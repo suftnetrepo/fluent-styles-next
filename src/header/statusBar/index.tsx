@@ -4,7 +4,7 @@ import type { StatusBarProps } from 'react-native'
 import { StatusBar } from 'react-native'
 
 const StyledStatusBar: React.FC<StatusBarProps> = props => {
-  return ( <StatusBar {...props} backgroundColor="transparent" translucent />)
+  return ( <StatusBar {...props} barStyle={'dark-content'} backgroundColor="transparent" translucent />)
 }
 
 export { StatusBarProps }; 
