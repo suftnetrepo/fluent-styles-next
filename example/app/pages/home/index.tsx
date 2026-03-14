@@ -23,28 +23,28 @@ const Home = () => {
             <StyledSpacer marginVertical={8} />
             <StyledScrollView showsVerticalScrollIndicator={false}>
                 <Stack gap={8}>
-                    <StyledImageBackground height={400} borderRadius={8} borderWidth={0.4} borderColor={theme.colors.gray[500]} source={require('../../../assets/bus.png')} >
+                    <StyledImageBackground resizeMode='contain' paddingHorizontal={4} height={250} borderRadius={8} borderWidth={0.4} borderColor={theme.colors.gray[500]} source={require('../../../assets/bus.png')} >
                     </StyledImageBackground>
-                    <StyledCard backgroundColor={theme.colors.gray[1]} borderWidth={0.1} borderColor={theme.colors.gray[500]} borderRadius={8} padding={8} shadow="light">
-                        <StyledCard.Header>
+                    <StyledCard backgroundColor={theme.colors.gray[1]} marginHorizontal={1} borderWidth={0.1} borderColor={theme.colors.gray[500]} borderRadius={16} padding={16} shadow="light">
+                        <StyledCard.Header paddingVertical={4}>
                             <StyledText fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.semiBold} color={theme.colors.gray[800]}>Card Title</StyledText>
                         </StyledCard.Header>
                         <StyledSpacer marginVertical={8} />
-                        <StyledCard.Image source={require('../../../assets/bus.png')} height={200} borderRadius={8} borderWidth={0.4} borderColor={theme.colors.gray[500]} >
+                        {/* <StyledCard.Image source={require('../../../assets/bus.png')} height={200} borderRadius={8} borderWidth={0.4} borderColor={theme.colors.gray[500]} >
                            </StyledCard.Image>
-                        <StyledSpacer marginVertical={8} />
+                        <StyledSpacer marginVertical={8} /> */}
                         <StyledCard.Content>
                             <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[700]}>This is a description of the card content. It provides additional information about the card.</StyledText>
                         </StyledCard.Content>
                         <StyledSpacer marginVertical={8} />
-                        <StyledCard.Footer horizontal gap={8} paddingVertical={12} paddingHorizontal={16} backgroundColor={theme.colors.gray[100]}>
+                        {/* <StyledCard.Footer horizontal gap={8} paddingVertical={12} paddingHorizontal={16} backgroundColor={theme.colors.gray[100]}>
                             <StyleShape padding={8} borderWidth={0} cycle backgroundColor={theme.colors.blue[500]}>
                                 <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[100]}>Action 1</StyledText>
                             </StyleShape>
                             <StyleShape padding={8} borderWidth={0} cycle backgroundColor={theme.colors.blue[500]}>
                                 <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[100]}>Action 2</StyledText>
                             </StyleShape>
-                        </StyledCard.Footer>
+                        </StyledCard.Footer> */}
                     </StyledCard>
 
 

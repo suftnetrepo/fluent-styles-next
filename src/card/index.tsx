@@ -5,6 +5,7 @@ import React from 'react';
 import { theme } from '../utiles/theme';
 import { Stack, StackProps } from '../stack';
 import { StyledImageBackground, StyledImageBackgroundProps } from '../image';
+import { viewStyleVariants } from '../utiles/viewStyleVariants';
 
 const shadow = {
   light: Platform.select({
@@ -99,6 +100,7 @@ const CardBase = styled<CardComponentProps>(View, {
     borderRadius: 8,
   } as ViewStyle,
   variants: {
+    ...viewStyleVariants,
     shadow: {
       light: shadow.light,
       lightMedium: shadow.lightMedium,
