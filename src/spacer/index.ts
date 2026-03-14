@@ -6,8 +6,6 @@ type SpacerProps =  ViewProps & ViewStyle;
 
 const StyledSpacer = styled<SpacerProps>(View, {
     base: {
-        flex: 1,
-        flexDirection: 'row',
         marginHorizontal: 1,
     } as ViewStyle,
 });

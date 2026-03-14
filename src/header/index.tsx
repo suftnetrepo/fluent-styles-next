@@ -1,131 +1,198 @@
 import React from 'react';
-import { useWindowDimensions, View, ViewProps, ViewStyle, Platform } from 'react-native';
+import { 
+  useWindowDimensions, 
+  View, 
+  ViewProps, 
+  ViewStyle, 
+  Platform 
+} from 'react-native';
 import { styled } from '../utiles/styled';
 import { getStatusBarHeight } from '../utiles/statusBar';
 import { Stack } from '../stack';
-import StyledStatusBar, { type StatusBarProps } from './statusBar';
+import StatusBar, { StatusBarProps } from './statusBar';
 import { StyleShape, ShapeProps } from '../shape';
 import { StyledText, StyledTextProps } from '../text';
 import { BackArrow } from '../icons';
 import { theme } from '../utiles/theme';
 
-type HeaderProps = ViewProps & ViewStyle;
+// Types
+export interface BackArrowConfig {
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+  onPress?: () => void;
+}
 
-const Header = styled<ViewProps & ViewStyle>(View, {
-    base: {
-        position: 'relative',
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: Platform.select({
-            ios: 44,
-            android: 56,
-            default: 56,
-        }),
-        backgroundColor: theme.colors.gray[1],
-    }
+export interface HeaderProps extends ViewProps, ViewStyle {
+  showBackArrow?: boolean;
+  title?: string;
+  titleProps?: StyledTextProps;
+  titleAlignment?: 'left' | 'center' | 'right';
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  backArrowConfig?: BackArrowConfig;
+  shapeProps?: ShapeProps;
+  onBackPress?: () => void;
+  showStatusBar?: boolean;
+  statusBarProps?: StatusBarProps;
+  skipStatusBarOnAndroid?: boolean;
+  skipStatusBarOnIOS?: boolean;
+}
+
+export interface FullHeaderProps extends ViewProps, ViewStyle {
+  children?: React.ReactNode;
+  statusBarProps?: StatusBarProps;
+  skipStatusBarOnAndroid?: boolean;
+  skipStatusBarOnIOS?: boolean;
+}
+
+// Styled Components
+const StyledHeaderContainer = styled<ViewProps & ViewStyle>(View, {
+  base: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: Platform.select({
+      ios: 44,
+      android: 56,
+      default: 56,
+    }),
+  },
 });
 
-type backArrowProps = {
-    size?: number;
-    color?: string;
-    strokeWidth?: number;
-    onPress?: () => void;
-};
-
-type headerProps = HeaderProps & {
-    showBackArrow?: boolean;
-    title?: string;
-    titleProps?: StyledTextProps;
-    titleAlign?: 'left' | 'center' | 'right';
-    leftIcon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-    backArrowProps?: backArrowProps;
-    shapeProps?: ShapeProps;
-    onPress?: () => void;
-    showStatusBar?: boolean;
-    statusBarProps?: StatusBarProps;
-    skipAndroid?: boolean;
-    skipIOS?: boolean;
-};
-
-const StyledHeader = React.forwardRef<View, headerProps>(
-    (
-        {
-            showBackArrow,
-            backArrowProps,
-            showStatusBar = true,
-            onPress,
-            title,
-            titleAlign = 'left',
-            titleProps,
-            leftIcon,
-            rightIcon,
-            shapeProps,
-            statusBarProps,
-            skipAndroid = true,
-            skipIOS = true,
-            ...rest
-        },
-        ref
-    ) => {
-        const { width } = useWindowDimensions();
-
-        return (
-            <Stack vertical>
-                {showStatusBar && <StyledStatusBar {...statusBarProps} />}
-                <Header
-                    ref={ref}
-                    marginTop={getStatusBarHeight(skipAndroid, skipIOS)}
-                    width={width}
-                    {...rest}
-                >
-
-                    <Stack flex={titleAlign === 'left' ? 2 : 1} alignItems='center' horizontal>
-                        {showBackArrow && (
-                            <StyleShape cycle {...shapeProps}>
-                                <BackArrow
-                                    size={32}
-                                    color={theme.colors.gray[1]}
-                                    onPress={() => onPress && onPress()}
-                                    {...backArrowProps}
-                                />
-                            </StyleShape>
-                        )}
-
-                        {leftIcon && (
-                            <>{leftIcon}</>
-                        )}
-
-                        {titleAlign === 'left' && title && (
-                            <StyledText
-                                marginLeft={24}
-                                {...titleProps}
-                            >
-                                {title}
-                            </StyledText>
-                        )}
-                    </Stack>
-
-                    <Stack
-                        flex={titleAlign === 'center' ? 2 : 1}
-                        flexWrap='nowrap'
-                        alignItems='center'
-                    >
-                        {titleAlign === 'center' && title && (
-                            <StyledText {...titleProps}>
-                                {title}
-                            </StyledText>
-                        )}
-                    </Stack>
-
-                    <Stack flex={1} backgroundColor={theme.colors.gray[1]} alignItems='flex-end'>
-                        {rightIcon && <>{rightIcon}</>}
-                    </Stack>
-                </Header>
-            </Stack>
-        );
-    }
+// Full Header Component
+const FullHeader = React.forwardRef<View, FullHeaderProps>(
+  (
+    { 
+      children, 
+      statusBarProps, 
+      skipStatusBarOnAndroid = true, 
+      skipStatusBarOnIOS = true, 
+      ...rest 
+    }, 
+    ref
+  ) => {
+    const { width } = useWindowDimensions();
+    
+    return (
+      <Stack vertical>
+        <StatusBar {...statusBarProps} />
+        <StyledHeaderContainer
+          ref={ref}
+          width={width}
+          marginTop={getStatusBarHeight(skipStatusBarOnAndroid, skipStatusBarOnIOS)}
+          {...rest}
+        >
+          {children}
+        </StyledHeaderContainer>
+      </Stack>
+    );
+  }
 );
 
+// Main Header Component
+const HeaderComponent = React.forwardRef<View, HeaderProps>(
+  (
+    {
+      showBackArrow,
+      backArrowConfig,
+      showStatusBar = true,
+      onBackPress,
+      title,
+      titleAlignment = 'left',
+      titleProps,
+      leftIcon,
+      rightIcon,
+      shapeProps,
+      statusBarProps,
+      skipStatusBarOnAndroid = true,
+      skipStatusBarOnIOS = true,
+      ...rest
+    },
+    ref
+  ) => {
+    const { width } = useWindowDimensions();
+
+    const renderLeftSection = () => (
+      <Stack 
+        flex={titleAlignment === 'left' ? 2 : 1} 
+        alignItems="center" 
+        horizontal
+      >
+        {showBackArrow && (
+          <StyleShape cycle {...shapeProps}>
+            <BackArrow
+              size={32}
+              color={theme.colors.gray[1]}
+              onPress={onBackPress}
+              {...backArrowConfig}
+            />
+          </StyleShape>
+        )}
+
+        {leftIcon}
+
+        {titleAlignment === 'left' && title && (
+          <StyledText marginLeft={24} {...titleProps}>
+            {title}
+          </StyledText>
+        )}
+      </Stack>
+    );
+
+    const renderCenterSection = () => (
+      <Stack
+        flex={titleAlignment === 'center' ? 2 : 1}
+        flexWrap="nowrap"
+        alignItems="center"
+      >
+        {titleAlignment === 'center' && title && (
+          <StyledText {...titleProps}>
+            {title}
+          </StyledText>
+        )}
+      </Stack>
+    );
+
+    const renderRightSection = () => (
+      <Stack 
+        flex={1} 
+        backgroundColor={theme.colors.gray[1]} 
+        alignItems="flex-end"
+      >
+        {rightIcon}
+      </Stack>
+    );
+
+    return (
+      <Stack vertical>
+        <StatusBar {...statusBarProps} />
+        <StyledHeaderContainer
+          ref={ref}
+          marginTop={getStatusBarHeight(skipStatusBarOnAndroid, skipStatusBarOnIOS)}
+          width={width}
+          {...rest}
+        >
+          {renderLeftSection()}
+          {renderCenterSection()}
+          {renderRightSection()}
+        </StyledHeaderContainer>
+      </Stack>
+    );
+  }
+);
+
+// Component Composition
+interface HeaderComponent extends React.ForwardRefExoticComponent<
+  HeaderProps & React.RefAttributes<View>
+> {
+  Full: typeof FullHeader;
+}
+
+const StyledHeader = HeaderComponent as HeaderComponent;
+
+StyledHeader.Full = FullHeader;
+StyledHeader.Full.displayName = 'StyledHeader.Full';
+StyledHeader.displayName = 'StyledHeader';
+
 export { StyledHeader };
-export type { HeaderProps };
