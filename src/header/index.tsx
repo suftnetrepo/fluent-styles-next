@@ -16,7 +16,7 @@ import { BackArrow } from '../icons';
 import { theme } from '../utiles/theme';
 
 // Types
-export interface BackArrowConfig {
+export interface BackArrowProps {
   size?: number;
   color?: string;
   strokeWidth?: number;
@@ -30,7 +30,7 @@ export interface HeaderProps extends ViewProps, ViewStyle {
   titleAlignment?: 'left' | 'center' | 'right';
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  backArrowConfig?: BackArrowConfig;
+  backArrowProps?: BackArrowProps;
   shapeProps?: ShapeProps;
   onBackPress?: () => void;
   showStatusBar?: boolean;
@@ -95,7 +95,7 @@ const HeaderComponent = React.forwardRef<View, HeaderProps>(
   (
     {
       showBackArrow,
-      backArrowConfig,
+      backArrowProps,
       showStatusBar = true,
       onBackPress,
       title,
@@ -111,8 +111,7 @@ const HeaderComponent = React.forwardRef<View, HeaderProps>(
     },
     ref
   ) => {
-    const { width } = useWindowDimensions();
-
+   
     const renderLeftSection = () => (
       <Stack 
         flex={titleAlignment === 'left' ? 2 : 1} 
@@ -125,7 +124,7 @@ const HeaderComponent = React.forwardRef<View, HeaderProps>(
               size={32}
               color={theme.colors.gray[1]}
               onPress={onBackPress}
-              {...backArrowConfig}
+              {...backArrowProps}
             />
           </StyleShape>
         )}
@@ -170,7 +169,7 @@ const HeaderComponent = React.forwardRef<View, HeaderProps>(
         <StyledHeaderContainer
           ref={ref}
           marginTop={getStatusBarHeight(skipStatusBarOnAndroid, skipStatusBarOnIOS)}
-          width={width}
+         
           {...rest}
         >
           {renderLeftSection()}

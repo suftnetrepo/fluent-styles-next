@@ -1,45 +1,58 @@
 
 import React, { Fragment } from 'react'
-import { ChevronRight, Stack, StyledText, theme, StyledScrollView, fontStyles, StyledPage, StyleShape, StyledHeader, StyledSpacer, StyledCard } from 'fluent-styles'
+import { ChevronRight, StyledPressaable, Stack, StyledText, theme, StyledScrollView, fontStyles, StyledPage, StyleShape, StyledHeader, StyledSpacer, StyledCard } from 'fluent-styles'
+import { StackParamList } from '../../navigation/StackParamList'
+import { useNavigation } from '@react-navigation/native'
 
 const Home = () => {
-
-    const data = [
-        {
-            name: 'Quick Pad',
-            route: 'quick-pad'
-        },
-        {
-            name: 'Typography',
-            route: 'typography'
-        },
-        {
-            name: 'Buttons',
-            route: 'buttons'
-        },
-        {
-            name: 'Cards',
-            route: 'cards'
-        },
-        {
-            name: 'Switches',
-            route: 'switches'
-        },
-        {
-            name: 'Text Inputs',
-            route: 'text-inputs'
-        },
-    ]
+    const navigation = useNavigation<any>()
+ 
+    const routeConfig: {
+        title: string,
+        data: {
+            title: string,
+            name: keyof StackParamList
+        }[]
+    }[] = [
+            {
+                title: 'Getting Started',
+                data: [
+                    {
+                        title: 'Quick Pad',
+                        name: 'quick-pad'
+                    },
+                    {
+                        title: 'Typography',
+                        name: 'typography'
+                    },
+                    {
+                        title: 'Buttons',
+                        name: 'buttons'
+                    },
+                    {
+                        title: 'Cards',
+                        name: 'cards'
+                    },
+                    {
+                        title: 'Switch',
+                        name: 'switch'
+                    },
+                    {
+                        title: 'Text Inputs',
+                        name: 'text-inputs'
+                    },
+                ]
+            }
+        ]
 
     type props = {
-        name: string
-        route: string
+        name: keyof StackParamList
         index: number
         lastIndex: number
     }
-    const renderCard = ({ name, route, index, lastIndex }: props) => {
+    const renderCard = ({ name, index, lastIndex }: props) => {
         return (
-            <>
+            <StyledPressaable onPress={() => navigation.navigate(name)}>
                 <Stack horizontal justifyContent='space-between' alignItems='center' paddingVertical={8}>
                     <StyledText fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.normal} color={theme.colors.gray[800]}>{name}</StyledText>
                     <StyleShape padding={8} borderWidth={0} cycle>
@@ -47,7 +60,7 @@ const Home = () => {
                     </StyleShape>
                 </Stack>
                 {index !== lastIndex && <StyledSpacer borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]} marginVertical={2} />}
-            </>
+            </StyledPressaable>
         )
     }
 
@@ -66,20 +79,30 @@ const Home = () => {
                     </StyleShape>
                 }
                 onBackPress={() => { }
-                } paddingVertical={8} backgroundColor={theme.colors.gray[100]} >
+                } paddingVertical={8} backgroundColor={theme.colors.gray[200]} borderRadius={30} >
             </StyledHeader>
             <StyledSpacer marginVertical={8} />
             <StyledScrollView showsVerticalScrollIndicator={false}>
                 <StyledCard backgroundColor={theme.colors.gray[1]} marginHorizontal={1} borderWidth={0.5} borderColor={theme.colors.gray[1]} borderRadius={32} padding={16} >
                     {
-                        data.map((item, index) => (
-                            <Fragment key={index}>
-                                {renderCard({ ...item, index, lastIndex: data.length - 1 })}
-                            </Fragment>
-                        ))
+                        routeConfig.map((item, index) => {
+                            return (
+                                <Fragment key={index}>
+                                    <StyledText fontSize={theme.fontSize.xlarge} fontWeight={theme.fontWeight.semiBold} color={theme.colors.gray[800]} marginBottom={8}>{item.title}</StyledText>
+                                    {
+                                        item.data.map((routeItem, routeIndex) => (
+                                            <Fragment key={routeIndex}>
+                                                {renderCard({ ...routeItem, index: routeIndex, lastIndex: item.data.length - 1 })}
+                                            </Fragment>
+                                        ))
+                                    }
+                                </Fragment>
+                            )
+                        })
                     }
                 </StyledCard>
             </StyledScrollView>
+
         </StyledPage>
     )
 }

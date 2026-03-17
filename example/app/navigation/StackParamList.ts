@@ -1,4 +1,5 @@
+import { _path } from "~/pages/config";
+
 export type StackParamList = {
 	home: undefined;
-	uploadImage: undefined;
-};
+} & Record<_path, undefined>
