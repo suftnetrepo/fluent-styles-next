@@ -3,7 +3,7 @@ import Svg, { Path } from 'react-native-svg'
 import { createIcon } from '../utiles/createIcon'
 import { StyleShape } from '../shape'
 
-const BackArrow = createIcon(
+const ForwardArrow = createIcon(
   ({ size, color, strokeWidth }, props) => (
     <StyleShape cycle>
       <Svg width={size} height={size} viewBox="0 0 24 24" {...props}>
@@ -13,5 +13,7 @@ const BackArrow = createIcon(
     </StyleShape>
   )
 )
-BackArrow.displayName = 'BackArrow'
-export { BackArrow }
+
+ForwardArrow.displayName = 'ForwardArrow'
+
+export { ForwardArrow }
