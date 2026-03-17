@@ -70,17 +70,15 @@ const Home = () => {
             </StyledHeader>
             <StyledSpacer marginVertical={8} />
             <StyledScrollView showsVerticalScrollIndicator={false}>
-                <Stack gap={8}>
-                    <StyledCard backgroundColor={theme.colors.gray[1]} marginHorizontal={1} borderWidth={0.5} borderColor={theme.colors.gray[1]} borderRadius={32} padding={16} >
-                        {
-                            data.map((item, index) => (
-                                <Fragment key={index}>
-                                    {renderCard({ ...item, index, lastIndex: data.length - 1 })}
-                                </Fragment>
-                            ))
-                        }
-                    </StyledCard>
-                </Stack>
+                <StyledCard backgroundColor={theme.colors.gray[1]} marginHorizontal={1} borderWidth={0.5} borderColor={theme.colors.gray[1]} borderRadius={32} padding={16} >
+                    {
+                        data.map((item, index) => (
+                            <Fragment key={index}>
+                                {renderCard({ ...item, index, lastIndex: data.length - 1 })}
+                            </Fragment>
+                        ))
+                    }
+                </StyledCard>
             </StyledScrollView>
         </StyledPage>
     )
