@@ -5,7 +5,6 @@ import {
     TextStyle,
 } from 'react-native';
 import { styled } from '../utiles/styled';
-import { viewStyleVariants } from '../utiles/viewStyleVariants';
 import { theme } from '../utiles/theme';
 
 type TextVariants = {
@@ -26,7 +25,6 @@ const StyledText = styled<StyledTextProps>(Text, {
         fontWeight: theme.fontWeight.normal,
     } as TextStyle,
     variants: {
-        ...viewStyleVariants,
         fontSize: (selected: string) => {
             const size = selected || theme.fontSize.normal;
             if (isNaN(Number(size))) {

@@ -19,7 +19,7 @@ const Page = ({ title, children }: { title: string, children?: StyledPageProps['
     )
 }
 
-export type _path = | 'cards' | 'switch' | 'text-inputs' | 'buttons' | 'typography' | 'quick-pad'
+export type _path = | 'cards' | 'switch' | 'inputs' | 'buttons' 
 export const config: { path: _path, Page: any }[] = [
     {
         path: 'cards',

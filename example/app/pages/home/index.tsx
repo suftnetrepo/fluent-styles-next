@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import { ChevronRight, StyledPressaable, Stack, StyledText, theme, StyledScrollView, fontStyles, StyledPage, StyleShape, StyledHeader, StyledSpacer, StyledCard } from 'fluent-styles'
 import { StackParamList } from '../../navigation/StackParamList'
 import { useNavigation } from '@react-navigation/native'
+import { capitalizeFirstLetter } from '../../../utiles/helper'
 
 const Home = () => {
     const navigation = useNavigation<any>()
@@ -18,14 +19,6 @@ const Home = () => {
                 title: 'Getting Started',
                 data: [
                     {
-                        title: 'Quick Pad',
-                        name: 'quick-pad'
-                    },
-                    {
-                        title: 'Typography',
-                        name: 'typography'
-                    },
-                    {
                         title: 'Buttons',
                         name: 'buttons'
                     },
@@ -38,8 +31,8 @@ const Home = () => {
                         name: 'switch'
                     },
                     {
-                        title: 'Text Inputs',
-                        name: 'text-inputs'
+                        title: 'Inputs',
+                        name: 'inputs'
                     },
                 ]
             }
@@ -54,7 +47,7 @@ const Home = () => {
         return (
             <StyledPressaable onPress={() => navigation.navigate(name)}>
                 <Stack horizontal justifyContent='space-between' alignItems='center' paddingVertical={8}>
-                    <StyledText fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.normal} color={theme.colors.gray[800]}>{name}</StyledText>
+                    <StyledText fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.normal} color={theme.colors.gray[800]}>{capitalizeFirstLetter(name)}</StyledText>
                     <StyleShape padding={8} borderWidth={0} cycle>
                         <ChevronRight size={16} color={theme.colors.gray[800]} strokeWidth={2} />
                     </StyleShape>
@@ -65,7 +58,7 @@ const Home = () => {
     }
 
     return (
-        <StyledPage paddingHorizontal={8} backgroundColor={theme.colors.gray[100]}>
+        <StyledPage paddingHorizontal={16} backgroundColor={theme.colors.gray[100]}>
             <StyledHeader borderBottomColor={theme.colors.gray[200]} showBackArrow={false} showStatusBar={true}
                 title='Fluent Styles' titleAlignment='left' titleProps={{
                     color: theme.colors.gray[800],
@@ -88,7 +81,7 @@ const Home = () => {
                         routeConfig.map((item, index) => {
                             return (
                                 <Fragment key={index}>
-                                    <StyledText fontSize={theme.fontSize.xlarge} fontWeight={theme.fontWeight.semiBold} color={theme.colors.gray[800]} marginBottom={8}>{item.title}</StyledText>
+                                    <StyledText fontSize={theme.fontSize.xlarge} fontWeight={theme.fontWeight.semiBold} color={theme.colors.gray[800]} marginBottom={8}>{capitalizeFirstLetter(item.title)}</StyledText>
                                     {
                                         item.data.map((routeItem, routeIndex) => (
                                             <Fragment key={routeIndex}>
@@ -102,7 +95,6 @@ const Home = () => {
                     }
                 </StyledCard>
             </StyledScrollView>
-
         </StyledPage>
     )
 }

@@ -31,7 +31,7 @@ interface _StyledImageProps extends StyledImageProps {
     width?: number ;
 }   
 
-const StyledImage = React.forwardRef<Image, _StyledImageProps>(({ height = 100, width = 100, ...props }: _StyledImageProps, ref) => {
+const StyledImage = React.forwardRef<React.ComponentRef<typeof Image>, _StyledImageProps>(({ height = 100, width = 100, ...props }: _StyledImageProps, ref) => {
     const { cycle, size, ...rest } = props;
     console.log('StyledImage props:', props);
     const sizeStyle = cycle ? { height: Number(size), width: Number(size) } : { height, width };
