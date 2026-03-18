@@ -1,13 +1,13 @@
 
 import React, { Fragment } from 'react'
-import { ChevronRight, StyledPressaable, Stack, StyledText, theme, StyledScrollView, fontStyles, StyledPage, StyleShape, StyledHeader, StyledSpacer, StyledCard } from 'fluent-styles'
+import { ChevronRight, StyledPressable, StyledButton, StyledDivider, Stack, StyledText, theme, StyledScrollView, fontStyles, StyledPage, StyleShape, StyledHeader, StyledSpacer, StyledCard } from 'fluent-styles'
 import { StackParamList } from '../../navigation/StackParamList'
 import { useNavigation } from '@react-navigation/native'
 import { capitalizeFirstLetter } from '../../../utiles/helper'
 
 const Home = () => {
     const navigation = useNavigation<any>()
- 
+
     const routeConfig: {
         title: string,
         data: {
@@ -45,15 +45,15 @@ const Home = () => {
     }
     const renderCard = ({ name, index, lastIndex }: props) => {
         return (
-            <StyledPressaable onPress={() => navigation.navigate(name)}>
+            <StyledPressable onPress={() => navigation.navigate(name)}>
                 <Stack horizontal justifyContent='space-between' alignItems='center' paddingVertical={8}>
                     <StyledText fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.normal} color={theme.colors.gray[800]}>{capitalizeFirstLetter(name)}</StyledText>
                     <StyleShape padding={8} borderWidth={0} cycle>
                         <ChevronRight size={16} color={theme.colors.gray[800]} strokeWidth={2} />
                     </StyleShape>
                 </Stack>
-                {index !== lastIndex && <StyledSpacer borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]} marginVertical={2} />}
-            </StyledPressaable>
+                {index !== lastIndex && <StyledDivider height={0.9} horizontal backgroundColor={theme.colors.gray[200]} marginVertical={2} />}
+            </StyledPressable>
         )
     }
 
@@ -93,7 +93,17 @@ const Home = () => {
                             )
                         })
                     }
+                    <Stack horizontal flex={1} gap={4}>
+                        <StyledButton backgroundColor={theme.colors.yellow[500]} flex={2} justifyContent='center' borderRadius={100} borderWidth={0.2} borderColor={theme.colors.yellow[500]}   >
+                            <StyledButton.Text color={theme.colors.gray[1]} fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.medium}>View on GitHub</StyledButton.Text>
+                        </StyledButton>
+                        <StyledButton primary flex={1} >
+                            <StyledButton.Text marginLeft={4} color={theme.colors.gray[1]} fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.medium}>Submit</StyledButton.Text>
+                        </StyledButton>
+                    </Stack>
+
                 </StyledCard>
+
             </StyledScrollView>
         </StyledPage>
     )

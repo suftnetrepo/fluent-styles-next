@@ -1,0 +1,79 @@
+
+import React from 'react';
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { styled } from '../utiles/styled';
+import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
+import { viewStyleStringVariants, viewStyleVariants } from '../utiles/viewStyleVariants';
+import { StyledText } from '../text';
+import { theme } from '../utiles/theme';
+
+type buttonVariants = {
+    link?: boolean;
+    outline?: boolean;
+    primary?: boolean;
+}
+type ButtonProps = { variant?: buttonVariants } & TouchableOpacityProps & ViewStyleProps
+
+const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
+    base: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        borderRadius: 50,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        flex: 1
+    } as ViewStyle,
+    variants: {
+        ...viewStyleVariants,
+        ...viewStyleStringVariants,
+        link: {
+            true: {
+                backgroundColor: theme.colors.transparent,
+                paddingHorizontal: 0,
+                paddingVertical: 0,
+                borderWidth: 0,
+            } as ViewStyle
+        },
+        outline: {
+            true: {
+                backgroundColor: theme.colors.transparent,
+                borderWidth: 1,
+                borderColor: theme.colors.gray[800],
+            } as ViewStyle
+        },
+        primary:{
+            true: {
+                backgroundColor: theme.colors.cyan[500],
+                borderWidth: 0,
+            } as ViewStyle
+        }
+    }
+});
+
+interface StyledButtonProps extends ButtonProps {
+    children?: React.ReactNode;
+    link?: boolean;
+    outline?: boolean;
+    primary?: boolean;
+}
+
+const Button = React.forwardRef<React.ComponentPropsWithRef<typeof ButtonBase>, StyledButtonProps>(({ children, ...rest }, ref) => {
+    return (
+        <ButtonBase ref={ref} {...rest}>
+            {children}
+        </ButtonBase>
+    )
+})
+
+
+interface RefExoticComponent extends React.ForwardRefExoticComponent<StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>> {
+    Text: typeof StyledText;
+}
+
+const StyledButton = Button as RefExoticComponent;
+StyledButton.Text = StyledText;
+
+export { StyledButton };
+export type { StyledButtonProps };

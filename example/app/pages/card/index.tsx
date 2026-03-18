@@ -1,6 +1,6 @@
 
 import React, { Fragment } from 'react'
-import { ChevronRight, Stack, StyledText, theme, StyledScrollView, StyleShape, StyledSpacer, StyledCard } from 'fluent-styles'
+import { ChevronRight, Stack, StyledText, StyledDivider, theme, StyledScrollView, StyleShape, StyledSpacer, StyledCard } from 'fluent-styles'
 
 
 const Card = () => {
@@ -47,7 +47,7 @@ const Card = () => {
                         <ChevronRight size={16} color={theme.colors.gray[800]} strokeWidth={2} />
                     </StyleShape>
                 </Stack>
-                {index !== lastIndex && <StyledSpacer borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]} marginVertical={2} />}
+                {index !== lastIndex && <StyledDivider marginVertical={2} />}
             </>
         )
     }

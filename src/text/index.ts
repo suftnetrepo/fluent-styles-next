@@ -14,6 +14,7 @@ type TextVariants = {
     textDecorationLine?: boolean | string;
     textAlign?: string ;
     fontFamily?: string;
+    link?: boolean;
 };
 
 type StyledTextProps = TextVariants & TextProps & TextStyle;
@@ -59,6 +60,12 @@ const StyledText = styled<StyledTextProps>(Text, {
             if (!selected) return {};
             return { fontFamily: selected };
         },
+        link: {
+            true: {
+                color: theme.colors.blue[800],
+                textDecorationLine: 'underline',
+            } as TextStyle
+        }
     }
 });
 

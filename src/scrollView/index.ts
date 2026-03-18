@@ -1,17 +1,14 @@
 
 import { styled } from '../utiles/styled';
-import { ViewStyle, ScrollView, ScrollViewProps } from 'react-native'
-import { viewStyleVariants } from '../utiles/viewStyleVariants';
+import { ScrollView, ScrollViewProps } from 'react-native'
+import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
 
-type StyledScrollViewProps = ScrollViewProps & ViewStyle;
+type StyledScrollViewProps = ScrollViewProps & ViewStyleProps;
 
 const StyledScrollView = styled<StyledScrollViewProps>(ScrollView, {
     base: {
         flex: 1,
-    },
-    variants: {
-        ...viewStyleVariants,
-    } 
+    } as ViewStyle
 });
 
 export { StyledScrollView };

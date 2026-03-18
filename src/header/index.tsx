@@ -61,7 +61,7 @@ const StyledHeaderContainer = styled<ViewProps & ViewStyle>(View, {
 });
 
 // Full Header Component
-const FullHeader = React.forwardRef<View, FullHeaderProps>(
+const FullHeader = React.forwardRef<React.ComponentPropsWithRef<typeof StyledHeaderContainer>, FullHeaderProps>(
   (
     { 
       children, 
@@ -91,7 +91,7 @@ const FullHeader = React.forwardRef<View, FullHeaderProps>(
 );
 
 // Main Header Component
-const HeaderComponent = React.forwardRef<View, HeaderProps>(
+const HeaderComponent = React.forwardRef<React.ComponentPropsWithRef<typeof StyledHeaderContainer>, HeaderProps>(
   (
     {
       showBackArrow,

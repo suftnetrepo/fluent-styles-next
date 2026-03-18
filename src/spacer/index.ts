@@ -1,8 +1,23 @@
 
-import { View, ViewProps, ViewStyle } from 'react-native';
+import { View, ViewProps } from 'react-native';
 import { styled } from '../utiles/styled';
+import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
 
-type SpacerProps =  ViewProps & ViewStyle;
+type SpacerProps =  ViewProps & (Pick<ViewStyleProps, 
+  | 'margin'
+  | 'marginTop'
+  | 'marginBottom'
+  | 'marginLeft'
+  | 'marginRight'
+  | 'marginHorizontal'
+  | 'marginVertical'
+  | 'backgroundColor'
+  | 'borderRadius'
+  | 'borderWidth'
+  | 'borderColor'
+  | 'flex'
+  | 'width'
+  | 'height'>);
 
 const StyledSpacer = styled<SpacerProps>(View, {
     base: {
