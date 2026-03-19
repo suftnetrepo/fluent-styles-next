@@ -15,6 +15,9 @@ import {
   StyledHeader,
   StyledSpacer,
   StyledCard,
+  StyledDropdown,
+  DropdownOptionItem,
+  StyledCheckBox,
 } from "fluent-styles";
 import { StackParamList } from "../../navigation/StackParamList";
 import { useNavigation } from "@react-navigation/native";
@@ -22,6 +25,12 @@ import { capitalizeFirstLetter } from "../../../utiles/helper";
 
 const Home = () => {
   const navigation = useNavigation<any>();
+
+  const options: DropdownOptionItem[] = [
+    { value: "1", label: "Option 1" },
+    { value: "2", label: "Option 2" },
+    { value: "3", label: "Option 3" },
+  ];
 
   const routeConfig: {
     title: string;
@@ -212,13 +221,27 @@ const Home = () => {
             accessibilityHint="Input field for first name"
             accessibilityRole="text"
             maxLength={50}
-            numberOfLines={4}
-            multiline
-            height={100}
+          />
+          <StyledSpacer marginVertical={8} />
+          <StyledDropdown
+            data={options}
+            disabled={false}
+            placeholder="Select an option"
+            placeholderTextColor={theme.colors.gray[500]}
+            onChange={(item) => console.log("Selected:", item.value)}
+          />
+          <StyledSpacer marginVertical={8} />
+          <StyledCheckBox
+            size={32}
+            iconSize={18}
+            checked={true}
+            disabled={false}
+            onCheck={(j)=> {console.log(j)}}
+            checkMarkColor={theme.colors.gray[100]}
           />
         </StyledCard>
       </StyledScrollView>
-    </StyledPage> 
+    </StyledPage>
   );
 };
 

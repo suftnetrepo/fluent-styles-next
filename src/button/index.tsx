@@ -11,6 +11,8 @@ type buttonVariants = {
     link?: boolean;
     outline?: boolean;
     primary?: boolean;
+    disabled?: boolean;
+    dropdown?: boolean;
 }
 type ButtonProps = { variant?: buttonVariants } & TouchableOpacityProps & ViewStyleProps
 
@@ -19,6 +21,8 @@ interface StyledButtonProps extends ButtonProps {
     link?: boolean;
     outline?: boolean;
     primary?: boolean;
+    disabled?: boolean;
+    dropdown?: boolean;
 }
 
 interface RefExoticComponent extends React.ForwardRefExoticComponent<StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>> {
@@ -58,6 +62,23 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
             true: {
                 backgroundColor: theme.colors.cyan[500],
                 borderWidth: 0,
+            } as ViewStyle
+        },
+        disabled: {
+            true: {
+                backgroundColor: theme.colors.gray[50],
+                borderWidth: 0,
+                disabled: true
+            } as ViewStyle
+        },
+        dropdown: {
+            true: {
+                backgroundColor: theme.colors.white,
+                borderLeftWidth: 1,
+                borderTopWidth: 1,
+                borderRightWidth: 1,
+                borderBottomWidth: 0,
+                borderColor: theme.colors.gray[200],
             } as ViewStyle
         }
     }
