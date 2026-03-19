@@ -14,6 +14,17 @@ type buttonVariants = {
 }
 type ButtonProps = { variant?: buttonVariants } & TouchableOpacityProps & ViewStyleProps
 
+interface StyledButtonProps extends ButtonProps {
+    children?: React.ReactNode;
+    link?: boolean;
+    outline?: boolean;
+    primary?: boolean;
+}
+
+interface RefExoticComponent extends React.ForwardRefExoticComponent<StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>> {
+    Text: typeof StyledText;
+}
+
 const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
     base: {
         position: 'relative',
@@ -52,12 +63,6 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
     }
 });
 
-interface StyledButtonProps extends ButtonProps {
-    children?: React.ReactNode;
-    link?: boolean;
-    outline?: boolean;
-    primary?: boolean;
-}
 
 const Button = React.forwardRef<React.ComponentPropsWithRef<typeof ButtonBase>, StyledButtonProps>(({ children, ...rest }, ref) => {
     return (
@@ -66,11 +71,6 @@ const Button = React.forwardRef<React.ComponentPropsWithRef<typeof ButtonBase>, 
         </ButtonBase>
     )
 })
-
-
-interface RefExoticComponent extends React.ForwardRefExoticComponent<StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>> {
-    Text: typeof StyledText;
-}
 
 const StyledButton = Button as RefExoticComponent;
 StyledButton.Text = StyledText;

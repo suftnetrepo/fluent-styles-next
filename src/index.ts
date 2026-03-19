@@ -17,3 +17,4 @@ export { StyledImage, StyledImageBackground, type StyledImageProps, type StyledI
 export { StyledPressable, type StyledPressableProps } from './pressable'
 export { StyledButton, type StyledButtonProps } from './button'
 export { StyledDivider, type DividerProps } from './divider'
+export { StyledTextInput, type StyledTextInputProps } from './input'
