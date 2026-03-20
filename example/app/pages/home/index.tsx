@@ -18,6 +18,11 @@ import {
   StyledDropdown,
   DropdownOptionItem,
   StyledCheckBox,
+  BellFill,
+  BellOutline,
+  StyledBadge,
+  BadgeWithIcon,
+  BadgeIcon,
 } from "fluent-styles";
 import { StackParamList } from "../../navigation/StackParamList";
 import { useNavigation } from "@react-navigation/native";
@@ -39,28 +44,28 @@ const Home = () => {
       name: keyof StackParamList;
     }[];
   }[] = [
-    {
-      title: "Getting Started",
-      data: [
-        {
-          title: "Buttons",
-          name: "buttons",
-        },
-        {
-          title: "Cards",
-          name: "cards",
-        },
-        {
-          title: "Switch",
-          name: "switch",
-        },
-        {
-          title: "Inputs",
-          name: "inputs",
-        },
-      ],
-    },
-  ];
+      {
+        title: "Getting Started",
+        data: [
+          {
+            title: "Buttons",
+            name: "buttons",
+          },
+          {
+            title: "Cards",
+            name: "cards",
+          },
+          {
+            title: "Switch",
+            name: "switch",
+          },
+          {
+            title: "Inputs",
+            name: "inputs",
+          },
+        ],
+      },
+    ];
 
   type props = {
     name: keyof StackParamList;
@@ -134,7 +139,7 @@ const Home = () => {
             </StyledText>
           </StyleShape>
         }
-        onBackPress={() => {}}
+        onBackPress={() => { }}
         paddingVertical={8}
         backgroundColor={theme.colors.gray[200]}
         borderRadius={30}
@@ -191,6 +196,7 @@ const Home = () => {
             </StyledButton>
             <StyledButton primary flex={1}>
               <StyledButton.Text
+                backgroundColor={theme.colors.gray[500]}
                 marginLeft={4}
                 color={theme.colors.gray[1]}
                 fontSize={theme.fontSize.medium}
@@ -236,9 +242,20 @@ const Home = () => {
             iconSize={18}
             checked={true}
             disabled={false}
-            onCheck={(j)=> {console.log(j)}}
+            onCheck={(j) => { console.log(j) }}
             checkMarkColor={theme.colors.gray[100]}
           />
+          <StyledSpacer marginVertical={16} />
+          <Stack horizontal gap={24} marginHorizontal={16} justifyContent="flex-end">
+            <BellFill size={24} color={theme.colors.gray[800]} />
+            <BellOutline size={24} color={theme.colors.gray[800]} />
+            <BadgeIcon backgroundColor={theme.colors.red[500]} top={-13} right={5} char="3" color={theme.colors.gray[1]} fontSize={10} icon={<BellOutline size={24} color={theme.colors.green[800]} />} />
+          </Stack>
+          <StyledSpacer marginVertical={8} />
+          <StyledBadge alignSelf="flex-start" borderRadius={100} paddingHorizontal={8} paddingVertical={2} fontSize={12} backgroundColor={theme.colors.red[200]} color={theme.colors.red[800]} >Pending</StyledBadge>
+          <StyledSpacer marginVertical={8} />
+          <BadgeWithIcon borderRadius={30} paddingHorizontal={16} gap={8} paddingVertical={4} justifyContent="center" alignItems="center" title="New Messages" backgroundColor={theme.colors.blue[200]} color={theme.colors.blue[800]} fontSize={12} iconLeft={<BellFill size={16} color={theme.colors.blue[800]} />} iconRight={<BellOutline size={16} color={theme.colors.blue[800]} />} />
+          <StyledSpacer marginVertical={8} />
         </StyledCard>
       </StyledScrollView>
     </StyledPage>
