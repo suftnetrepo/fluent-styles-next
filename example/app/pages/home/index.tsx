@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import {
   ChevronRight,
   StyledTextInput,
@@ -23,6 +23,9 @@ import {
   StyledBadge,
   BadgeWithIcon,
   BadgeIcon,
+  StyledConfirmDialog,
+  StyledOkDialog,
+  StyledDialog,
 } from "fluent-styles";
 import { StackParamList } from "../../navigation/StackParamList";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +33,25 @@ import { capitalizeFirstLetter } from "../../../utiles/helper";
 
 const Home = () => {
   const navigation = useNavigation<any>();
+  const [show, setShow] = useState(true);
+  const [success, setSuccess] = useState(false);
+
+  function useDialog(type: 'delete' | 'save' | 'error' | 'success') {
+    const [visible, setVisible] = useState(true);
+    const [data, setData] = useState<any>(null);
+
+    return {
+      visible,
+      data,
+      show: (data?: any) => {
+        setData(data);
+        setVisible(true);
+      },
+      hide: () => setVisible(false),
+    };
+  }
+
+  const deleteDialog = useDialog('save');
 
   const options: DropdownOptionItem[] = [
     { value: "1", label: "Option 1" },
@@ -196,7 +218,7 @@ const Home = () => {
             </StyledButton>
             <StyledButton primary flex={1}>
               <StyledButton.Text
-                backgroundColor={theme.colors.gray[500]}
+
                 marginLeft={4}
                 color={theme.colors.gray[1]}
                 fontSize={theme.fontSize.medium}
@@ -257,7 +279,23 @@ const Home = () => {
           <BadgeWithIcon borderRadius={30} paddingHorizontal={16} gap={8} paddingVertical={4} justifyContent="center" alignItems="center" title="New Messages" backgroundColor={theme.colors.blue[200]} color={theme.colors.blue[800]} fontSize={12} iconLeft={<BellFill size={16} color={theme.colors.blue[800]} />} iconRight={<BellOutline size={16} color={theme.colors.blue[800]} />} />
           <StyledSpacer marginVertical={8} />
         </StyledCard>
+        <StyledConfirmDialog
+          description="Your changes have been saved."
+          variant="success"
+          visible={deleteDialog.visible}
+          title="Success?"
+          onConfirm={deleteDialog.hide}
+          onCancel={deleteDialog.hide}
+          showNeutral={true}
+        />
+
       </StyledScrollView>
+      <StyledOkDialog
+          visible={success}
+          variant="success"
+          okLabel="Ok"
+          onOk={() => setSuccess(false)}
+        />
     </StyledPage>
   );
 };
