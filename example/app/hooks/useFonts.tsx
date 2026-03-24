@@ -10,11 +10,9 @@ export function useFonts() {
     });   
 
     useEffect(() => {
-        async () => {
-            if (fontsLoaded) {             
-                setIsReady(true);
-            } 
-        };
+        if (fontsLoaded) {             
+            setIsReady(true);
+        } 
     }, [fontsLoaded]);
   
     return isReady;

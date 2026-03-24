@@ -1,11 +1,13 @@
 import React from 'react'
 import Navigator from '../app/navigation'
-import { StyledSafeAreaProvider } from 'fluent-styles'
+import { GlobalPortalProvider, StyledSafeAreaProvider, PortalManager } from 'fluent-styles'
 
 const Start = () => {
   return (
     <StyledSafeAreaProvider>
-       <Navigator />
+       <PortalManager >
+          <Navigator />
+        </PortalManager>
     </StyledSafeAreaProvider>
   )
 }
