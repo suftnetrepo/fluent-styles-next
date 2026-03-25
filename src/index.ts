@@ -27,11 +27,26 @@ export { Circular, type CircularProps } from './loading'
 export { StyledDialog, StyledConfirmDialog, StyledOkDialog, type StyledDialogProps, type StyledConfirmDialogProps, type StyledOkDialogProps } from './dialog'
 export { StyledDropdown, type StyledDropdownProps, type StyledMultiSelectDropdownProps, type DropdownOptionItem } from './dropdown'
 export { GlobalPortalProvider, getPositionStyles, PortalInstance, PortalManager, usePortal, PortalRenderer, type Position, type PortalNode, type PortalContextType } from './portal'
-export { toastService } from './services'
+
 export { useToast } from './toast/useToast'
-export { notificationService } from './services'
 export { useNotification } from './notification/useNotification'
-export { loaderService } from './services'
 export { useLoader } from './loading/useLoader'
 export { useDialogue } from './dialog/useDialogue'
+export { useActionSheet } from './actionSheet/useActionSheet'
+
+export {
+  toastService,
+  notificationService,
+  loaderService,
+  dialogueService,
+  actionSheetService,
+} from './services'
+
+export type {
+  ToastOptions,
+  NotificationOptions,
+  LoaderOptions,
+  DialogueOptions,
+  ActionSheetOptions,
+} from './services'
 

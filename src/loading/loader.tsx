@@ -1,64 +1,50 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
   Animated,
   Easing,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
 } from 'react-native'
+import {
+  ComponentTheme,
+  resolveTheme,
+  LoaderColors,
+  LOADER_DARK,
+  LOADER_LIGHT,
+} from '../utiles/theme'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type LoaderVariant = 'spinner' | 'pulse' | 'dots'
 
 export type LoaderProps = {
-  label?: string
-  variant?: LoaderVariant
-  /** Tint colour for the indicator. Default: #6366f1 */
-  color?: string
-  /** Whether to render a full-screen opaque overlay (blocking UX). */
-  overlay?: boolean
+  label?:    string
+  variant?:  LoaderVariant
+  /** Overrides the indicator tint from the theme. */
+  color?:    string
+  overlay?:  boolean
+  theme?:    ComponentTheme
+  colors?:   Partial<LoaderColors>
 }
 
-// ─── Spinner ──────────────────────────────────────────────────────────────────
+// ─── Indicators ───────────────────────────────────────────────────────────────
 
 const Spinner: React.FC<{ color: string }> = ({ color }) => {
   const rotate = useRef(new Animated.Value(0)).current
-
   useEffect(() => {
     Animated.loop(
-      Animated.timing(rotate, {
-        toValue: 1,
-        duration: 800,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
+      Animated.timing(rotate, { toValue: 1, duration: 800, easing: Easing.linear, useNativeDriver: true }),
     ).start()
   }, [])
-
   const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] })
-
-  return (
-    <Animated.View style={[spinnerStyles.ring, { borderTopColor: color, transform: [{ rotate: spin }] }]} />
-  )
+  return <Animated.View style={[ind.ring, { borderTopColor: color, transform: [{ rotate: spin }] }]} />
 }
-
-const spinnerStyles = StyleSheet.create({
-  ring: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-})
-
-// ─── Pulse ────────────────────────────────────────────────────────────────────
 
 const Pulse: React.FC<{ color: string }> = ({ color }) => {
   const scale   = useRef(new Animated.Value(1)).current
   const opacity = useRef(new Animated.Value(0.8)).current
-
   useEffect(() => {
     Animated.loop(
       Animated.parallel([
@@ -73,19 +59,8 @@ const Pulse: React.FC<{ color: string }> = ({ color }) => {
       ]),
     ).start()
   }, [])
-
-  return (
-    <Animated.View
-      style={[pulseStyles.dot, { backgroundColor: color, opacity, transform: [{ scale }] }]}
-    />
-  )
+  return <Animated.View style={[ind.pulse, { backgroundColor: color, opacity, transform: [{ scale }] }]} />
 }
-
-const pulseStyles = StyleSheet.create({
-  dot: { width: 28, height: 28, borderRadius: 14 },
-})
-
-// ─── Dots ─────────────────────────────────────────────────────────────────────
 
 const Dots: React.FC<{ color: string }> = ({ color }) => {
   const anims = [
@@ -93,58 +68,64 @@ const Dots: React.FC<{ color: string }> = ({ color }) => {
     useRef(new Animated.Value(0)).current,
     useRef(new Animated.Value(0)).current,
   ]
-
   useEffect(() => {
-    const makeSeq = (anim: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, { toValue: -8, duration: 300, useNativeDriver: true }),
-          Animated.timing(anim, { toValue: 0,  duration: 300, useNativeDriver: true }),
-          Animated.delay(600 - delay),
-        ]),
-      )
-
-    anims.forEach((a, i) => makeSeq(a, i * 150).start())
+    const seq = (anim: Animated.Value, delay: number) =>
+      Animated.loop(Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(anim, { toValue: -8, duration: 300, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0,  duration: 300, useNativeDriver: true }),
+        Animated.delay(600 - delay),
+      ]))
+    anims.forEach((a, i) => seq(a, i * 150).start())
   }, [])
-
   return (
-    <View style={dotsStyles.row}>
+    <View style={ind.dotsRow}>
       {anims.map((anim, i) => (
-        <Animated.View
-          key={i}
-          style={[dotsStyles.dot, { backgroundColor: color, transform: [{ translateY: anim }] }]}
-        />
+        <Animated.View key={i} style={[ind.dot, { backgroundColor: color, transform: [{ translateY: anim }] }]} />
       ))}
     </View>
   )
 }
 
-const dotsStyles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 8 },
-  dot: { width: 10, height: 10, borderRadius: 5 },
+const ind = StyleSheet.create({
+  ring:    { width: 36, height: 36, borderRadius: 18, borderWidth: 3, borderColor: 'transparent' },
+  pulse:   { width: 28, height: 28, borderRadius: 14 },
+  dotsRow: { flexDirection: 'row', gap: 8 },
+  dot:     { width: 10, height: 10, borderRadius: 5 },
 })
 
-// ─── Main Loader ──────────────────────────────────────────────────────────────
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export const Loader: React.FC<LoaderProps> = ({
   label,
-  variant = 'spinner',
-  color = '#6366f1',
-  overlay = true,
+  variant         = 'spinner',
+  color: colorProp,
+  overlay         = false,
+  theme           = 'dark',
+  colors: colorOverrides,
 }) => {
+  const deviceScheme = useColorScheme()
+
+  const colors = useMemo<LoaderColors>(() => {
+    const base = resolveTheme(theme, deviceScheme) === 'light' ? LOADER_LIGHT : LOADER_DARK
+    return colorOverrides ? { ...base, ...colorOverrides } : base
+  }, [theme, deviceScheme, colorOverrides])
+
+  // `color` prop overrides the theme's indicator tint
+  const tint = colorProp ?? colors.indicator
+
   const indicator = {
-    spinner: <Spinner color={color} />,
-    pulse:   <Pulse color={color} />,
-    dots:    <Dots color={color} />,
+    spinner: <Spinner color={tint} />,
+    pulse:   <Pulse   color={tint} />,
+    dots:    <Dots    color={tint} />,
   }[variant]
 
   if (overlay) {
     return (
-      <View style={styles.overlay}>
-        <View style={styles.card}>
+      <View style={[styles.overlay, { backgroundColor: colors.overlayBg }]}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           {indicator}
-          {label ? <Text style={styles.label}>{label}</Text> : null}
+          {label ? <Text style={[styles.label, { color: colors.label }]}>{label}</Text> : null}
         </View>
       </View>
     )
@@ -153,46 +134,35 @@ export const Loader: React.FC<LoaderProps> = ({
   return (
     <View style={styles.inline}>
       {indicator}
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.label }]}>{label}</Text> : null}
     </View>
   )
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles (layout only) ─────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.72)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   card: {
-    backgroundColor: '#94949a',
-    borderWidth: 0.5,
-    borderColor: '#94949a',
-    borderRadius: 8,
-    padding: 32,
-  
-    // paddingVertical: 32,
-    // paddingHorizontal: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 16 },
-    // shadowOpacity: 0.6,
-    // shadowRadius: 24,
-    // elevation: 12,
+    borderWidth:       1,
+    borderRadius:      16,
+    paddingVertical:   32,
+    paddingHorizontal: 40,
+    alignItems:        'center',
+    gap:               16,
+    shadowColor:       '#000',
+    shadowOffset:      { width: 0, height: 16 },
+    shadowOpacity:     0.25,
+    shadowRadius:      24,
+    elevation:         12,
   },
-  inline: {
-    alignItems: 'center',
-    gap: 12,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#a1a1aa',
-    letterSpacing: 0.2,
-  },
+  inline: { alignItems: 'center', gap: 12 },
+  label:  { fontSize: 14, fontWeight: '500', letterSpacing: 0.2 },
 })
+
+export { LOADER_DARK, LOADER_LIGHT }
+export type { LoaderColors }

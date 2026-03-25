@@ -1,7 +1,21 @@
-/* eslint-disable prettier/prettier */
+import { useColorScheme } from 'react-native'
 import { fontStyles } from "./fontStyles"
 
-/* eslint-disable prettier/prettier */
+// ─── Common theme selector ────────────────────────────────────────────────────
+
+export type ComponentTheme = 'dark' | 'light' | 'system'
+
+/**
+ * Resolves 'system' to the device's current color scheme.
+ * Returns `'light'` or `'dark'`.
+ */
+export function resolveTheme(
+  theme: ComponentTheme,
+  deviceScheme: ReturnType<typeof useColorScheme>,
+): 'light' | 'dark' {
+  if (theme === 'system') return deviceScheme === 'light' ? 'light' : 'dark'
+  return theme
+}
 
 const palettes = {
   white: '#FFFFFF',
@@ -381,5 +395,178 @@ const theme = {
 export type Theme = typeof theme
 
 export { theme, lightColors, darkColors, palettes, fontStyles };
+
+// ─── Toast color tokens ───────────────────────────────────────────────────────
+
+export type ToastColors = {
+  /** Background of the toast pill. */
+  successBg:          string
+  successBorder:      string
+  successLabel:       string
+  errorBg:            string
+  errorBorder:        string
+  errorLabel:         string
+  warningBg:          string
+  warningBorder:      string
+  warningLabel:       string
+  infoBg:             string
+  infoBorder:         string
+  infoLabel:          string
+  /** Body description text colour (shared across all variants). */
+  description:        string
+  /** The small × close button. */
+  closeIcon:          string
+}
+
+export const TOAST_DARK: ToastColors = {
+  successBg:     '#0d1f0f', successBorder: '#22c55e', successLabel: '#22c55e',
+  errorBg:       '#1f0d0d', errorBorder:   '#ef4444', errorLabel:   '#ef4444',
+  warningBg:     '#1f1a0d', warningBorder: '#f59e0b', warningLabel: '#f59e0b',
+  infoBg:        '#0d1220', infoBorder:    '#3b82f6', infoLabel:    '#3b82f6',
+  description:   '#9ca3af',
+  closeIcon:     '#6b7280',
+}
+
+export const TOAST_LIGHT: ToastColors = {
+  successBg:     '#f0fdf4', successBorder: '#16a34a', successLabel: '#15803d',
+  errorBg:       '#fef2f2', errorBorder:   '#dc2626', errorLabel:   '#b91c1c',
+  warningBg:     '#fffbeb', warningBorder: '#d97706', warningLabel: '#b45309',
+  infoBg:        '#eff6ff', infoBorder:    '#2563eb', infoLabel:    '#1d4ed8',
+  description:   '#6b7280',
+  closeIcon:     '#9ca3af',
+}
+
+// ─── Notification color tokens ────────────────────────────────────────────────
+
+export type NotificationColors = {
+  background:      string
+  border:          string
+  source:          string
+  title:           string
+  timestamp:       string
+  body:            string
+  avatarBg:        string
+  avatarBorder:    string
+  avatarInitials:  string
+  actionBg:        string
+  actionBorder:    string
+  actionLabel:     string
+  closeIcon:       string
+}
+
+export const NOTIFICATION_DARK: NotificationColors = {
+  background:     '#18181b',
+  border:         '#3f3f46',
+  source:         '#71717a',
+  title:          '#f4f4f5',
+  timestamp:      '#52525b',
+  body:           '#a1a1aa',
+  avatarBg:       '#27272a',
+  avatarBorder:   '#3f3f46',
+  avatarInitials: '#a1a1aa',
+  actionBg:       '#27272a',
+  actionBorder:   '#3f3f46',
+  actionLabel:    '#e4e4e7',
+  closeIcon:      '#52525b',
+}
+
+export const NOTIFICATION_LIGHT: NotificationColors = {
+  background:     '#ffffff',
+  border:         '#e5e5ea',
+  source:         '#8e8e93',
+  title:          '#1c1c1e',
+  timestamp:      '#aeaeb2',
+  body:           '#636366',
+  avatarBg:       '#f2f2f7',
+  avatarBorder:   '#e5e5ea',
+  avatarInitials: '#636366',
+  actionBg:       '#f2f2f7',
+  actionBorder:   '#e5e5ea',
+  actionLabel:    '#1c1c1e',
+  closeIcon:      '#aeaeb2',
+}
+
+// ─── Loader color tokens ──────────────────────────────────────────────────────
+
+export type LoaderColors = {
+  /** Overlay backdrop. */
+  overlayBg:    string
+  /** Card background (overlay mode). */
+  cardBg:       string
+  cardBorder:   string
+  /** Spinner / pulse / dots tint. */
+  indicator:    string
+  label:        string
+}
+
+export const LOADER_DARK: LoaderColors = {
+  overlayBg:  'rgba(0,0,0,0.72)',
+  cardBg:     '#18181b',
+  cardBorder: '#3f3f46',
+  indicator:  '#6366f1',
+  label:      '#a1a1aa',
+}
+
+export const LOADER_LIGHT: LoaderColors = {
+  overlayBg:  'rgba(0,0,0,0.4)',
+  cardBg:     '#ffffff',
+  cardBorder: '#e5e5ea',
+  indicator:  '#6366f1',
+  label:      '#636366',
+}
+
+// ─── Dialogue color tokens ────────────────────────────────────────────────────
+
+export type DialogueColors = {
+  background:        string
+  border:            string
+  title:             string
+  message:           string
+  divider:           string
+  primaryBg:         string
+  primaryBorder:     string
+  primaryLabel:      string
+  secondaryBg:       string
+  secondaryBorder:   string
+  secondaryLabel:    string
+  destructiveBg:     string
+  destructiveBorder: string
+  destructiveLabel:  string
+}
+
+export const DIALOGUE_DARK: DialogueColors = {
+  background:        '#18181b',
+  border:            '#3f3f46',
+  title:             '#f4f4f5',
+  message:           '#a1a1aa',
+  divider:           '#27272a',
+  primaryBg:         '#6366f1',
+  primaryBorder:     '#818cf8',
+  primaryLabel:      '#ffffff',
+  secondaryBg:       '#27272a',
+  secondaryBorder:   '#3f3f46',
+  secondaryLabel:    '#e4e4e7',
+  destructiveBg:     '#450a0a',
+  destructiveBorder: '#ef4444',
+  destructiveLabel:  '#fca5a5',
+}
+
+export const DIALOGUE_LIGHT: DialogueColors = {
+  background:        '#ffffff',
+  border:            '#e5e5ea',
+  title:             '#1c1c1e',
+  message:           '#636366',
+  divider:           '#f2f2f7',
+  primaryBg:         '#6366f1',
+  primaryBorder:     '#818cf8',
+  primaryLabel:      '#ffffff',
+  secondaryBg:       '#f2f2f7',
+  secondaryBorder:   '#e5e5ea',
+  secondaryLabel:    '#1c1c1e',
+  destructiveBg:     '#fff1f0',
+  destructiveBorder: '#ff3b30',
+  destructiveLabel:  '#ff3b30',
+}
+
 
 

@@ -97,7 +97,7 @@ export function useDialogue(): DialogueAPI {
         />,
         {
           position:        'center',
-          backdrop:        true,
+          backdrop:        false,
           onBackdropPress: handleBackdrop,
         },
       )

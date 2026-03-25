@@ -32,8 +32,16 @@ import {
   useNotification,
   useLoader,
   useDialogue,
-
+  useActionSheet,
 } from "fluent-styles";
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { StackParamList } from "../../navigation/StackParamList";
 import { useNavigation } from "@react-navigation/native";
 import { capitalizeFirstLetter } from "../../../utiles/helper";
@@ -53,6 +61,67 @@ function useDialog(type: "delete" | "save" | "error" | "success") {
   };
 }
 
+// ─── Demo helpers ─────────────────────────────────────────────────────────────
+
+/** Tiny colour swatch grid — used in the "custom children" example. */
+const COLOURS = [
+  "#ef4444",
+  "#f59e0b",
+  "#22c55e",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+];
+
+const ColourPicker: React.FC<{ onSelect: (c: string) => void }> = ({
+  onSelect,
+}) => (
+  <View style={cp.wrap}>
+    {COLOURS.map((c) => (
+      <TouchableOpacity
+        key={c}
+        style={[cp.swatch, { backgroundColor: c }]}
+        onPress={() => onSelect(c)}
+        activeOpacity={0.75}
+      />
+    ))}
+  </View>
+);
+const cp = StyleSheet.create({
+  wrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    justifyContent: "center",
+    paddingVertical: 8,
+  },
+  swatch: { width: 44, height: 44, borderRadius: 22 },
+});
+
+/** Simple star rating row used in the "mixed" example. */
+const StarRating: React.FC<{
+  value: number;
+  onChange: (v: number) => void;
+}> = ({ value, onChange }) => (
+  <View style={sr.row}>
+    {[1, 2, 3, 4, 5].map((n) => (
+      <TouchableOpacity key={n} onPress={() => onChange(n)} activeOpacity={0.7}>
+        <Text style={[sr.star, n <= value && sr.active]}>★</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+);
+const sr = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 4,
+  },
+  star: { fontSize: 36, color: "#3f3f46" },
+  active: { color: "#f59e0b" },
+});
+
 const Home = () => {
   const navigation = useNavigation<any>();
   const [show, setShow] = useState(false);
@@ -61,6 +130,100 @@ const Home = () => {
   const notification = useNotification();
   const loader = useLoader();
   const dialogue = useDialogue();
+  const actionSheet = useActionSheet();
+
+  const [colour, setColour] = useState("#3b82f6");
+  const [rating, setRating] = useState(0);
+
+  // ── 1. Items-only ──────────────────────────────────────────────────────────
+  const onActionSheetItems = () =>
+    actionSheet.show({
+      title: "Post options",
+      message: "Choose an action for this post",
+      theme: "light",
+      items: [
+        {
+          icon: "✏️",
+          label: "Edit post",
+          description: "Update the text and media",
+          onPress: () => toast.info("Opening editor…"),
+        },
+        {
+          icon: "🔗",
+          label: "Copy link",
+          onPress: () => toast.success("Link copied"),
+        },
+        {
+          icon: "📌",
+          label: "Pin to profile",
+          onPress: () => toast.info("Post pinned"),
+        },
+        {
+          icon: "🚩",
+          label: "Report post",
+          variant: "destructive",
+          onPress: () => toast.warning("Report submitted"),
+        },
+        {
+          icon: "🔒",
+          label: "Premium feature",
+          description: "Upgrade to unlock",
+          variant: "disabled",
+        },
+      ],
+    });
+
+  // ── 2. Children-only (custom body) ─────────────────────────────────────────
+  const onActionSheetChildren = () =>
+    actionSheet.present(
+      <ColourPicker
+        onSelect={(c) => {
+          setColour(c);
+          toast.success("Colour applied");
+          // The sheet dismisses itself because ColourPicker calls onSelect,
+          // but we don't have a reference to dismiss here — the sheet auto-
+          // closes when the user taps a swatch because we pass the dismiss
+          // callback via onCancel / the Cancel row.
+        }}
+      />,
+      {
+        title: "Choose accent colour",
+        message: "Tap a swatch to apply",
+        showCancel: true,
+        cancelLabel: "Done",
+        theme: "light",
+      },
+    );
+
+  const onActionSheetRating = () =>
+    actionSheet.show({
+      title: 'Rate your experience',
+      theme: 'light',
+      children: (
+        <StarRating
+          value={rating}
+          onChange={r => {
+            setRating(r)
+            toast.info(`${r} star${r !== 1 ? 's' : ''} selected`)
+          }}
+        />
+      ),
+      items: [
+        {
+          icon: '💬',
+          label: 'Leave a written review',
+          onPress: () => toast.info('Opening review form…'),
+        },
+        {
+          icon: '📷',
+          label: 'Add a photo',
+          onPress: () => toast.info('Opening camera…'),
+        },
+      ],
+      cancelLabel: 'Maybe later',
+      showCancel: false,
+  
+    })
 
   const deleteDialog = useDialog("save");
 
@@ -108,33 +271,36 @@ const Home = () => {
 
   const onShowDialog = async () => {
     dialogue.show({
-      title: 'Unsaved changes',
-      icon: '📝',
+      theme: "light",
+      title: "Unsaved changes",
+      icon: "📝",
       actions: [
-        { label: 'Discard', variant: 'destructive', onPress: () => { } },
-        { label: 'Keep editing', variant: 'primary', onPress: () => { } },
+        { label: "Discard", variant: "destructive", onPress: () => { } },
+        { label: "Keep editing", variant: "primary", onPress: () => { } },
       ],
-    })
+    });
 
     // const confirmed = await dialogue.confirm({ title: 'Are you sure?' })
   };
 
   const onShowLoader = async () => {
-    const id = loader.show({ label: 'Saving…', variant: 'dots' })
-    await new Promise(resolve => setTimeout(resolve, 8000)) // Simulate async work
-    loader.hide(id)
-  }
+    const id = loader.show({  variant: "dots", theme: "dark" });
+    await new Promise((resolve) => setTimeout(resolve, 8000)); // Simulate async work
+    loader.hide(id);
+  };
 
   const onShowToast = () => {
     toast.show({
       message: "This is a toast message",
       description: "This is a description for the toast message",
       variant: "success",
+      theme: "light",
     });
   };
 
   const onShowNotification = () => {
     notification.show({
+      theme: "light",
       title: "Build succeeded",
       body: "main → production • 47 files changed.",
       source: "CI/CD",
@@ -440,7 +606,11 @@ const Home = () => {
                   Dialogue
                 </StyledButton.Text>
               </StyledButton>
-              <StyledButton backgroundColor={theme.colors.teal[600]} flex={1} onPress={onShowLoader}>
+              <StyledButton
+                backgroundColor={theme.colors.teal[600]}
+                flex={1}
+                onPress={onShowLoader}
+              >
                 <StyledButton.Text
                   marginLeft={4}
                   color={theme.colors.gray[1]}
@@ -452,6 +622,59 @@ const Home = () => {
               </StyledButton>
             </Stack>
           </StyledScrollView>
+          <StyledDivider
+            height={0.9}
+            horizontal
+            backgroundColor={theme.colors.gray[200]}
+            marginVertical={8}
+          />
+          <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Stack horizontal flex={1} gap={4}>
+              <StyledButton
+                backgroundColor={theme.colors.fuchsia[600]}
+                flex={1}
+                onPress={onActionSheetItems}
+              >
+                <StyledButton.Text
+                  marginLeft={4}
+                  color={theme.colors.gray[1]}
+                  fontSize={theme.fontSize.small}
+                  fontWeight={theme.fontWeight.normal}
+                >
+                  Action Sheet
+                </StyledButton.Text>
+              </StyledButton>
+              <StyledButton
+                backgroundColor={theme.colors.violet[600]}
+                flex={1}
+                onPress={onActionSheetChildren}
+              >
+                <StyledButton.Text
+                  marginLeft={4}
+                  color={theme.colors.gray[1]}
+                  fontSize={theme.fontSize.small}
+                  fontWeight={theme.fontWeight.normal}
+                >
+                  Action Sheet Children
+                </StyledButton.Text>
+              </StyledButton>
+              <StyledButton
+                backgroundColor={theme.colors.orange[600]}
+                flex={1}
+                onPress={onActionSheetRating}
+              >
+                <StyledButton.Text
+                  marginLeft={4}
+                  color={theme.colors.gray[1]}
+                  fontSize={theme.fontSize.small}
+                  fontWeight={theme.fontWeight.normal}
+                >
+                  Action Sheet Rating
+                </StyledButton.Text>
+              </StyledButton>
+            </Stack>
+          </StyledScrollView>
+
         </StyledCard>
         <StyledConfirmDialog
           description="Your changes have been saved."
