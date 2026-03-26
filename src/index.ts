@@ -12,7 +12,7 @@ export { StyledHeader, type HeaderProps } from './header'
 export { StyledSpacer, type SpacerProps } from './spacer'
 export { StyledCard, type StyledCardProps } from './card'
 export * from './icons'
-export { ToggleSwitch } from './switch'
+export { Switch, SWITCH_COLORS_DEFAULT, SWITCH_SIZES, type SwitchProps } from './switch'
 export { StyledImage, StyledImageBackground, type StyledImageProps, type StyledImageBackgroundProps } from './image'
 export { StyledPressable, type StyledPressableProps } from './pressable'
 export { StyledButton, type StyledButtonProps } from './button'
@@ -50,3 +50,5 @@ export type {
   ActionSheetOptions,
 } from './services'
 
+export * from './collapsible'
+export { StyledSeperator, type SeperatorProps } from './seperator'

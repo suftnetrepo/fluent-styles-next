@@ -12,7 +12,7 @@ import { Stack } from '../stack';
 import StatusBar, { StatusBarProps } from './statusBar';
 import { StyleShape, ShapeProps } from '../shape';
 import { StyledText, StyledTextProps } from '../text';
-import { BackArrow } from '../icons';
+import { BackArrow, ChevronLeft } from '../icons';
 import { theme } from '../utiles/theme';
 
 // Types
@@ -120,7 +120,7 @@ const HeaderComponent = React.forwardRef<React.ComponentPropsWithRef<typeof Styl
       >
         {showBackArrow && (
           <StyleShape cycle {...shapeProps}>
-            <BackArrow
+            <ChevronLeft
               size={32}
               color={theme.colors.gray[1]}
               onPress={onBackPress}

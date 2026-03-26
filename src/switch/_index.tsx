@@ -12,7 +12,7 @@ interface ToggleSwitchProps {
   width?: number;
   height?: number;
 }
- function ToggleSwitch({
+ function StyledSwitch({
   initialValue = false,
   onToggle,
   width = 120,
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export { ToggleSwitch };
+export { StyledSwitch };
+export type { ToggleSwitchProps as StyledSwitchProps } 
 
 

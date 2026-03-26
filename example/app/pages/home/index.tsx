@@ -33,6 +33,10 @@ import {
   useLoader,
   useDialogue,
   useActionSheet,
+  Collapse,
+  CollapseGroup,
+  CollapseItem,
+  StyledSeperator,
 } from "fluent-styles";
 import {
   SafeAreaView,
@@ -45,6 +49,7 @@ import {
 import { StackParamList } from "../../navigation/StackParamList";
 import { useNavigation } from "@react-navigation/native";
 import { capitalizeFirstLetter } from "../../../utiles/helper";
+import { routeConfig } from "../rountConfig";
 
 function useDialog(type: "delete" | "save" | "error" | "success") {
   const [visible, setVisible] = useState(false);
@@ -132,6 +137,7 @@ const Home = () => {
   const dialogue = useDialogue();
   const actionSheet = useActionSheet();
 
+
   const [colour, setColour] = useState("#3b82f6");
   const [rating, setRating] = useState(0);
 
@@ -197,33 +203,32 @@ const Home = () => {
 
   const onActionSheetRating = () =>
     actionSheet.show({
-      title: 'Rate your experience',
-      theme: 'light',
+      title: "Rate your experience",
+      theme: "light",
       children: (
         <StarRating
           value={rating}
-          onChange={r => {
-            setRating(r)
-            toast.info(`${r} star${r !== 1 ? 's' : ''} selected`)
+          onChange={(r) => {
+            setRating(r);
+            toast.info(`${r} star${r !== 1 ? "s" : ""} selected`);
           }}
         />
       ),
       items: [
         {
-          icon: '💬',
-          label: 'Leave a written review',
-          onPress: () => toast.info('Opening review form…'),
+          icon: "💬",
+          label: "Leave a written review",
+          onPress: () => toast.info("Opening review form…"),
         },
         {
-          icon: '📷',
-          label: 'Add a photo',
-          onPress: () => toast.info('Opening camera…'),
+          icon: "📷",
+          label: "Add a photo",
+          onPress: () => toast.info("Opening camera…"),
         },
       ],
-      cancelLabel: 'Maybe later',
+      cancelLabel: "Maybe later",
       showCancel: false,
-  
-    })
+    });
 
   const deleteDialog = useDialog("save");
 
@@ -232,36 +237,6 @@ const Home = () => {
     { value: "2", label: "Option 2" },
     { value: "3", label: "Option 3" },
   ];
-
-  const routeConfig: {
-    title: string;
-    data: {
-      title: string;
-      name: keyof StackParamList;
-    }[];
-  }[] = [
-      {
-        title: "Getting Started",
-        data: [
-          {
-            title: "Buttons",
-            name: "buttons",
-          },
-          {
-            title: "Cards",
-            name: "cards",
-          },
-          {
-            title: "Switch",
-            name: "switch",
-          },
-          {
-            title: "Inputs",
-            name: "inputs",
-          },
-        ],
-      },
-    ];
 
   type props = {
     name: keyof StackParamList;
@@ -284,7 +259,7 @@ const Home = () => {
   };
 
   const onShowLoader = async () => {
-    const id = loader.show({  variant: "dots", theme: "dark" });
+    const id = loader.show({ variant: "dots", theme: "dark" });
     await new Promise((resolve) => setTimeout(resolve, 8000)); // Simulate async work
     loader.hide(id);
   };
@@ -414,34 +389,7 @@ const Home = () => {
               </Fragment>
             );
           })}
-          <Stack horizontal flex={1} gap={4}>
-            <StyledButton
-              backgroundColor={theme.colors.yellow[500]}
-              flex={2}
-              justifyContent="center"
-              borderRadius={100}
-              borderWidth={0.2}
-              borderColor={theme.colors.yellow[500]}
-            >
-              <StyledButton.Text
-                color={theme.colors.gray[1]}
-                fontSize={theme.fontSize.medium}
-                fontWeight={theme.fontWeight.medium}
-              >
-                View on GitHub
-              </StyledButton.Text>
-            </StyledButton>
-            <StyledButton primary flex={1}>
-              <StyledButton.Text
-                marginLeft={4}
-                color={theme.colors.gray[1]}
-                fontSize={theme.fontSize.medium}
-                fontWeight={theme.fontWeight.medium}
-              >
-                Submit
-              </StyledButton.Text>
-            </StyledButton>
-          </Stack>
+        
           <StyledSpacer marginVertical={8} />
           <StyledTextInput
             label="First name"
@@ -674,7 +622,7 @@ const Home = () => {
               </StyledButton>
             </Stack>
           </StyledScrollView>
-
+       
         </StyledCard>
         <StyledConfirmDialog
           description="Your changes have been saved."
