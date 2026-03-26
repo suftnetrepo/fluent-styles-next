@@ -12,6 +12,9 @@ import { useNavigation } from "@react-navigation/native";
 import Button from "./button";
 import ActionSheet from "./actionSheet";
 import Switch from "./switch";
+import TabBarUsage from "./tabBar";
+import PopupUsage from "./popup";
+import DrawerUsage from "./drawer";
 
 const Page = ({
   title,
@@ -49,7 +52,10 @@ export type _path =
   | "inputs"
   | "buttons"
   | "collapsible"
-  | "actionSheet";
+  | "actionSheet"
+  | "tabBar"
+  | "popup"
+  | "drawer";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -88,6 +94,30 @@ export const config: { path: _path; Page: any }[] = [
     Page: () => (
       <Page title="Switch">
         <Switch />
+      </Page>
+    ),
+  },
+  {
+    path: "tabBar",
+    Page: () => (
+      <Page title="TabBar">
+        <TabBarUsage />
+      </Page>
+    ),
+  },
+  {
+    path: "popup",
+    Page: () => (
+      <Page title="Popup">
+        <PopupUsage />
+      </Page>
+    ),
+  },
+  {
+    path: "drawer",
+    Page: () => (
+      <Page title="Drawer">
+        <DrawerUsage />
       </Page>
     ),
   },

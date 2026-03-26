@@ -493,26 +493,9 @@ const Button = () => {
             </Stack>
           </Section>
 
-          {/* ── 10. Dropdown trigger ──────────────────────────────────────── */}
-          <Section label="Dropdown trigger">
-            <StyledButton
-              dropdown
-              compact
-              rightIcon={<Icon emoji="⌄" size={14} />}
-            >
-              <StyledButton.Text
-                color={theme.colors.gray[700]}
-                fontSize={theme.fontSize.small}
-                fontWeight={theme.fontWeight.medium}
-              >
-                Select option
-              </StyledButton.Text>
-            </StyledButton>
-          </Section>
-
           {/* ── 11. Real-world card CTA ────────────────────────────────────── */}
           <Section label="Card CTA (real-world)">
-            <View style={u.card}>
+            <StyledCard shadow="light" padding={20} borderRadius={20} gap={12} borderWidth={1} borderColor={theme.colors.gray[200]}>
               <StyledText
                 fontSize={theme.fontSize.normal}
                 fontWeight={theme.fontWeight.bold}
@@ -553,7 +536,7 @@ const Button = () => {
                   Maybe later
                 </StyledButton.Text>
               </StyledButton>
-            </View>
+            </StyledCard>
           </Section>
 
           <StyledSpacer marginVertical={32} />

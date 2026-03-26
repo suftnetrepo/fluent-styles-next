@@ -52,3 +52,6 @@ export type {
 
 export * from './collapsible'
 export { StyledSeperator, type SeperatorProps } from './seperator'
+export * from './tabBar'
+export * from './popup'
+export * from './drawer'
