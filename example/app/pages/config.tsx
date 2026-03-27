@@ -15,6 +15,7 @@ import Switch from "./switch";
 import TabBarUsage from "./tabBar";
 import PopupUsage from "./popup";
 import DrawerUsage from "./drawer";
+import TextInputUsage from "./input";
 
 const Page = ({
   title,
@@ -121,4 +122,12 @@ export const config: { path: _path; Page: any }[] = [
       </Page>
     ),
   },
+  {
+    path: "inputs",
+    Page: () => (
+      <Page title="Input">
+        <TextInputUsage />
+      </Page>
+    ),
+  }
 ];

@@ -1,6 +1,7 @@
 
 import { View, ViewProps, ViewStyle } from 'react-native';
 import { styled } from '../utiles/styled';
+import { viewStyleVariants, viewStyleStringVariants } from '../utiles/viewStyleVariants';
 
 /**
  * Stack-specific layout variants for flex direction
@@ -25,6 +26,7 @@ const Stack = styled<StackProps>(View, {
         position: 'relative',
     } as ViewStyle,
     variants: {
+        ...viewStyleStringVariants,
         vertical: {
             true: {
                 flexDirection: 'column',

@@ -390,28 +390,8 @@ const Home = () => {
             );
           })}
         
-          <StyledSpacer marginVertical={8} />
-          <StyledTextInput
-            label="First name"
-            labelProps={{
-              fontSize: theme.fontSize.normal,
-              fontWeight: theme.fontWeight.medium,
-              color: theme.colors.gray[800],
-            }}
-            keyboardType="number-pad"
-            returnKeyType="done"
-            placeholder="Enter text"
-            placeholderTextColor={theme.colors.gray[200]}
-            fontSize={theme.fontSize.normal}
-            error={false}
-            errorMessage="First name is required"
-            borderColor={theme.colors.gray[400]}
-            borderRadius={8}
-            accessibilityLabel="first-name-input"
-            accessibilityHint="Input field for first name"
-            accessibilityRole="text"
-            maxLength={50}
-          />
+  
+          
           <StyledSpacer marginVertical={8} />
           <StyledDropdown
             data={options}
