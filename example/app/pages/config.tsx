@@ -16,6 +16,11 @@ import TabBarUsage from "./tabBar";
 import PopupUsage from "./popup";
 import DrawerUsage from "./drawer";
 import TextInputUsage from "./input";
+import DropdownUsage from "./dropdown";
+import ImageUsage from "./image";
+import BadgeUsage from "./badge";
+import CheckBoxUsage from "./checkBox";
+import DialogueUsage from "./dialogue";
 
 const Page = ({
   title,
@@ -56,7 +61,12 @@ export type _path =
   | "actionSheet"
   | "tabBar"
   | "popup"
-  | "drawer";
+  | "drawer"
+  | "dropdown"
+  | "image"
+  | "badge"
+  | "checkBox" 
+  | "dialogue";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -129,5 +139,44 @@ export const config: { path: _path; Page: any }[] = [
         <TextInputUsage />
       </Page>
     ),
-  }
+  },
+  {
+    path: "dropdown",
+    Page: () => (
+      <Page title="Dropdown">
+        <DropdownUsage />
+      </Page>
+    ),
+  },
+  {
+    path: "image",
+    Page: () => (
+      <Page title="Image">
+        <ImageUsage />
+      </Page>
+    ),
+  },
+  { 
+    path: "badge",
+    Page: () => (
+      <Page title="Badge">
+        <BadgeUsage />
+      </Page>
+    ),  
+  },
+  { 
+    path: "checkBox",
+    Page: () => (
+      <Page title="CheckBox">
+        <CheckBoxUsage />
+      </Page>
+    ),  
+  },
+  {
+    path: "dialogue",
+    Page: () => (
+      <Page title="Dialogue">
+        <DialogueUsage />
+      </Page>   
+    )},
 ];

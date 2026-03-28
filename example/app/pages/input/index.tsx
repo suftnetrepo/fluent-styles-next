@@ -40,17 +40,24 @@ const Icon = ({ e, size = 16, color = theme.colors.gray[400] }: {
 const Divider = () => <StyledDivider height={1} backgroundColor={theme.colors.gray[200]} />
 
 const Section = ({ label, children }: React.PropsWithChildren<{ label: string }>) => (
-    <View>
-        <StyledSeperator
+    <Stack paddingVertical={0}>
+        <>
+          <StyledSeperator
             leftLabel={label}
+            leftLabelProps={{
+              color: theme.colors.gray[800],
+              fontSize: theme.fontSize.normal,
+            }}
             borderRadius={8}
             paddingVertical={8}
-            paddingHorizontal={8}
-            marginVertical={8}
-            backgroundColor={theme.colors.gray[200]}
-        />
-        {children}
-    </View>
+            marginVertical={16}
+            borderBottomColor={theme.colors.gray[500]}
+            borderBottomWidth={0.5}
+            backgroundColor={theme.colors.gray[1]}
+          />
+          {children}
+        </>
+      </Stack>
 )
 
 const Btn = ({ label, onPress, color = theme.colors.indigo?.[500] ?? '#6366f1' }: {

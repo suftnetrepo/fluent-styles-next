@@ -10,9 +10,9 @@ import { viewStyleVariants } from '../utiles/viewStyleVariants';
 const shadow = {
   light: Platform.select({
     ios: {
-      shadowColor: theme.colors.gray[900],
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.22,
+      shadowColor: theme.colors.gray[400],
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.2,
       shadowRadius: 2.22,
     },
     android: {

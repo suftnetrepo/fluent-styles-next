@@ -25,7 +25,7 @@ export { BadgeIcon, type BadgeIconProps } from './badge'
 export { Spinner, type SpinnerProps } from './loading'
 export { Circular, type CircularProps } from './loading'
 export { StyledDialog, StyledConfirmDialog, StyledOkDialog, type StyledDialogProps, type StyledConfirmDialogProps, type StyledOkDialogProps } from './dialog'
-export { StyledDropdown, type StyledDropdownProps, type StyledMultiSelectDropdownProps, type DropdownOptionItem } from './dropdown'
+export { StyledDropdown, StyledMultiSelectDropdown, type StyledDropdownProps, type StyledMultiSelectDropdownProps, type DropdownOptionItem } from './dropdown'
 export { GlobalPortalProvider, getPositionStyles, PortalInstance, PortalManager, usePortal, PortalRenderer, type Position, type PortalNode, type PortalContextType } from './portal'
 
 export { useToast } from './toast/useToast'

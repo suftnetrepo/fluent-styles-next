@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { styled }                  from '../utiles/styled';
-import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
+import { ViewStyle } from '../utiles/viewStyleProps';
 import { viewStyleStringVariants, viewStyleVariants } from '../utiles/viewStyleVariants';
 import { StyledText }              from '../text';
 import { theme }                   from '../utiles/theme';
@@ -54,9 +54,9 @@ type ButtonVariants = {
   block?:     boolean
   /** Icon-only circular button. */
   icon?:      boolean
-}
+} & typeof viewStyleStringVariants
 
-type ButtonProps = { variant?: ButtonVariants } & TouchableOpacityProps & ViewStyleProps
+type ButtonProps = { variant?: ButtonVariants } & TouchableOpacityProps & ViewStyle
 
 export interface StyledButtonProps extends ButtonProps {
   children?:   React.ReactNode
@@ -317,7 +317,9 @@ const Button = React.forwardRef<
         />
       ) : null}
 
-      {children}
+      {typeof children === 'string' ? (
+        <StyledText>{children}</StyledText>
+      ) : children}
 
       {/* Right icon slot */}
       {!loading && rightIcon ? rightIcon : null}

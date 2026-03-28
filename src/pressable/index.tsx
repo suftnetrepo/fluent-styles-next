@@ -4,7 +4,7 @@ import { styled } from '../utiles/styled';
 import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
 
 
-type StyledPressableProps = PressableProps & (Omit<ViewStyleProps, 'width'
+type StyledPressableProps = PressableProps & (Pick<ViewStyleProps, 'width'
     | 'height'
     | 'minHeight'
     | 'maxHeight'

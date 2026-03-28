@@ -366,17 +366,22 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <View style={u.section}>
-    <StyledSeperator
-      leftLabel={label}
-      borderRadius={8}
-      paddingVertical={8}
-      paddingHorizontal={8}
-      marginVertical={8}
-      backgroundColor={theme.colors.gray[100]}
-    />
-    {children}
-  </View>
+  <>
+           <StyledSeperator
+             leftLabel={label}
+             leftLabelProps={{
+               color: theme.colors.gray[800],
+               fontSize: theme.fontSize.normal,
+             }}
+             borderRadius={8}
+             paddingVertical={8}
+             marginVertical={16}
+             borderBottomColor={theme.colors.gray[500]}
+             borderBottomWidth={0.5}
+             backgroundColor={theme.colors.gray[1]}
+           />
+           {children}
+         </>
 );
 
 // ─── Styles ───────────────────────────────────────────────────────────────────

@@ -137,7 +137,6 @@ const Home = () => {
   const dialogue = useDialogue();
   const actionSheet = useActionSheet();
 
-
   const [colour, setColour] = useState("#3b82f6");
   const [rating, setRating] = useState(0);
 
@@ -250,8 +249,8 @@ const Home = () => {
       title: "Unsaved changes",
       icon: "📝",
       actions: [
-        { label: "Discard", variant: "destructive", onPress: () => { } },
-        { label: "Keep editing", variant: "primary", onPress: () => { } },
+        { label: "Discard", variant: "destructive", onPress: () => {} },
+        { label: "Keep editing", variant: "primary", onPress: () => {} },
       ],
     });
 
@@ -351,7 +350,7 @@ const Home = () => {
             </StyledText>
           </StyleShape>
         }
-        onBackPress={() => { }}
+        onBackPress={() => {}}
         paddingVertical={8}
         backgroundColor={theme.colors.gray[200]}
         borderRadius={30}
@@ -389,88 +388,7 @@ const Home = () => {
               </Fragment>
             );
           })}
-        
-  
-          
-          <StyledSpacer marginVertical={8} />
-          <StyledDropdown
-            data={options}
-            disabled={false}
-            placeholder="Select an option"
-            placeholderTextColor={theme.colors.gray[500]}
-            onChange={(item) => console.log("Selected:", item.value)}
-          />
-          <StyledSpacer marginVertical={8} />
-          <StyledCheckBox
-            size={32}
-            iconSize={18}
-            checked={true}
-            disabled={false}
-            onCheck={(j) => {
-              console.log(j);
-            }}
-            checkMarkColor={theme.colors.gray[100]}
-          />
-
-          <StyledDivider
-            height={0.9}
-            horizontal
-            backgroundColor={theme.colors.gray[200]}
-            marginVertical={8}
-          />
-          <StyledSpacer marginVertical={8} />
-          <Stack
-            horizontal
-            gap={24}
-            marginHorizontal={16}
-            justifyContent="flex-end"
-          >
-            <BellFill size={24} color={theme.colors.gray[800]} />
-            <BellOutline size={24} color={theme.colors.gray[800]} />
-            <BadgeIcon
-              backgroundColor={theme.colors.red[500]}
-              top={-13}
-              right={5}
-              char="3"
-              color={theme.colors.gray[1]}
-              fontSize={10}
-              icon={<BellOutline size={24} color={theme.colors.green[800]} />}
-            />
-          </Stack>
-          <StyledSpacer marginVertical={8} />
-          <StyledBadge
-            alignSelf="flex-start"
-            borderRadius={100}
-            paddingHorizontal={8}
-            paddingVertical={2}
-            fontSize={12}
-            backgroundColor={theme.colors.red[200]}
-            color={theme.colors.red[800]}
-          >
-            Pending
-          </StyledBadge>
-          <StyledSpacer marginVertical={8} />
-          <BadgeWithIcon
-            borderRadius={30}
-            paddingHorizontal={16}
-            gap={8}
-            paddingVertical={4}
-            justifyContent="center"
-            alignItems="center"
-            title="New Messages"
-            backgroundColor={theme.colors.blue[200]}
-            color={theme.colors.blue[800]}
-            fontSize={12}
-            iconLeft={<BellFill size={16} color={theme.colors.blue[800]} />}
-            iconRight={<BellOutline size={16} color={theme.colors.blue[800]} />}
-          />
-          <StyledDivider
-            height={0.9}
-            horizontal
-            backgroundColor={theme.colors.gray[200]}
-            marginVertical={8}
-          />
-
+    
           <Stack
             horizontal
             gap={16}
@@ -556,53 +474,7 @@ const Home = () => {
             backgroundColor={theme.colors.gray[200]}
             marginVertical={8}
           />
-          <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Stack horizontal flex={1} gap={4}>
-              <StyledButton
-                backgroundColor={theme.colors.fuchsia[600]}
-                flex={1}
-                onPress={onActionSheetItems}
-              >
-                <StyledButton.Text
-                  marginLeft={4}
-                  color={theme.colors.gray[1]}
-                  fontSize={theme.fontSize.small}
-                  fontWeight={theme.fontWeight.normal}
-                >
-                  Action Sheet
-                </StyledButton.Text>
-              </StyledButton>
-              <StyledButton
-                backgroundColor={theme.colors.violet[600]}
-                flex={1}
-                onPress={onActionSheetChildren}
-              >
-                <StyledButton.Text
-                  marginLeft={4}
-                  color={theme.colors.gray[1]}
-                  fontSize={theme.fontSize.small}
-                  fontWeight={theme.fontWeight.normal}
-                >
-                  Action Sheet Children
-                </StyledButton.Text>
-              </StyledButton>
-              <StyledButton
-                backgroundColor={theme.colors.orange[600]}
-                flex={1}
-                onPress={onActionSheetRating}
-              >
-                <StyledButton.Text
-                  marginLeft={4}
-                  color={theme.colors.gray[1]}
-                  fontSize={theme.fontSize.small}
-                  fontWeight={theme.fontWeight.normal}
-                >
-                  Action Sheet Rating
-                </StyledButton.Text>
-              </StyledButton>
-            </Stack>
-          </StyledScrollView>
-       
+      
         </StyledCard>
         <StyledConfirmDialog
           description="Your changes have been saved."

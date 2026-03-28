@@ -46,6 +46,26 @@ const routeConfig: {
         title: "Drawer",
         name: "drawer",
       },  
+      {
+        title: "Dropdown",
+        name: "dropdown",
+      }, 
+       {
+        title: "Image",
+        name: "image",
+      }, 
+      {
+        title: "Badge",
+        name: "badge",
+      },  
+       {
+        title: "Checkbox",
+        name: "checkBox",
+      }, 
+        { 
+        title: "Dialogue",
+        name: "dialogue",
+        }
     ],
   },
 ];

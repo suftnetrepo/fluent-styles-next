@@ -314,17 +314,24 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => (
-  <View style={s.section}>
-    <StyledSeperator
-      leftLabel={title}
-      borderRadius={8}
-      paddingVertical={8}
-      paddingHorizontal={8}
-      marginVertical={8}
-      backgroundColor={theme.colors.gray[100]}
-    />
-    <View style={s.sectionBody}>{children}</View>
-  </View>
+  <Stack paddingVertical={0}>
+      <>
+        <StyledSeperator
+          leftLabel={title}
+          leftLabelProps={{
+            color: theme.colors.gray[800],
+            fontSize: theme.fontSize.normal,
+          }}
+          borderRadius={8}
+          paddingVertical={8}
+          marginVertical={16}
+          borderBottomColor={theme.colors.gray[500]}
+          borderBottomWidth={0.5}
+          backgroundColor={theme.colors.gray[1]}
+        />
+        {children}
+      </>
+    </Stack>
 );
 
 const Row: React.FC<{ children: React.ReactNode }> = ({ children }) => (
