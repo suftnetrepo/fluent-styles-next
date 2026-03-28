@@ -21,6 +21,9 @@ import ImageUsage from "./image";
 import BadgeUsage from "./badge";
 import CheckBoxUsage from "./checkBox";
 import DialogueUsage from "./dialogue";
+import ToastUsage from "./toast";
+import NotificationUsage from "./notification";
+import LoaderUsage from "./loader";
 
 const Page = ({
   title,
@@ -66,7 +69,10 @@ export type _path =
   | "image"
   | "badge"
   | "checkBox" 
-  | "dialogue";
+  | "dialogue"
+  | "toast"
+  | "notification"
+  | "loader";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -179,4 +185,28 @@ export const config: { path: _path; Page: any }[] = [
         <DialogueUsage />
       </Page>   
     )},
+  {
+    path: "toast",
+    Page: () => (
+      <Page title="Toast">
+        <ToastUsage />
+      </Page>
+    ),
+  },
+  {
+    path: "notification",
+    Page: () => (
+      <Page title="Notification">
+        <NotificationUsage />
+      </Page>
+    ),
+  },
+  {
+    path: "loader",
+    Page: () => (
+      <Page title="Loader">
+        <LoaderUsage />
+      </Page>
+    ),
+  },
 ];

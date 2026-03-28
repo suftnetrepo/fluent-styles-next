@@ -66,6 +66,18 @@ const routeConfig: {
         title: "Dialogue",
         name: "dialogue",
         }
+        ,{
+          title: 'Toast',
+          name: 'toast',
+        },
+        {
+          title: 'Notification',
+          name: 'notification',
+        },
+        {
+          title: 'Loader',
+          name: 'loader',
+        }
     ],
   },
 ];

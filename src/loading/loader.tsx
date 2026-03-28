@@ -14,10 +14,11 @@ import {
   LOADER_DARK,
   LOADER_LIGHT,
 } from '../utiles/theme'
+import { Circular } from './circular'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type LoaderVariant = 'spinner' | 'pulse' | 'dots'
+export type LoaderVariant = 'spinner' | 'pulse' | 'dots' |'circular'
 
 export type LoaderProps = {
   label?:    string
@@ -118,6 +119,7 @@ export const Loader: React.FC<LoaderProps> = ({
     spinner: <Spinner color={tint} />,
     pulse:   <Pulse   color={tint} />,
     dots:    <Dots    color={tint} />,
+    circular: <Circular color={tint} />,
   }[variant]
 
   if (overlay) {

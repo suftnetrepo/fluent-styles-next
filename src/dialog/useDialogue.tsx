@@ -16,15 +16,17 @@ export type ConfirmOptions = {
   confirmLabel?: string
   cancelLabel?: string
   destructive?: boolean
-   theme?: "light" | "dark"
+  theme?: "light" | "dark"
 }
 
 export type DialogueAPI = {
   show: (options: ShowDialogueOptions) => number
   dismiss: (id: number) => void
   confirm: (options: ConfirmOptions) => Promise<boolean>
-  alert: (title: string, message?: string, icon?: string) => Promise<void>
+  alert: (title: string, message?: string, icon?: string, theme?: "light" | "dark") => Promise<void>
 }
+
+
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -70,63 +72,84 @@ export function useDialogue(): DialogueAPI {
     (options: ConfirmOptions): Promise<boolean> =>
       new Promise(resolve => {
         let settled = false
-        let dialogueId = -1
+        const idBox = { current: -1 }
 
         const finish = (value: boolean) => {
           if (settled) return
           settled = true
           resolve(value)
-          if (dialogueId !== -1) unmount(dialogueId)
+
+          requestAnimationFrame(() => {
+            unmount(idBox.current)
+          })
         }
 
-        dialogueId = show({
-          title: options.title,
-          message: options.message,
-          icon: options.icon,
-          theme: options.theme,
-          actions: [
-            {
-              label: options.cancelLabel ?? 'Cancel',
-              variant: 'secondary',
-              onPress: () => finish(false),
-            },
-            {
-              label: options.confirmLabel ?? 'Confirm',
-              variant: options.destructive ? 'destructive' : 'primary',
-              onPress: () => finish(true),
-            },
-          ],
-        })
+        idBox.current = mount(
+          <Dialogue
+            title={options.title}
+            message={options.message}
+            icon={options.icon}
+            theme={options.theme ?? "light"}
+            onDismiss={() => finish(false)}
+            actions={[
+              {
+                label: options.cancelLabel ?? 'Cancel',
+                variant: 'secondary',
+                onPress: () => finish(false),
+              },
+              {
+                label: options.confirmLabel ?? 'Confirm',
+                variant: options.destructive ? 'destructive' : 'primary',
+                onPress: () => finish(true),
+              },
+            ]}
+          />,
+          {
+            position: 'center',
+            backdrop: false,
+            onBackdropPress: () => finish(false),
+          },
+        )
       }),
-    [show, unmount],
+    [mount, unmount],
   )
 
   const alert = useCallback(
     (title: string, message?: string, icon?: string, theme?: "light" | "dark"): Promise<void> =>
       new Promise(resolve => {
         let settled = false
-        let dialogueId = -1
+        const idBox = { current: -1 }
 
         const finish = () => {
           if (settled) return
           settled = true
           resolve()
-          if (dialogueId !== -1) unmount(dialogueId)
-        }
 
-        dialogueId = show({
-          title,
-          message,
-          icon,
-          actions: [
-            {
-              label: 'OK',
-              variant: 'primary',
-              onPress: finish,
-            },
-          ],
-          theme,
-        })
+          requestAnimationFrame(() => {
+            unmount(idBox.current)
+          })
+        }
+        idBox.current = mount(
+          <Dialogue
+            title={title}
+            message={message}
+            icon={icon}
+            theme={theme ?? "light"}
+            onDismiss={finish}
+            actions={[
+              {
+                label: 'OK',
+                variant: 'primary',
+                onPress: finish,
+              },
+            ]}
+          />,
+          {
+            position: 'center',
+            backdrop: false,
+            onBackdropPress: finish,
+          },
+        )
       }),
     [show, unmount],
   )

@@ -1,26 +1,12 @@
-import React, { useRef, useMemo, memo, useEffect } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import type { ColorValue, ViewStyle, ViewProps } from 'react-native';
 import { Animated, Easing } from 'react-native';
 import { Svg, Circle } from 'react-native-svg';
 import type { CircleProps } from 'react-native-svg/lib/typescript/elements/Circle';
 
 export interface CircularProps extends ViewProps {
-  /**
-   * Size of the spinner in pixels
-   * @default 32
-   */
   size?: number;
-
-  /**
-   * Color of the spinner circles
-   * @default '#888888'
-   */
   color?: ColorValue;
-
-  /**
-   * Base duration of the rotation animation in milliseconds
-   * @default 800
-   */
   duration?: number;
 }
 
@@ -29,7 +15,7 @@ const STROKE_WIDTH = 2;
 const AnimatedCircle =
   Animated.createAnimatedComponent<React.ComponentType<CircleProps>>(Circle);
 
-const useLoop = (
+const useSvgLoop = (
   animatedValue: Animated.Value,
   initValue: number,
   config: Pick<Animated.TimingAnimationConfig, 'toValue' | 'duration'>,
@@ -41,7 +27,7 @@ const useLoop = (
       toValue: config.toValue as number,
       duration: config.duration,
       easing: Easing.linear,
-      useNativeDriver: true,
+      useNativeDriver: false,
     });
 
     const loop = Animated.loop(animation);
@@ -84,17 +70,29 @@ const Circular: React.FC<CircularProps> = ({
     [circle2Props.r],
   );
 
-  useLoop(animatedRotation, 0, {
-    toValue: 1,
-    duration,
-  });
+  useEffect(() => {
+    animatedRotation.setValue(0);
 
-  useLoop(animatedCircle1, half1Circle, {
+    const rotation = Animated.loop(
+      Animated.timing(animatedRotation, {
+        toValue: 1,
+        duration,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+
+    rotation.start();
+
+    return () => rotation.stop();
+  }, [animatedRotation, duration]);
+
+  useSvgLoop(animatedCircle1, half1Circle, {
     toValue: -half1Circle * 2,
     duration: duration * 1.5,
   });
 
-  useLoop(animatedCircle2, half2Circle, {
+  useSvgLoop(animatedCircle2, half2Circle, {
     toValue: -half2Circle * 2,
     duration: duration * 2.5,
   });

@@ -54,6 +54,7 @@ export default function DialogueUsage() {
       "Session expired",
       "Please log in again to continue.",
       "🔒",
+      "light"
     );
     setStatus("Alert closed");
   };
@@ -175,7 +176,7 @@ export default function DialogueUsage() {
       <StyledSpacer marginVertical={8} />
 
       <StyledScrollView showsVerticalScrollIndicator={false}>
-        <Stack padding={16} borderRadius={16}  backgroundColor={theme.colors.gray[1]}>
+        <Stack padding={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
 
           <Section label="Alert">
             <StyledButton onPress={handleAlert}>
