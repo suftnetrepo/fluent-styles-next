@@ -42,6 +42,7 @@ const Page = ({
         marginHorizontal={16}
         paddingHorizontal={32}
         title={title}
+        titleAlignment="left"
         showBackArrow={true}
         backArrowProps={{
           color: theme.colors.gray[500],
