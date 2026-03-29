@@ -19,6 +19,7 @@ const StyledImageBackground = styled<StyledImageBackgroundProps>(ImageBackground
         position: 'relative',
         borderWidth: 0,
         resizeMode: 'cover',
+        
     } as ImageStyle,
     variants: {
         ...viewStyleVariants,

@@ -1,463 +1,464 @@
-// FitnessHomeScreen.tsx
-import React, { useState } from 'react'
-import { ScrollView } from 'react-native'
-import Svg, { Circle } from 'react-native-svg'  // npm install react-native-svg
+import React, { useMemo, useState } from "react";
+import { ColorValue, DimensionValue, Dimensions } from "react-native";
 import {
+  BadgeIcon,
+  StyledBadge,
+  StyledCircularProgress,
+  StyledImage,
+  StyledImageBackground,
+  StyledPressable,
   StyledSafeAreaView,
   StyledScrollView,
-  StyledCard,
-  StyledImage,
   StyledText,
-  StyledBadge,
   Stack,
-  StyledSpacer,
-  StyleShape,
-  StyledPressable,
-  useToast,
+  TabBar,
   theme,
-} from 'fluent-styles'
+} from "fluent-styles";
 
-const C = {
-  lime:  '#A8E63D',
-  dark:  '#1C1F1A',
-  bg:    '#F4F5F0',
-  muted: '#8A8F82',
-  white: '#FFFFFF',
-}
+const { width } = Dimensions.get("window");
 
-const CATEGORIES = [
-  { value: 'all',    label: 'All' },
-  { value: 'cardio', label: 'Cardio' },
-  { value: 'muscle', label: 'Muscle' },
-  { value: 'weight', label: 'Weight' },
-  { value: 'yoga',   label: 'Yoga' },
-]
+type Category = "All" | "Cardio" | "Muscle" | "Weight";
 
-const WORKOUTS = [
+type WorkoutItem = {
+  id: string;
+  title: string;
+  level: string;
+  duration: string;
+  category: Category;
+  image: { uri: string };
+};
+
+const categories: Category[] = ["All", "Cardio", "Muscle", "Weight"];
+
+const workouts: WorkoutItem[] = [
   {
-    id: '1',
-    title: 'Cardio Exercise',
-    level: 'Intermediate',
-    duration: '120 Menit',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
-    liked: false,
+    id: "1",
+    title: "Cardio Exercise",
+    level: "Intermediate",
+    duration: "120 Menit",
+    category: "Cardio",
+    image: {
+      uri: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=80",
+    },
   },
   {
-    id: '2',
-    title: 'Muscle Exercise',
-    level: 'Beginner',
-    duration: '90 Menit',
-    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80',
-    liked: true,
+    id: "2",
+    title: "Muscle Exercise",
+    level: "Beginner",
+    duration: "90 Menit",
+    category: "Muscle",
+    image: {
+      uri: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
+    },
   },
   {
-    id: '3',
-    title: 'Weight Training',
-    level: 'Advanced',
-    duration: '60 Menit',
-    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80',
-    liked: false,
+    id: "3",
+    title: "Weight Exercise",
+    level: "Advanced",
+    duration: "75 Menit",
+    category: "Weight",
+    image: {
+      uri: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=900&q=80",
+    },
   },
-  {
-    id: '4',
-    title: 'Yoga Flow',
-    level: 'Beginner',
-    duration: '45 Menit',
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&q=80',
-    liked: false,
-  },
-]
+];
 
-const BOTTOM_TABS = [
-  { value: 'home',     icon: '🏠' },
-  { value: 'schedule', icon: '📅' },
-  { value: 'add',      icon: '＋' },
-  { value: 'likes',    icon: '🤍' },
-  { value: 'profile',  icon: '👤' },
-]
+const CARD_WIDTH = width * 0.66;
 
-// ─── Circular Progress ────────────────────────────────────────────────────────
-// ✅ Uses react-native-svg — the only reliable way to draw a partial arc in RN.
-// strokeDasharray = [filledLength, remainingLength] on a circle of circumference 2πr.
-function CircularProgress({
-  value,
-  total,
-  label,
-  size = 80,
+type BottomTab = "home" | "calendar" | "heart" | "profile";
+
+function IconText({
+  children,
+  size = 20,
+  color = "#111827",
 }: {
-  value: number
-  total: number
-  label: string
-  size?: number
+  children: string;
+  size?: number;
+  color?: ColorValue;
 }) {
-  const strokeWidth = 6
-  const radius      = (size - strokeWidth) / 2   // radius fits inside the SVG canvas
-  const circumference = 2 * Math.PI * radius
-  const filled      = (value / total) * circumference
-  const gap         = circumference - filled
-  const center      = size / 2
-
   return (
-    // Outer wrapper: fixed size, centres SVG + text overlay
-    <Stack width={size} height={size} alignItems="center" justifyContent="center">
-      {/* SVG ring — absolutely fills the wrapper */}
-      <Stack style={{ position: 'absolute', top: 0, left: 0 }}>
-        <Svg width={size} height={size}>
-          {/* Track (full circle, dim) */}
-          <Circle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke="rgba(255,255,255,0.18)"
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          {/* Progress arc — rotated so it starts at 12 o'clock */}
-          <Circle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke={C.white}
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={[filled, gap]}
-            strokeLinecap="round"
-            rotation={-90}
-            origin={`${center}, ${center}`}
-          />
-        </Svg>
-      </Stack>
-
-      {/* Centre label — layered on top of SVG */}
-      <Stack alignItems="center" gap={1}>
-        <StyledText fontSize={15} fontWeight="800" color={C.white} lineHeight={18}>
-          {value}/{total}
-        </StyledText>
-        <StyledText fontSize={9} color="rgba(255,255,255,0.65)" lineHeight={11}>
-          {label}
-        </StyledText>
-      </Stack>
-    </Stack>
-  )
+    <StyledText fontSize={size} color={color as string} lineHeight={size + 2}>
+      {children}
+    </StyledText>
+  );
 }
 
-// ─── Stat Item ────────────────────────────────────────────────────────────────
-function StatItem({ value, unit, label }: { value: string; unit: string; label: string }) {
+function Metric({
+  value,
+  label,
+  barWidth,
+}: {
+  value: string;
+  label: string;
+  barWidth: DimensionValue;
+}) {
   return (
-    <Stack gap={2} flex={1}>
-      <Stack horizontal alignItems="baseline" gap={3}>
-        <StyledText fontSize={20} fontWeight="800" color={C.white}>{value}</StyledText>
-        <StyledText fontSize={11} fontWeight="600" color="rgba(255,255,255,0.65)">{unit}</StyledText>
-      </Stack>
-      <StyledText fontSize={11} color="rgba(255,255,255,0.45)" lineHeight={14}>{label}</StyledText>
-      {/* Track */}
-      <Stack marginTop={4} height={2} width={52} borderRadius={1} backgroundColor="rgba(255,255,255,0.15)">
-        <Stack height={2} width={26} borderRadius={1} backgroundColor="rgba(255,255,255,0.5)" />
-      </Stack>
-    </Stack>
-  )
-}
+    <Stack flex={1} gap={6}>
+      <StyledText color="#FFFFFF" fontSize={15} fontWeight="700">
+        {value}
+      </StyledText>
 
-// ─── Activity Card ────────────────────────────────────────────────────────────
-function ActivityCard() {
-  return (
-    <StyledCard
-      shadow="dark"
-      borderRadius={20}
-      padding={0}
-      backgroundColor={C.dark}
-      overflow="hidden"
-    >
-      <Stack padding={20} gap={20}>
-        {/* Top row: title left, ring right */}
-        <Stack horizontal justifyContent="space-between" alignItems="center">
-          <Stack gap={4} flex={1}>
-            <StyledText fontSize={22} fontWeight="800" color={C.white} lineHeight={28}>
-              Today's{'\n'}Activities
-            </StyledText>
-            <StyledText fontSize={13} color="rgba(255,255,255,0.5)">
-              Body Weight
-            </StyledText>
-          </Stack>
-          {/* Fixed-width container stops ring from flexing */}
-          <Stack width={84} alignItems="center" style={{ flexShrink: 0 }}>
-            <CircularProgress value={7} total={9} label="Workout" size={80} />
-          </Stack>
-        </Stack>
+      <StyledText color="rgba(255,255,255,0.72)" fontSize={12}>
+        {label}
+      </StyledText>
 
-        {/* Stats row */}
-        <Stack horizontal>
-          <StatItem value="1200" unit="kcal" label="Calories Burned" />
-          <StatItem value="90"   unit="bpm"  label="Heart Rate" />
-          <StatItem value="03:00" unit="hr"  label="Time" />
-        </Stack>
-      </Stack>
-    </StyledCard>
-  )
-}
-
-// ─── Category Pills ───────────────────────────────────────────────────────────
-function CategoryPills({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ gap: 10, paddingRight: 16 }}
-    >
-      {CATEGORIES.map((cat) => {
-        const isActive = cat.value === selected
-        return (
-          <StyledPressable
-            key={cat.value}
-            onPress={() => onSelect(cat.value)}
-            paddingHorizontal={20}
-            paddingVertical={10}
-            borderRadius={9999}
-            borderWidth={1.5}
-            borderColor={isActive ? C.lime : theme.colors.gray[200]}
-            backgroundColor={isActive ? C.lime : C.white}
-          >
-            <StyledText
-              fontSize={14}
-              fontWeight={isActive ? '700' : '500'}
-              color={isActive ? C.dark : theme.colors.gray[600]}
-            >
-              {cat.label}
-            </StyledText>
-          </StyledPressable>
-        )
-      })}
-    </ScrollView>
-  )
-}
-
-// ─── Workout Card ─────────────────────────────────────────────────────────────
-function WorkoutCard({ item, onLike }: { item: typeof WORKOUTS[0]; onLike: () => void }) {
-  return (
-    <StyledCard shadow="light" borderRadius={16} padding={0} overflow="hidden" width={180}>
-      <Stack height={190} style={{ position: 'relative' }}>
-        <StyledImage source={{ uri: item.image }} width={180} height={190} resizeMode="cover" />
-        <Stack
-          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-          height={80}
-          backgroundColor="rgba(0,0,0,0.28)"
-        />
-        <Stack style={{ position: 'absolute', top: 10, left: 10 }}>
-          <StyledBadge
-            fontSize={11}
-            fontWeight="600"
-            color={C.white}
-            backgroundColor="rgba(0,0,0,0.45)"
-            paddingHorizontal={10}
-            paddingVertical={4}
-            borderRadius={9999}
-          >
-            {item.level}
-          </StyledBadge>
-        </Stack>
-        <StyledPressable
-          onPress={onLike}
-          style={{ position: 'absolute', top: 8, right: 8 }}
-          width={32}
-          height={32}
-          borderRadius={16}
-          backgroundColor="rgba(255,255,255,0.88)"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StyledText fontSize={15}>{item.liked ? '❤️' : '🤍'}</StyledText>
-        </StyledPressable>
-      </Stack>
-      <Stack padding={12} gap={6}>
-        <StyledText fontSize={14} fontWeight="700" color={C.dark}>{item.title}</StyledText>
-        <Stack horizontal alignItems="center" gap={4}>
-          <StyledText fontSize={12} color={C.muted}>⏱</StyledText>
-          <StyledText fontSize={12} color={C.muted}>{item.duration}</StyledText>
-        </Stack>
-      </Stack>
-    </StyledCard>
-  )
-}
-
-// ─── Bottom Tab Bar ───────────────────────────────────────────────────────────
-function BottomTabBar({ active, onPress }: { active: string; onPress: (v: string) => void }) {
-  return (
-    <StyledCard
-      shadow="mediumDark"
-      borderRadius={0}
-      padding={0}
-      backgroundColor={C.white}
-      style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-    >
       <Stack
-        horizontal
-        alignItems="center"
-        justifyContent="space-around"
-        paddingHorizontal={8}
-        paddingTop={12}
-        paddingBottom={28}
+        width="82%"
+        height={6}
+        borderRadius={999}
+        backgroundColor="rgba(255,255,255,0.12)"
+        overflow="hidden"
+        marginTop={3}
       >
-        {BOTTOM_TABS.map((tab) => {
-          const isAdd    = tab.value === 'add'
-          const isActive = tab.value === active && !isAdd
+        <Stack
+          width={barWidth}
+          height="100%"
+          borderRadius={999}
+          backgroundColor="#F5F5F0"
+        />
+      </Stack>
+    </Stack>
+  );
+}
 
-          if (isAdd) {
-            return (
-              <StyledPressable
-                key={tab.value}
-                onPress={() => onPress(tab.value)}
-                width={54}
-                height={54}
-                borderRadius={27}
-                backgroundColor={C.lime}
-                alignItems="center"
-                justifyContent="center"
-                style={{ marginTop: -22 }}
-              >
-                <StyledText fontSize={24} color={C.dark}>+</StyledText>
-              </StyledPressable>
-            )
-          }
+function CategoryChip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <StyledPressable
+      onPress={onPress}
+      paddingHorizontal={22}
+      height={52}
+      minWidth={110}
+      borderRadius={999}
+      borderWidth={1}
+      borderColor={active ? "#B7F000" : "#D9D9D9"}
+      backgroundColor={active ? "#B7F000" : "#FFFFFF"}
+      alignItems="center"
+      justifyContent="center"
+    >
+      <StyledText
+        fontSize={15}
+        fontWeight={active ? "700" : "500"}
+        color="#0F1E35"
+      >
+        {label}
+      </StyledText>
+    </StyledPressable>
+  );
+}
 
-          return (
+function WorkoutCard({ item }: { item: WorkoutItem }) {
+  return (
+    <Stack width={CARD_WIDTH} gap={12}>
+      <StyledImageBackground
+        source={item.image}
+        width={CARD_WIDTH}
+        height={240}
+        borderRadius={22}
+        overflow="hidden"
+      >
+        <Stack
+          flex={1}
+          padding={16}
+          justifyContent="space-between"
+          backgroundColor="rgba(0,0,0,0.18)"
+        >
+          <Stack
+            horizontal
+            justifyContent="space-between"
+            alignItems="flex-start"
+          >
+            <StyledText color="#FFFFFF" fontSize={16} fontWeight="500">
+              {item.level}
+            </StyledText>
+
             <StyledPressable
-              key={tab.value}
-              onPress={() => onPress(tab.value)}
+              width={32}
+              height={32}
+              borderRadius={999}
+              backgroundColor="rgba(255,255,255,0.18)"
               alignItems="center"
               justifyContent="center"
-              width={44}
-              height={44}
-              gap={2}
             >
-              <StyledText fontSize={22}>{tab.icon}</StyledText>
-              <Stack
-                width={4}
-                height={4}
-                borderRadius={2}
-                backgroundColor={isActive ? C.dark : 'transparent'}
-              />
+              <StyledText fontSize={16} color="#FFFFFF">
+                ♡
+              </StyledText>
             </StyledPressable>
-          )
-        })}
+          </Stack>
+
+          <Stack />
+        </Stack>
+      </StyledImageBackground>
+
+      <Stack gap={8} paddingHorizontal={2}>
+        <StyledText fontSize={18} fontWeight="700" color="#0F1E35">
+          {item.title}
+        </StyledText>
+
+        <Stack horizontal alignItems="center" gap={8}>
+          <StyledText fontSize={14} color="#111827">
+            ◷
+          </StyledText>
+          <StyledText fontSize={14} color="#1F2937">
+            {item.duration}
+          </StyledText>
+        </Stack>
       </Stack>
-    </StyledCard>
-  )
+    </Stack>
+  );
 }
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
-export default function Demo() {
-  const [category, setCategory]   = useState('all')
-  const [activeTab, setActiveTab] = useState('home')
-  const [workouts, setWorkouts]   = useState(WORKOUTS)
-  const toast = useToast()
+function Header() {
+  return (
+    <Stack horizontal alignItems="center" justifyContent="space-between">
+      <StyledImage
+        source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
+        width={46}
+        height={46}
+        borderRadius={999}
+      />
 
-  const filtered =
-    category === 'all'
-      ? workouts
-      : workouts.filter((w) => w.title.toLowerCase().includes(category.toLowerCase()))
+      <Stack horizontal alignItems="center" gap={18}>
+        <StyledPressable>
+          <IconText size={26}>⌕</IconText>
+        </StyledPressable>
 
-  function toggleLike(id: string) {
-    setWorkouts((prev) => prev.map((w) => (w.id === id ? { ...w, liked: !w.liked } : w)))
-    const item = workouts.find((w) => w.id === id)
-    if (item) toast.success(item.liked ? 'Removed from likes' : 'Added to likes!')
-  }
+        <BadgeIcon
+          icon={
+            <StyledPressable>
+              <IconText size={24}>◌</IconText>
+            </StyledPressable>
+          }
+          char=""
+          size={10}
+          top={-1}
+          right={1}
+          backgroundColor="#FF5A5F"
+        />
+      </Stack>
+    </Stack>
+  );
+}
+
+function ActivityCard() {
+  return (
+    <Stack backgroundColor="#1B2013" borderRadius={24} padding={20} gap={18}>
+      <Stack horizontal justifyContent="space-between" alignItems="flex-start">
+        <Stack gap={6} flex={1} paddingRight={16}>
+          <StyledText color="#FFFFFF" fontSize={21} fontWeight="700">
+            Today’s
+          </StyledText>
+          <StyledText color="#FFFFFF" fontSize={21} fontWeight="700">
+            Activities
+          </StyledText>
+          <StyledText color="rgba(255,255,255,0.65)" fontSize={15}>
+            Body Weight
+          </StyledText>
+        </Stack>
+
+       <StyledCircularProgress
+                         value={55}
+                         diameter={150}
+                         strokeWidth={32}
+                         display="percent"
+                         contentPosition="center"
+                         colors={{
+                           arc: theme.colors.yellow[500],
+                           track: theme.colors.yellow[100],
+                           label: theme.colors.yellow[700],
+                           sublabel: theme.colors.yellow[400],
+                         }}
+                       />
+      </Stack>
+
+      <Stack horizontal gap={12}>
+        <Metric value="1200 kcal" label="Calories Burned" barWidth="42%" />
+        <Metric value="90 bpm" label="Heart Rate" barWidth="54%" />
+        <Metric value="03:00 hr" label="Time" barWidth="67%" />
+      </Stack>
+    </Stack>
+  );
+}
+
+function SectionHeader({ title, action }: { title: string; action?: string }) {
+  return (
+    <Stack horizontal alignItems="center" justifyContent="space-between">
+      <StyledText fontSize={18} fontWeight="700" color="#0F1E35">
+        {title}
+      </StyledText>
+
+      {action ? (
+        <StyledPressable>
+          <StyledText fontSize={16} fontWeight="500" color="#B7F000">
+            {action}
+          </StyledText>
+        </StyledPressable>
+      ) : (
+        <Stack />
+      )}
+    </Stack>
+  );
+}
+
+export default function FitnessHomeScreen() {
+  const [selectedCategory, setSelectedCategory] = useState<Category>("All");
+  const [tab, setTab] = useState<BottomTab>("home");
+
+  const filteredWorkouts = useMemo(() => {
+    if (selectedCategory === "All") return workouts;
+    return workouts.filter((item) => item.category === selectedCategory);
+  }, [selectedCategory]);
 
   return (
-    <StyledSafeAreaView flex={1} backgroundColor={C.bg}>
+    <StyledSafeAreaView flex={1} backgroundColor="#FFFFFF">
       <StyledScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 110 }}
+        contentContainerStyle={{
+          paddingHorizontal: 22,
+          paddingTop: 18,
+          paddingBottom: 120,
+        }}
       >
-        {/* ── Top Bar ──────────────────────────────────────────────────────── */}
-        <Stack
-          horizontal
-          alignItems="center"
-          justifyContent="space-between"
-          paddingHorizontal={16}
-          paddingVertical={12}
-        >
-          <StyleShape size={46} borderRadius={23} overflow="hidden" borderWidth={2.5} borderColor={C.lime}>
-            <StyledImage
-              source={{ uri: 'https://i.pravatar.cc/100?img=12' }}
-              width={46}
-              height={46}
-              resizeMode="cover"
-            />
-          </StyleShape>
+        <Stack gap={28}>
+          <Header />
 
-          <Stack horizontal gap={10} alignItems="center">
-            <StyledPressable
-              onPress={() => toast.info('Search coming soon')}
-              width={42} height={42} borderRadius={21}
-              backgroundColor={C.white}
-              alignItems="center" justifyContent="center"
+          <ActivityCard />
+
+          <Stack gap={18}>
+            <SectionHeader title="Category" />
+
+            <StyledScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 12, paddingRight: 18 }}
             >
-              <StyledText fontSize={18}>🔍</StyledText>
-            </StyledPressable>
+              {categories.map((category) => (
+                <CategoryChip
+                  key={category}
+                  label={category}
+                  active={selectedCategory === category}
+                  onPress={() => setSelectedCategory(category)}
+                />
+              ))}
+            </StyledScrollView>
+          </Stack>
 
-            <Stack width={42} height={42}>
-              <StyledPressable
-                onPress={() => toast.info('No new notifications')}
-                width={42} height={42} borderRadius={21}
-                backgroundColor={C.white}
-                alignItems="center" justifyContent="center"
-              >
-                <StyledText fontSize={18}>🔔</StyledText>
-              </StyledPressable>
-              <Stack
-                style={{ position: 'absolute', top: 8, right: 8 }}
-                width={9} height={9} borderRadius={5}
-                backgroundColor="#EF4444"
-                borderWidth={1.5}
-                borderColor={C.bg}
-              />
-            </Stack>
+          <Stack gap={18}>
+            <SectionHeader title="Popular" action="See All" />
+
+            <StyledScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 18, paddingRight: 24 }}
+            >
+              {filteredWorkouts.map((item) => (
+                <WorkoutCard key={item.id} item={item} />
+              ))}
+            </StyledScrollView>
           </Stack>
         </Stack>
-
-        {/* ── Activity Card ─────────────────────────────────────────────────── */}
-        <Stack paddingHorizontal={16}>
-          <ActivityCard />
-        </Stack>
-
-        <StyledSpacer height={24} />
-
-        {/* ── Category ──────────────────────────────────────────────────────── */}
-        <Stack paddingHorizontal={16} marginBottom={10}>
-          <StyledText fontSize={18} fontWeight="800" color={C.dark}>Category</StyledText>
-        </Stack>
-        <Stack paddingLeft={16}>
-          <CategoryPills selected={category} onSelect={setCategory} />
-        </Stack>
-
-        <StyledSpacer height={24} />
-
-        {/* ── Popular ───────────────────────────────────────────────────────── */}
-        <Stack
-          horizontal
-          justifyContent="space-between"
-          alignItems="center"
-          paddingHorizontal={16}
-          marginBottom={14}
-        >
-          <StyledText fontSize={18} fontWeight="800" color={C.dark}>Popular</StyledText>
-          <StyledPressable onPress={() => toast.info('See all workouts')}>
-            <StyledText fontSize={14} fontWeight="600" color={C.lime}>See All</StyledText>
-          </StyledPressable>
-        </Stack>
-
-        <StyledScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 14, paddingHorizontal: 16, paddingRight: 24 }}
-        >
-          {filtered.map((item) => (
-            <WorkoutCard key={item.id} item={item} onLike={() => toggleLike(item.id)} />
-          ))}
-        </StyledScrollView>
       </StyledScrollView>
 
-      <BottomTabBar active={activeTab} onPress={setActiveTab} />
+      <Stack
+        position="absolute"
+        left={0}
+        right={0}
+        bottom={0}
+        backgroundColor="#FFFFFF"
+        paddingHorizontal={20}
+        paddingTop={8}
+        paddingBottom={20}
+      >
+        <Stack
+          horizontal
+          alignItems="center"
+          justifyContent="space-between"
+          borderTopWidth={1}
+          borderTopColor="#EEF2F7"
+          paddingTop={10}
+        >
+          <Stack vertical flex={1}>
+            <TabBar
+              options={[
+                {
+                  value: "home",
+                  label: "",
+                  iconRender: (color) => (
+                    <IconText size={32} color={color}>
+                      ⌂
+                    </IconText>
+                  ),
+                },
+                {
+                  value: "calendar",
+                  label: "",
+                  iconRender: (color) => (
+                    <IconText size={32} color={color}>
+                      ◫
+                    </IconText>
+                  ),
+                },
+                {
+                  value: "heart",
+                  label: "",
+                  iconRender: (color) => (
+                    <IconText size={32} color={color}>
+                      ♡
+                    </IconText>
+                  ),
+                },
+                {
+                  value: "profile",
+                  label: "",
+                  iconRender: (color) => (
+                    <IconText size={32} color={color}>
+                      ◯
+                    </IconText>
+                  ),
+                },
+              ]}
+              value={tab}
+              onChange={setTab}
+              indicator={false}
+              showBorder={false}
+              colors={{
+                background: "#FFFFFF",
+                activeText: "#1D2216",
+                text: "#A1A1AA",
+              }}
+              style={{ justifyContent: "space-between", alignItems: "center" }}
+            />
+          </Stack>
+
+          {/* <Stack
+            position="absolute"
+            alignSelf="center"
+            top={-10}
+            left="50%"
+            marginLeft={-32}
+          >
+            <StyledPressable
+              width={64}
+              height={64}
+              borderRadius={999}
+              backgroundColor="#B7F000"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <StyledText fontSize={34} color="#111827" fontWeight="400">
+                +
+              </StyledText>
+            </StyledPressable>
+          </Stack> */}
+        </Stack>
+      </Stack>
     </StyledSafeAreaView>
-  )
+  );
 }
