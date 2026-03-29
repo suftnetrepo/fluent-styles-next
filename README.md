@@ -131,43 +131,65 @@ setTimeout(() => portal.hide(id), 3000)
 A fully themed button with variant, shape, size, and icon support.
 
 ```tsx
-import { StyledButton } from 'fluent-styles'
+import { StyledButton, theme } from 'fluent-styles'
 
-// Variants
-<StyledButton primary>Primary</StyledButton>
-<StyledButton secondary>Secondary</StyledButton>
-<StyledButton outline>Outline</StyledButton>
-<StyledButton ghost>Ghost</StyledButton>
-<StyledButton link>Link</StyledButton>
-<StyledButton danger>Danger</StyledButton>
-<StyledButton success>Success</StyledButton>
-<StyledButton warning>Warning</StyledButton>
-
-// Shapes
-<StyledButton primary pill>Pill</StyledButton>
-<StyledButton primary rounded>Rounded</StyledButton>
-<StyledButton primary square>Square</StyledButton>
+// Variants (compact style)
+<StyledButton primary compact>
+  <StyledButton.Text color={theme.colors.white} fontSize={theme.fontSize.small} fontWeight={theme.fontWeight.semiBold}>
+    Primary
+  </StyledButton.Text>
+</StyledButton>
+<StyledButton secondary compact>Secondary</StyledButton>
+<StyledButton outline compact>Outline</StyledButton>
+<StyledButton ghost compact>Ghost</StyledButton>
+<StyledButton link compact>Link</StyledButton>
+<StyledButton danger compact>Danger</StyledButton>
+<StyledButton success compact>Success</StyledButton>
+<StyledButton warning compact>Warning</StyledButton>
+<StyledButton disabled compact>Disabled</StyledButton>
 
 // Sizes: xs | sm | md | lg | xl
-<StyledButton primary lg>Large</StyledButton>
+{(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((s) => (
+  <StyledButton key={s} primary compact {...{ [s]: true }}>
+    <StyledButton.Text color={theme.colors.white}>{s.toUpperCase()}</StyledButton.Text>
+  </StyledButton>
+))}
 
-// Layout
-<StyledButton primary block>Full Width</StyledButton>
-<StyledButton primary compact>Compact</StyledButton>
-<StyledButton primary icon><MyIcon /></StyledButton>
+// Shapes
+<StyledButton primary compact pill>Pill</StyledButton>
+<StyledButton primary compact rounded>Rounded</StyledButton>
+<StyledButton backgroundColor={theme.colors.yellow[500]} borderWidth={0} square>Square</StyledButton>
 
-// Icons
-<StyledButton primary leftIcon={<Icon />}>With Left Icon</StyledButton>
-<StyledButton primary rightIcon={<Icon />}>With Right Icon</StyledButton>
-
-// States
-<StyledButton primary loading>Saving…</StyledButton>
-<StyledButton primary disabled>Disabled</StyledButton>
-
-// Styled text sub-component
-<StyledButton primary>
-  <StyledButton.Text>Custom Text</StyledButton.Text>
+// Icons — left, right, or both
+<StyledButton primary compact leftIcon={<Icon emoji="🚀" />}>Deploy</StyledButton>
+<StyledButton outline compact rightIcon={<Icon emoji="→" />}>Continue</StyledButton>
+<StyledButton secondary compact leftIcon={<Icon emoji="⬇" />} rightIcon={<Icon emoji="📦" />}>
+  Download package
 </StyledButton>
+
+// Icon-only circular buttons
+<StyledButton icon backgroundColor={theme.colors.indigo[500]}><Icon emoji="✉️" size={18} /></StyledButton>
+<StyledButton icon backgroundColor={theme.colors.amber[400]}><Icon emoji="🔔" size={18} /></StyledButton>
+<StyledButton icon backgroundColor={theme.colors.red[500]}><Icon emoji="🗑️" size={18} /></StyledButton>
+
+// Loading state (async example)
+const [loading, setLoading] = useState(false)
+<StyledButton primary compact loading={loading} onPress={() => { setLoading(true); setTimeout(() => setLoading(false), 2000) }}>
+  <StyledButton.Text color={theme.colors.white}>{loading ? 'Saving…' : 'Save changes'}</StyledButton.Text>
+</StyledButton>
+
+// Full-width block
+<StyledButton primary block>
+  <StyledButton.Text color={theme.colors.white} fontSize={theme.fontSize.medium} fontWeight={theme.fontWeight.bold}>
+    Create account
+  </StyledButton.Text>
+</StyledButton>
+<StyledButton outline block>
+  <StyledButton.Text color={theme.colors.gray[800]} fontSize={theme.fontSize.medium}>Sign in instead</StyledButton.Text>
+</StyledButton>
+
+// Disabled
+<StyledButton primary disabled>Disabled</StyledButton>
 ```
 
 Accepts all `TouchableOpacityProps` and flat `ViewStyle` props.
@@ -279,6 +301,46 @@ import { Switch } from 'fluent-styles'
 <Switch activeLabel="ON" inactiveLabel="OFF" />
 <Switch activeColor="#10b981" inactiveColor="#d4d4d8" />
 
+// Fine-grained color token overrides
+<Switch
+  defaultValue
+  colors={{
+    activeTrack: palettes.rose[500],
+    inactiveTrack: palettes.rose[100],
+    inactiveBorder: palettes.rose[200],
+    activeLabelText: '#fff',
+  }}
+/>
+<Switch defaultValue activeColor={palettes.amber[400]} inactiveColor={palettes.amber[100]} />
+
+// Teal with labels
+<Switch
+  size="lg"
+  defaultValue
+  activeLabel="ON"
+  inactiveLabel="OFF"
+  colors={{
+    activeTrack: palettes.teal[500],
+    inactiveTrack: palettes.teal[100],
+    activeLabelText: '#fff',
+    inactiveLabelText: palettes.teal[400],
+  }}
+/>
+
+// On a dark background (slate palette)
+<Switch
+  defaultValue
+  colors={{
+    activeTrack: palettes.indigo[400],
+    inactiveTrack: palettes.blueGray[700],
+    inactiveBorder: palettes.blueGray[600],
+    thumb: '#ffffff',
+  }}
+/>
+
+// Always-rejected guard (demonstrates async guard returning false)
+<Switch defaultValue={false} beforeChange={() => Promise.resolve(false)} />
+
 // States
 <Switch loading />
 <Switch disabled />
@@ -307,18 +369,67 @@ import { Switch } from 'fluent-styles'
 An accessible checkbox with customisable size and colour.
 
 ```tsx
-import { StyledCheckBox } from 'fluent-styles'
+import { StyledCheckBox, StyledCard, StyledText, Stack, theme } from 'fluent-styles'
 
+// Basic
 <StyledCheckBox checked={isChecked} onCheck={setChecked} />
 
-<StyledCheckBox
-  checkedColor="#6366f1"
-  checkMarkColor="#ffffff"
-  uncheckedColor="#e4e4e7"
-  size={28}
-/>
+// Sizes: 18 | 24 | 32 | 40
+<Stack horizontal gap={16} alignItems="center">
+  <StyledCheckBox checked size={18} onCheck={() => {}} />
+  <StyledCheckBox checked size={24} onCheck={() => {}} />
+  <StyledCheckBox checked size={32} onCheck={() => {}} />
+  <StyledCheckBox checked size={40} onCheck={() => {}} />
+</Stack>
 
-<StyledCheckBox checked disabled />
+// Custom colors
+<StyledCheckBox checked checkedColor={theme.colors.green[500]}  checkMarkColor="#fff" onCheck={() => {}} />
+<StyledCheckBox checked checkedColor={theme.colors.blue[600]}   checkMarkColor="#fff" onCheck={() => {}} />
+<StyledCheckBox checked checkedColor={theme.colors.rose[500]}   checkMarkColor="#fff" onCheck={() => {}} />
+
+// Disabled states
+<StyledCheckBox checked={false} disabled onCheck={() => {}} />
+<StyledCheckBox checked          disabled onCheck={() => {}} />
+
+// --- Real-world: Settings preferences card ---
+<StyledCard backgroundColor={theme.colors.white} borderRadius={18} padding={16} shadow="light">
+  <Stack gap={18}>
+    <StyledText fontSize={18} fontWeight={800}>Preferences</StyledText>
+    {[{ label: 'Product updates', checked: updates, setter: setUpdates },
+      { label: 'Marketing emails', checked: marketing, setter: setMarketing },
+      { label: 'Push notifications', checked: notifs, setter: setNotifs }]
+      .map(({ label, checked, setter }) => (
+        <Stack key={label} horizontal alignItems="center" gap={12}>
+          <StyledCheckBox checked={checked} onCheck={setter} />
+          <StyledText fontSize={15} fontWeight={600}>{label}</StyledText>
+        </Stack>
+    ))}
+  </Stack>
+</StyledCard>
+
+// --- Real-world: Task list with green checkmarks ---
+<Stack gap={16}>
+  {tasks.map(({ key, label, helper }) => (
+    <Stack key={key} horizontal alignItems="center" gap={12}>
+      <StyledCheckBox
+        checked={done[key]}
+        onCheck={(v) => setDone(prev => ({ ...prev, [key]: v }))}
+        checkedColor={theme.colors.green[500]}
+        checkMarkColor="#fff"
+      />
+      <Stack flex={1}>
+        <StyledText fontSize={15} fontWeight={600}>{label}</StyledText>
+        {helper && <StyledText fontSize={13} color={theme.colors.gray[500]}>{helper}</StyledText>}
+      </Stack>
+    </Stack>
+  ))}
+</Stack>
+
+// --- Compact inline usage ---
+<Stack horizontal alignItems="center" gap={10}>
+  <StyledCheckBox checked={remember} onCheck={setRemember} size={20} />
+  <StyledText>Remember me</StyledText>
+</Stack>
 ```
 
 ---
@@ -350,37 +461,99 @@ Accepts all `ViewProps` and flat `ViewStyle` props.
 
 ---
 
-### StyledBadge / BadgeWithIcon
+### StyledBadge / BadgeWithIcon / BadgeIcon
 
-A styled text badge with optional leading/trailing icon slots.
+Styled text badges, icon badges, and notification count overlays.
 
 ```tsx
-import { StyledBadge, BadgeWithIcon } from 'fluent-styles'
+import { StyledBadge, BadgeWithIcon, BadgeIcon, StyledImage, Stack, theme } from 'fluent-styles'
 
-<StyledBadge
-  fontSize={12}
-  color="#ffffff"
-  backgroundColor="#ef4444"
-  paddingHorizontal={8}
-  paddingVertical={2}
-  borderRadius={9999}
->
-  New
-</StyledBadge>
+// --- Pill status badges ---
+<Stack horizontal gap={10} flexWrap="wrap">
+  <StyledBadge
+    backgroundColor={theme.colors.green[50]}
+    color={theme.colors.green[700]}
+    paddingHorizontal={10} paddingVertical={6} borderRadius={999}
+  >Active</StyledBadge>
 
+  <StyledBadge
+    backgroundColor={theme.colors.red[50]}
+    color={theme.colors.red[600]}
+    paddingHorizontal={10} paddingVertical={6} borderRadius={999}
+  >Rejected</StyledBadge>
+
+  <StyledBadge
+    backgroundColor={theme.colors.blue[50]}
+    color={theme.colors.blue[700]}
+    paddingHorizontal={10} paddingVertical={6} borderRadius={999}
+  >New</StyledBadge>
+</Stack>
+
+// --- Link badge ---
+<StyledBadge link>View details</StyledBadge>
+
+// --- BadgeWithIcon: feature / status badges ---
 <BadgeWithIcon
-  title="Pro"
-  iconLeft={<StarIcon size={12} />}
-  backgroundColor="#6366f1"
-  color="#ffffff"
-  gap={4}
-  paddingHorizontal={8}
-  paddingVertical={4}
-  borderRadius={8}
+  title="Featured"
+  iconLeft={<Text>⭐</Text>}
+  backgroundColor={theme.colors.yellow[50]}
+  paddingHorizontal={12} paddingVertical={7} borderRadius={999} gap={6}
+/>
+<BadgeWithIcon
+  title="Verified"
+  iconLeft={<Text>✅</Text>}
+  backgroundColor={theme.colors.green[50]}
+  paddingHorizontal={12} paddingVertical={7} borderRadius={999} gap={6}
 />
 
-<StyledBadge link>Click here</StyledBadge>
+// --- Status badges (workflow states) ---
+<BadgeWithIcon title="In progress" iconLeft={<Text>🟡</Text>} color={theme.colors.yellow[700]}
+  backgroundColor={theme.colors.yellow[50]} paddingHorizontal={12} paddingVertical={8} borderRadius={999} gap={6} />
+<BadgeWithIcon title="Completed"  iconLeft={<Text>🟢</Text>} color={theme.colors.green[700]}
+  backgroundColor={theme.colors.green[50]}  paddingHorizontal={12} paddingVertical={8} borderRadius={999} gap={6} />
+<BadgeWithIcon title="Blocked"    iconLeft={<Text>🔴</Text>} color={theme.colors.red[700]}
+  backgroundColor={theme.colors.red[50]}    paddingHorizontal={12} paddingVertical={8} borderRadius={999} gap={6} />
+
+// --- BadgeIcon: count bubbles ---
+<Stack horizontal gap={24} alignItems="center">
+  <BadgeIcon char="1" size={24} />
+  <BadgeIcon char="3" backgroundColor={theme.colors.blue[600]}  size={24} />
+  <BadgeIcon char="9+" backgroundColor={theme.colors.gray[800]} size={24} />
+</Stack>
+
+// --- BadgeIcon over an icon (notification dot) ---
+<BadgeIcon icon={<Text style={{ fontSize: 24 }}>🔔</Text>} char="2" right={20} top={-12} size={16} />
+<BadgeIcon icon={<Text style={{ fontSize: 24 }}>🛒</Text>} char="4" backgroundColor={theme.colors.green[600]} right={16} top={-12} size={16} />
+
+// --- Overlay badge on an image ---
+<Stack>
+  <StyledImage source={{ uri: '…' }} width={220} height={150} borderRadius={18} />
+  <Stack position="absolute" top={10} right={10}>
+    <StyledBadge backgroundColor="rgba(17,24,39,0.78)" color="#fff"
+      paddingHorizontal={10} paddingVertical={6} borderRadius={999} fontWeight="700">New</StyledBadge>
+  </Stack>
+</Stack>
+
+// --- Avatar with notification count ---
+<Stack>
+  <StyledImage source={{ uri: '…' }} cycle size={64} borderRadius={999} />
+  <Stack position="absolute" top={2} right={2}>
+    <BadgeIcon char="3" size={18} />
+  </Stack>
+</Stack>
+
+// --- Product badges ---
+<Stack horizontal gap={10} flexWrap="wrap">
+  <StyledBadge backgroundColor={theme.colors.red[50]} color={theme.colors.red[600]}
+    paddingHorizontal={10} paddingVertical={6} borderRadius={999} fontWeight="700">Sale</StyledBadge>
+  <StyledBadge backgroundColor={theme.colors.gray[900]} color={theme.colors.white}
+    paddingHorizontal={10} paddingVertical={6} borderRadius={999} fontWeight="700">Limited</StyledBadge>
+  <BadgeWithIcon title="Free delivery" iconLeft={<Text>🚚</Text>} backgroundColor={theme.colors.green[50]}
+    paddingHorizontal={12} paddingVertical={7} borderRadius={999} gap={6} />
+</Stack>
 ```
+
+**`BadgeIcon` props:** `char`, `icon?`, `size?`, `backgroundColor?`, `top?`, `right?`
 
 ---
 
@@ -489,20 +662,70 @@ A versatile overlay with multiple positions, animation styles, and a built-in he
 ```tsx
 import { Popup } from 'fluent-styles'
 
-// Bottom sheet (default)
-<Popup visible={visible} onClose={() => setVisible(false)} title="Options" showHandle showClose safeAreaBottom>
-  <MyContent />
-</Popup>
+// --- Bottom sheet variants ---
+<Popup visible={visible} onClose={hide}>Plain content — no header</Popup>
+<Popup visible={visible} onClose={hide} title="Post options" showClose><ActionList /></Popup>
+<Popup visible={visible} onClose={hide} title="Share post" subtitle="Choose where to send" showClose><ShareList /></Popup>
+<Popup visible={visible} onClose={hide} title="Safe area" showClose safeAreaBottom>…</Popup>
 
-// Centered modal
-<Popup visible={visible} position="center" animation="scale" onClose={() => setVisible(false)}>
-  <MyModal />
-</Popup>
+// No backdrop
+<Popup visible={visible} onClose={hide} title="No backdrop" overlay={false} showClose>…</Popup>
 
-// Left side panel
-<Popup visible={visible} position="left" animation="slide" onClose={() => setVisible(false)}>
-  <MySideContent />
-</Popup>
+// Prevent dismiss on backdrop tap
+<Popup visible={visible} onClose={hide} title="Tap overlay — nothing" showClose closeOnPressOverlay={false}>…</Popup>
+
+// --- Positions ---
+<Popup visible={visible} onClose={hide} position="top"    title="Notification" showClose>…</Popup>
+<Popup visible={visible} onClose={hide} position="left"   title="Side menu"    showClose>…</Popup>
+<Popup visible={visible} onClose={hide} position="right"  title="Filters"      showClose>…</Popup>
+<Popup visible={visible} onClose={hide} position="center" title="Confirm"      showClose round>…</Popup>
+
+// --- Animation styles ---
+<Popup visible={visible} onClose={hide} animation="slide" title="Slide" showClose>…</Popup>
+<Popup visible={visible} onClose={hide} animation="fade"  title="Fade"  showClose>…</Popup>
+<Popup visible={visible} onClose={hide} position="center" animation="scale" title="Scale" showClose round>…</Popup>
+<Popup visible={visible} onClose={hide} animation="none"  title="Instant" showClose>…</Popup>
+
+// Spring physics
+<Popup visible={visible} onClose={hide} title="Spring" showClose spring={{ damping: 18, stiffness: 280 }}>…</Popup>
+
+// --- Corner rounding ---
+<Popup visible={visible} onClose={hide} round           title="Default 20 px" showClose>…</Popup>
+<Popup visible={visible} onClose={hide} round={false}   title="Square corners" showClose>…</Popup>
+<Popup visible={visible} onClose={hide} round roundRadius={36} title="Large radius" showClose>…</Popup>
+
+// --- Render strategy ---
+<Popup visible={visible} onClose={hide} lazyRender title="Lazy (default)" showClose>…</Popup>
+<Popup visible={visible} onClose={hide} destroyOnClose title="Destroy on close" showClose>…</Popup>
+
+// --- Color token overrides ---
+<Popup
+  visible={visible} onClose={hide}
+  title="Dark slate" subtitle="Token overrides" showClose
+  colors={{
+    background: palettes.blueGray[900],
+    overlay: 'rgba(0,0,0,0.75)',
+    handle: palettes.blueGray[600],
+    headerTitle: palettes.blueGray[100],
+    headerSubtitle: palettes.blueGray[400],
+    headerBorder: palettes.blueGray[700],
+    closeIcon: palettes.blueGray[300],
+    closeIconBg: palettes.blueGray[700],
+  }}
+>…</Popup>
+
+<Popup
+  visible={visible} onClose={hide} title="Indigo surface" showClose
+  colors={{ background: palettes.indigo[50], headerTitle: palettes.indigo[900], handle: palettes.indigo[300], closeIconBg: palettes.indigo[100] }}
+>…</Popup>
+
+// --- Lifecycle callbacks ---
+<Popup
+  visible={visible} onClose={hide} title="Lifecycle" showClose
+  onOpen={()   => console.log('onOpen')}
+  onOpened={()  => console.log('onOpened — animation done')}
+  onClosed={()  => console.log('onClosed — animation done')}
+>…</Popup>
 ```
 
 | Prop | Type | Default | Description |
@@ -569,17 +792,111 @@ import { Drawer } from 'fluent-styles'
 Animated accordion panels with full render-slot control.
 
 ```tsx
-import { Collapse, CollapseGroup, CollapseItem } from 'fluent-styles'
+import { Collapse, CollapseGroup, CollapseItem, palettes, theme } from 'fluent-styles'
 
-// Single panel
-<Collapse title="What is React Native?" variant="card" defaultCollapse>
-  <StyledText>React Native lets you build mobile apps with React…</StyledText>
-</Collapse>
+// --- Variants ---
+<Collapse title="Cell (default)" variant="cell">…</Collapse>
+<Collapse title="Card" subtitle="Shadow + radius" variant="card">…</Collapse>
+<Collapse title="Bordered" variant="bordered">…</Collapse>
+<Collapse title="Ghost" variant="ghost">…</Collapse>
 
-// Accordion group
-<CollapseGroup accordion defaultActiveKey="panel1">
-  <CollapseItem itemKey="panel1" title="Section 1"><StyledText>Content 1</StyledText></CollapseItem>
-  <CollapseItem itemKey="panel2" title="Section 2"><StyledText>Content 2</StyledText></CollapseItem>
+// --- Sizes ---
+<Collapse title="Small"  variant="bordered" size="sm">…</Collapse>
+<Collapse title="Medium" variant="bordered" size="md">…</Collapse>
+<Collapse title="Large"  variant="bordered" size="lg">…</Collapse>
+
+// --- Header slots: leading · subtitle · trailing ---
+<Collapse
+  variant="card"
+  leading={<Text style={{ fontSize: 20 }}>📦</Text>}
+  title="Leading icon"
+  subtitle="Any ReactNode on the left"
+>…</Collapse>
+
+<Collapse
+  variant="card"
+  title="Trailing badge"
+  trailing={<View style={{ backgroundColor: palettes.indigo[500], borderRadius: 10, paddingHorizontal: 8 }}><Text style={{ color: '#fff', fontWeight: '700' }}>NEW</Text></View>}
+>…</Collapse>
+
+// --- Active header tint ---
+<Collapse title="Tints when open" variant="bordered" activeHeader>…</Collapse>
+
+// --- Disabled ---
+<Collapse title="Premium feature" subtitle="Upgrade to unlock" variant="bordered" disabled>…</Collapse>
+
+// --- Default open (uncontrolled) ---
+<Collapse title="Starts expanded" variant="card" defaultCollapse>…</Collapse>
+
+// --- Controlled open state ---
+const [open, setOpen] = useState(false)
+<Collapse
+  title="Externally driven"
+  variant="bordered"
+  collapse={open}
+  onCollapse={setOpen}
+>…</Collapse>
+
+// --- Custom header renderer ---
+<Collapse
+  variant="card"
+  renderHeader={(open) => (
+    <View style={{ padding: 14, backgroundColor: open ? '#eef2ff' : '#f2f2f7' }}>
+      <Text style={{ fontWeight: '600' }}>{open ? '▲ Open' : '▼ Closed'}</Text>
+    </View>
+  )}
+>…</Collapse>
+
+// --- Custom header right (keep title, replace right side) ---
+<Collapse
+  title="Custom right"
+  variant="bordered"
+  renderHeaderRight={(open, chevron) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      <Text style={{ color: open ? '#6366f1' : '#8e8e93' }}>{open ? 'Open' : 'Closed'}</Text>
+      {chevron}
+    </View>
+  )}
+>…</Collapse>
+
+// --- Color token overrides ---
+<Collapse
+  title="Dark slate theme"
+  variant="card"
+  colors={{
+    background: theme.colors.blueGray[900],
+    border: theme.colors.blueGray[700],
+    titleColor: theme.colors.blueGray[100],
+    subtitleColor: theme.colors.blueGray[400],
+    iconColor: theme.colors.blueGray[400],
+    activeHeaderBg: palettes.blueGray[800],
+  }}
+>…</Collapse>
+
+<Collapse
+  title="Warm amber theme"
+  variant="bordered"
+  colors={{
+    background: palettes.amber[50],
+    border: palettes.amber[300],
+    titleColor: palettes.amber[900],
+    iconColor: palettes.amber[500],
+    activeHeaderBg: palettes.amber[100],
+  }}
+>…</Collapse>
+
+// --- CollapseGroup: multi-open with defaultActiveKey array ---
+<CollapseGroup variant="bordered" defaultActiveKey={['shipping']}>
+  <CollapseItem itemKey="shipping" title="Shipping" subtitle="2–5 business days">…</CollapseItem>
+  <CollapseItem itemKey="returns"  title="Returns"  subtitle="30-day policy">…</CollapseItem>
+  <CollapseItem itemKey="sizing"   title="Size guide">…</CollapseItem>
+</CollapseGroup>
+
+// --- CollapseGroup: accordion FAQ with icons ---
+<CollapseGroup accordion variant="card" defaultActiveKey="q1" style={{ gap: 8 }}>
+  <CollapseItem itemKey="q1" leading={<Text style={{ fontSize: 18 }}>💳</Text>} title="Accepted payment methods">…</CollapseItem>
+  <CollapseItem itemKey="q2" leading={<Text style={{ fontSize: 18 }}>🔒</Text>} title="Is my data secure?">…</CollapseItem>
+  <CollapseItem itemKey="q3" leading={<Text style={{ fontSize: 18 }}>📞</Text>} title="How do I contact support?">…</CollapseItem>
 </CollapseGroup>
 ```
 
@@ -592,11 +909,14 @@ import { Collapse, CollapseGroup, CollapseItem } from 'fluent-styles'
 | `collapse / defaultCollapse` | `boolean` | — | Controlled / uncontrolled open state |
 | `onCollapse` | `(open: boolean) => void` | — | Toggle callback |
 | `activeHeader` | `boolean` | `false` | Tint header when open |
+| `disabled` | `boolean` | `false` | Prevent interaction |
 | `lazyRender` | `boolean` | `true` | Mount body on first expand |
 | `destroyOnClose` | `boolean` | `false` | Unmount body when collapsed |
-| `renderHeader` | `(open: boolean) => ReactNode` | — | Custom header renderer |
-| `renderBody` | `() => ReactNode` | — | Custom body renderer |
+| `renderHeader` | `(open: boolean) => ReactNode` | — | Replace the entire header |
+| `renderHeaderRight` | `(open, chevron) => ReactNode` | — | Replace only the right side of the header |
 | `colors` | `Partial<CollapseColors>` | — | Token overrides |
+
+`CollapseGroup` additional props: `accordion` (single-open), `defaultActiveKey` (`string \| string[]`)
 
 ---
 
@@ -605,15 +925,97 @@ import { Collapse, CollapseGroup, CollapseItem } from 'fluent-styles'
 A feature-rich animated tab bar with badge, icon, and indicator support.
 
 ```tsx
-import { TabBar } from 'fluent-styles'
+import { TabBar, TabItem, palettes } from 'fluent-styles'
 
-const tabs = [
-  { value: 'home',    label: 'Home',    iconRender: (color) => <HomeIcon color={color} /> },
-  { value: 'explore', label: 'Explore', badge: 3 },
-  { value: 'profile', label: 'Profile', iconRender: (color) => <UserIcon color={color} /> },
+// --- Bottom nav with icons + dot badges ---
+type Nav = 'home' | 'explore' | 'activity' | 'profile'
+const NAV_TABS: TabItem<Nav>[] = [
+  { value: 'home',     label: 'Home',     iconRender: (c) => <HomeIcon color={c} /> },
+  { value: 'explore',  label: 'Explore',  iconRender: (c) => <SearchIcon color={c} />, badge: 3 },
+  { value: 'activity', label: 'Activity', iconRender: (c) => <BellIcon color={c} />,   badge: '' }, // '' = dot badge
+  { value: 'profile',  label: 'Profile',  iconRender: (c) => <UserIcon color={c} /> },
 ]
+<TabBar options={NAV_TABS} value={nav} onChange={setNav} indicator="dot" showBorder />
 
-<TabBar options={tabs} value={activeTab} onChange={setActiveTab} variant="underline" indicator="line" />
+// --- Animated underline indicator ---
+<TabBar options={SIMPLE_TABS} value={seg} onChange={setSeg} indicator="line" showBorder />
+
+// --- Sliding pill indicator ---
+<TabBar
+  options={SIMPLE_TABS}
+  defaultValue="week"
+  indicator="pill"
+  colors={{ background: palettes.indigo[50], activeText: palettes.indigo[700], indicator: palettes.indigo[200], text: palettes.indigo[400] }}
+/>
+
+// --- Scrollable tabs (many items) ---
+<TabBar options={MANY_TABS} value={cat} onChange={setCat} tabAlign="scroll" indicator="line" showBorder />
+
+// --- Disabled tabs ---
+const TABS_WITH_DISABLED: TabItem<string>[] = [
+  { value: 'available', label: 'Available' },
+  { value: 'locked',    label: 'Locked',  disabled: true },
+  { value: 'open',      label: 'Open' },
+]
+<TabBar options={TABS_WITH_DISABLED} value={active} onChange={setActive} indicator="line" showBorder />
+
+// --- Solid / chip variant ---
+<TabBar
+  options={SIMPLE_TABS}
+  defaultValue="week"
+  variant="solid"
+  indicator="pill"
+  colors={{
+    background: palettes.gray[100],
+    activeChipBg: '#ffffff',
+    activeChipText: palettes.gray[900],
+    indicator: palettes.coolGray[200],
+    text: palettes.gray[500],
+  }}
+/>
+
+// --- Numeric values (step wizard) ---
+type Step = 1 | 2 | 3
+const STEPS: TabItem<Step>[] = [
+  { value: 1, label: 'Step 1' },
+  { value: 2, label: 'Step 2' },
+  { value: 3, label: 'Step 3' },
+]
+<TabBar
+  options={STEPS}
+  value={step}
+  onChange={setStep}
+  indicator="line"
+  colors={{ activeText: palettes.violet[600], indicator: palettes.violet[600], text: palettes.gray[400] }}
+  showBorder
+/>
+
+// --- Custom indicator sizing ---
+<TabBar options={SIMPLE_TABS} defaultValue="month" indicator="line" indicatorWidth={24} indicatorHeight={3} indicatorRadius={3} showBorder />
+
+// --- Label scale on active tab ---
+<TabBar options={SIMPLE_TABS} defaultValue="week" indicator="line" labelBulge={1.15} showBorder />
+
+// --- Color overrides: green theme ---
+<TabBar
+  options={SIMPLE_TABS}
+  defaultValue="day"
+  indicator="line"
+  showBorder
+  colors={{ background: palettes.green[50], activeText: palettes.green[700], indicator: palettes.green[500], text: palettes.green[400], border: palettes.green[200] }}
+/>
+
+// --- Color overrides: dark slate ---
+<TabBar
+  options={NAV_TABS}
+  defaultValue="home"
+  indicator="dot"
+  showBorder
+  colors={{ background: palettes.blueGray[900], activeText: palettes.indigo[400], indicator: palettes.indigo[400], text: palettes.blueGray[400], border: palettes.blueGray[700], badge: palettes.rose[400] }}
+/>
+
+// --- Large font / taller bar ---
+<TabBar options={SIMPLE_TABS} defaultValue="week" indicator="line" fontSize={17} height={52} showBorder />
 ```
 
 | Prop | Type | Default | Description |
@@ -624,12 +1026,17 @@ const tabs = [
 | `variant` | `default \| underline \| card \| solid` | `default` | Visual preset |
 | `indicator` | `false \| line \| pill \| dot` | `false` | Animated indicator style |
 | `indicatorColor` | `ColorValue` | — | Indicator colour override |
+| `indicatorWidth` | `number` | auto | Fixed indicator width (0 = full tab width) |
+| `indicatorHeight` | `number` | `2` | Indicator thickness |
+| `indicatorRadius` | `number` | auto | Indicator border radius |
 | `tabAlign` | `center \| scroll` | `center` | Equal-width or scrolling tabs |
 | `labelBulge` | `number \| boolean` | `1` | Active label scale factor |
+| `fontSize` | `number` | — | Label font size |
+| `height` | `number` | — | Bar height override |
 | `showBorder` | `boolean` | `false` | Persistent bottom border |
 | `colors` | `Partial<TabBarColors>` | — | Token overrides |
 
-**TabItem:** `value`, `label`, `badge?` (empty string = dot badge), `iconRender?`, `disabled?`
+**TabItem:** `value`, `label`, `badge?` (`number` = count, `''` = dot), `iconRender?`, `disabled?`
 
 ---
 
@@ -802,21 +1209,74 @@ import { useToast } from 'fluent-styles'
 
 const toast = useToast()
 
-toast.success('Saved!', 'Your changes have been saved.')
-toast.error('Failed', 'Please try again.')
-toast.warning('Low storage')
-toast.info('Update available')
+// --- Shortcut methods ---
+toast.success('Profile saved')
+toast.error('Upload failed', 'The selected file is larger than 5 MB.')
+toast.warning('Unsaved changes', 'You have pending edits on this screen.')
+toast.info('New update available', 'Restart the app to use the latest version.')
 
+// --- Full control with show() ---
 const id = toast.show({
-  message: 'Profile updated',
-  description: 'Changes are live.',
-  variant: 'success',
-  duration: 3000,
+  message: 'Settings updated',
+  description: 'Your preferences were saved successfully.',
+  variant: 'success',     // 'success' | 'error' | 'warning' | 'info'
+  duration: 2500,
+  theme: 'light',         // 'light' | 'dark' | 'system'
+})
+
+// Dark-themed toast
+toast.show({
+  message: 'Background sync started',
+  description: 'We will notify you when sync is complete.',
+  variant: 'info',
+  duration: 4000,
   theme: 'dark',
 })
 
-toast.dismiss(id)
-toast.dismissAll()
+// --- Persistent toast (duration: 0 — never auto-dismisses) ---
+const persistId = toast.show({
+  message: 'Uploading file…',
+  description: 'Please keep the app open until upload finishes.',
+  variant: 'info',
+  duration: 0,
+  theme: 'dark',
+})
+toast.dismiss(persistId)  // dismiss manually later
+
+// --- Short / long durations ---
+toast.show({ message: 'Quick message', variant: 'info', duration: 1200, theme: 'light' })
+toast.show({ message: 'Read this carefully', variant: 'warning', duration: 6000, theme: 'light' })
+
+// --- Color token overrides ---
+toast.show({
+  message: 'Custom success',
+  variant: 'success',
+  theme: 'light',
+  colors: {
+    successBg: '#ecfdf5',
+    successBorder: '#10b981',
+    successLabel: '#065f46',
+    description: '#047857',
+    closeIcon: '#065f46',
+  },
+})
+
+toast.show({
+  message: 'Custom error',
+  variant: 'error',
+  theme: 'dark',
+  colors: {
+    errorBg: '#3b0a0a',
+    errorBorder: '#ef4444',
+    errorLabel: '#fecaca',
+    description: '#fca5a5',
+    closeIcon: '#fecaca',
+  },
+})
+
+// --- Dismiss ---
+toast.dismiss(id)    // single
+toast.dismissAll()   // all active
 ```
 
 | Method | Signature | Description |
@@ -829,6 +1289,8 @@ toast.dismissAll()
 | `dismiss` | `(id: number) => void` | Dismiss specific toast |
 | `dismissAll` | `() => void` | Dismiss all active toasts |
 
+**`show` options:** `message`, `description?`, `variant`, `duration` (`0` = persistent), `theme`, `colors`
+
 ---
 
 ### useNotification
@@ -838,20 +1300,95 @@ import { useNotification } from 'fluent-styles'
 
 const notification = useNotification()
 
+// --- Basic notification ---
 const id = notification.show({
-  title: 'New message',
-  body: 'Hey, are you free tonight?',
-  initials: 'JD',
-  timestamp: '2 min ago',
-  actionLabel: 'Reply',
-  onAction: () => navigate('Chat'),
-  duration: 5000,
+  title: 'New message from Alex',
+  body: 'Hey, are you free this afternoon?',
+  source: 'Messages',
+  initials: 'AK',
+  timestamp: 'now',
+  theme: 'dark',
+})
+
+// --- With avatar image ---
+notification.show({
+  title: 'Sarah Johnson',
+  body: 'Sent you 3 new design files.',
+  source: 'Drive',
+  avatar: { uri: 'https://example.com/avatar.jpg' },
+  timestamp: '2m',
+  theme: 'light',
+})
+
+// --- With action button ---
+notification.show({
+  title: 'Deployment finished',
+  body: 'Production build completed successfully.',
+  source: 'CI/CD',
+  initials: 'CI',
+  timestamp: 'now',
+  actionLabel: 'Open',
+  onAction: () => navigate('Dashboard'),
+  theme: 'dark',
+})
+
+// --- Custom duration ---
+notification.show({ title: 'Quick', body: 'Disappears fast', initials: 'Q', duration: 1500, theme: 'light' })
+notification.show({ title: 'Long',  body: 'Stays a while',   initials: 'L', duration: 8000, theme: 'dark'  })
+
+// --- Color token overrides ---
+notification.show({
+  title: 'Custom brand notification',
+  body: 'Using token overrides on top of the active theme.',
+  source: 'Brand',
+  initials: 'BR',
+  timestamp: 'now',
+  theme: 'light',
+  actionLabel: 'View',
+  onAction: () => navigate('Brand'),
+  colors: {
+    background: '#eff6ff',
+    border: '#2563eb',
+    title: '#1e3a8a',
+    body: '#1d4ed8',
+    source: '#2563eb',
+    timestamp: '#3b82f6',
+    avatarBg: '#dbeafe',
+    avatarBorder: '#60a5fa',
+    avatarInitials: '#1d4ed8',
+    actionBg: '#dbeafe',
+    actionLabel: '#1d4ed8',
+    closeIcon: '#1d4ed8',
+  },
+})
+
+// --- Real-world examples ---
+notification.show({
+  title: 'New comment on your PR',
+  body: 'Chris left feedback on the latest changes.',
+  source: 'Git',
+  initials: 'CK',
+  timestamp: '1m',
+  actionLabel: 'Review',
+  onAction: () => navigate('PRReview'),
+  theme: 'dark',
+})
+
+notification.show({
+  title: 'Meeting starts in 10 minutes',
+  body: 'Frontend sync with the product team.',
+  source: 'Calendar',
+  initials: 'CA',
+  timestamp: 'soon',
+  actionLabel: 'Join',
+  onAction: joinMeeting,
+  theme: 'light',
 })
 
 notification.dismiss(id)
 ```
 
-**Show options:** `title`, `body`, `avatar`, `initials`, `source`, `timestamp`, `actionLabel`, `onAction`, `duration`, `theme`, `colors`
+**Show options:** `title`, `body`, `avatar`, `initials`, `source`, `timestamp`, `actionLabel`, `onAction`, `duration` (`0` = persistent), `theme`, `colors`
 
 ---
 
@@ -862,32 +1399,96 @@ import { useDialogue } from 'fluent-styles'
 
 const dialogue = useDialogue()
 
-// Async confirm — returns Promise<boolean>
+// --- Alert (Promise<void>) ---
+await dialogue.alert(
+  'Session expired',
+  'Please log in again to continue.',
+  '🔒',
+  'light',  // optional theme
+)
+
+// --- Confirm (Promise<boolean>) ---
 const confirmed = await dialogue.confirm({
-  title: 'Delete account?',
-  message: 'This action cannot be undone.',
-  confirmLabel: 'Delete',
+  title: 'Save changes?',
+  message: 'Your edits will be saved to this project.',
+  icon: '💾',
+  confirmLabel: 'Save',
   cancelLabel: 'Cancel',
-  destructive: true,
-  icon: '⚠️',
+  theme: 'light',
 })
-if (confirmed) deleteAccount()
+if (confirmed) save()
 
-// Async alert — returns Promise<void>
-await dialogue.alert('Done!', 'Your profile has been updated.', '✅')
+// --- Destructive confirm ---
+const ok = await dialogue.confirm({
+  title: 'Delete project?',
+  message: 'This action cannot be undone.',
+  icon: '⚠️',
+  confirmLabel: 'Delete',
+  cancelLabel: 'Keep it',
+  destructive: true,
+})
+if (ok) deleteProject()
 
-// Fully custom dialogue
-const id = dialogue.show({
-  title: 'Rate your experience',
-  icon: '⭐',
+// --- Custom multi-action dialogue ---
+dialogue.show({
+  title: 'Unsaved changes',
+  message: 'You have unsaved edits. What would you like to do?',
+  icon: '📝',
+  theme: 'light',
   actions: [
-    { label: '😠', onPress: () => submit(1) },
-    { label: '😐', onPress: () => submit(3) },
-    { label: '😁', onPress: () => submit(5) },
+    { label: 'Discard',      variant: 'destructive', onPress: () => discard() },
+    { label: 'Save draft',   variant: 'secondary',   onPress: () => saveDraft() },
+    { label: 'Keep editing', variant: 'primary',     onPress: () => keepEditing() },
   ],
 })
-dialogue.dismiss(id)
+
+// --- Async chained flow (confirm then alert) ---
+const publish = async () => {
+  const confirmed = await dialogue.confirm({
+    title: 'Publish update?',
+    message: 'This will make the latest version visible to users.',
+    icon: '🚀',
+    confirmLabel: 'Publish',
+    cancelLabel: 'Not now',
+    theme: 'light',
+  })
+  if (!confirmed) return
+
+  await performPublish()
+
+  await dialogue.alert('Published', 'Your update is now live.', '✅')
+}
+
+// --- Programmatic dismiss by id ---
+const id = dialogue.show({
+  title: 'Temporary dialogue',
+  message: 'This will close automatically in 2 seconds.',
+  icon: '⏳',
+  theme: 'light',
+  actions: [{ label: 'OK', variant: 'primary', onPress: () => {} }],
+})
+setTimeout(() => dialogue.dismiss(id), 2000)
+
+// --- Real-world: log out + rate app ---
+const handleLogout = async () => {
+  const ok = await dialogue.confirm({ title: 'Log out?', message: 'You will need to sign in again.', icon: '👋', confirmLabel: 'Log out', destructive: true })
+  if (ok) logout()
+}
+
+const handleRateApp = () => {
+  dialogue.show({
+    title: 'Enjoying the app?',
+    icon: '⭐',
+    actions: [
+      { label: '😠 1',  variant: 'secondary', onPress: () => submitRating(1) },
+      { label: '😐 3',  variant: 'secondary', onPress: () => submitRating(3) },
+      { label: '😁 5',  variant: 'primary',   onPress: () => submitRating(5) },
+    ],
+  })
+}
 ```
+
+**Action variants:** `primary` | `secondary` | `destructive`
 
 ---
 
@@ -931,13 +1532,41 @@ import { useLoader } from 'fluent-styles'
 
 const loader = useLoader()
 
-// Manual
+// --- Manual show / hide ---
 const id = loader.show({ label: 'Saving…', variant: 'spinner' })
 await saveData()
 loader.hide(id)
 
-// Automatic wrap — hides on completion or error
-const data = await loader.wrap(() => api.fetchReport(), { label: 'Loading report…', variant: 'dots' })
+// --- Variants ---
+loader.show({ variant: 'spinner'  })
+loader.show({ variant: 'dots',    label: 'Processing…' })
+loader.show({ variant: 'pulse',   overlay: true })
+loader.show({ variant: 'circular', label: 'Loading…', theme: 'dark' })
+
+// --- Color overrides ---
+loader.show({
+  label: 'Preparing analytics…',
+  variant: 'circular',
+  theme: 'dark',
+  colors: { indicator: '#60a5fa', label: '#dbeafe' },
+})
+
+// --- Automatic wrap (always hides, even on error) ---
+const report = await loader.wrap(
+  () => api.fetchReport(),
+  { label: 'Loading report…', variant: 'dots' },
+)
+
+// --- Wrap example with status feedback ---
+const runFakeTask = async (options, successMsg) => {
+  const result = await loader.wrap(
+    () => new Promise(resolve => setTimeout(resolve, 2000)),
+    options,
+  )
+  toast.success(successMsg)
+}
+await runFakeTask({ label: 'Saving profile…', variant: 'spinner'  }, 'Profile saved')
+await runFakeTask({ label: 'Uploading data…', variant: 'circular' }, 'Upload complete')
 ```
 
 ---
