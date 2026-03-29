@@ -36,6 +36,7 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [Spacer](#spacer)
   - [StyledShape](#styledshape)
   - [Loader](#loader)
+  - [StyledCircularProgress](#styledcircularprogress)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -1195,6 +1196,185 @@ import { Loader } from 'fluent-styles'
 | `overlay` | `boolean` | `false` | Full-screen dimmed backdrop |
 | `theme` | `light \| dark \| system` | `system` | Colour scheme |
 | `colors` | `Partial<LoaderColors>` | — | Fine-grained token overrides |
+
+---
+
+### StyledCircularProgress
+
+An animated SVG ring progress indicator with four visual variants, five preset sizes, centre label modes, gradient support, and full colour customisation.
+
+```tsx
+import { StyledCircularProgress } from 'fluent-styles'
+
+// Basic — shows percentage
+<StyledCircularProgress value={72} />
+
+// Fraction display
+<StyledCircularProgress value={18} total={25} display="fraction" />
+
+// With label and sublabel
+<StyledCircularProgress
+  value={72}
+  display="percent"
+  label="Tasks"
+  sublabel="this week"
+  size="lg"
+/>
+
+// Gradient variant
+<StyledCircularProgress
+  value={68}
+  variant="gradient"
+  colors={{
+    gradientFrom: '#6366f1',
+    gradientTo:   '#22d3ee',
+  }}
+/>
+
+// Dashboard (half-circle gauge)
+<StyledCircularProgress value={55} variant="dashboard" size="xl" />
+
+// Custom diameter and stroke
+<StyledCircularProgress value={55} diameter={120} strokeWidth={24} display="percent" />
+
+// Colour overrides
+<StyledCircularProgress
+  value={82}
+  display="percent"
+  label="Health"
+  size="md"
+  colors={{
+    arc:      theme.colors.green[500],
+    track:    theme.colors.green[100],
+    label:    theme.colors.green[700],
+    sublabel: theme.colors.green[400],
+  }}
+/>
+
+// Custom centre content (overrides display/label)
+<StyledCircularProgress value={55} display="none" size="lg">
+  <Stack alignItems="center" gap={2}>
+    <StyledText fontSize={14}>❤️</StyledText>
+    <StyledText fontSize={12} fontWeight={theme.fontWeight.bold} color="#f43f5e">
+      55 bpm
+    </StyledText>
+  </Stack>
+</StyledCircularProgress>
+
+// Controlled value with animation
+<StyledCircularProgress
+  value={controlled}
+  display="percent"
+  label="Progress"
+  sublabel={`${controlled} / 100`}
+  size="xl"
+  variant="gradient"
+  duration={600}
+/>
+
+// No animation
+<StyledCircularProgress value={90} animated={false} display="percent" />
+
+// On a dark surface
+<StyledCircularProgress
+  value={72}
+  variant="gradient"
+  display="percent"
+  label="Progress"
+  colors={{
+    gradientFrom: '#818cf8',
+    gradientTo:   '#22d3ee',
+    track:        'rgba(255,255,255,0.12)',
+    label:        '#f4f4f5',
+    sublabel:     'rgba(255,255,255,0.5)',
+  }}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` | `number` | **required** | Current progress value |
+| `total` | `number` | `100` | Maximum value |
+| `display` | `'percent' \| 'fraction' \| 'value' \| 'label' \| 'none'` | `'percent'` | What to render in the centre |
+| `label` | `string` | — | Primary label inside the ring |
+| `sublabel` | `string` | — | Secondary line below the primary label |
+| `variant` | `'default' \| 'ghost' \| 'gradient' \| 'dashboard'` | `'default'` | Visual style |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Preset diameter |
+| `diameter` | `number` | — | Pixel diameter — overrides `size` |
+| `strokeWidth` | `number` | — | Arc thickness in px — auto-scaled when omitted |
+| `lineCap` | `'round' \| 'butt' \| 'square'` | `'round'` | Arc end cap style |
+| `animated` | `boolean` | `true` | Animate from 0 to `value` on mount / value change |
+| `duration` | `number` | `900` | Animation duration in ms |
+| `colors` | `Partial<CircularProgressColors>` | — | Fine-grained colour overrides (see below) |
+| `children` | `ReactNode` | — | Custom centre content — overrides `display`, `label`, `sublabel` |
+
+#### Size presets
+
+| Size | Diameter | Stroke |
+|---|---|---|
+| `xs` | 48 px | 4 px |
+| `sm` | 64 px | 5 px |
+| `md` | 80 px | 6 px |
+| `lg` | 100 px | 7 px |
+| `xl` | 128 px | 8 px |
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `default` | Coloured arc on a light grey track |
+| `ghost` | Arc only — no background track |
+| `gradient` | Two-stop linear gradient arc (uses `gradientFrom` / `gradientTo`) |
+| `dashboard` | Half-circle gauge — flat side at the bottom |
+
+#### `CircularProgressColors`
+
+| Token | Default | Controls |
+|---|---|---|
+| `arc` | `indigo[500]` | Progress arc fill |
+| `track` | `gray[200]` | Background track ring |
+| `label` | `gray[800]` | Primary centre text |
+| `sublabel` | `gray[400]` | Secondary centre text |
+| `gradientFrom` | `violet[500]` | Gradient start — `gradient` variant only |
+| `gradientTo` | `cyan[400]` | Gradient end — `gradient` variant only |
+
+#### Real-world example — onboarding card
+
+```tsx
+<Stack
+  backgroundColor={theme.colors.indigo[600]}
+  borderRadius={16}
+  horizontal
+  gap={20}
+  paddingVertical={32}
+  paddingHorizontal={16}
+  alignItems="center"
+>
+  <StyledCircularProgress
+    value={3}
+    total={5}
+    display="fraction"
+    label="done"
+    size="lg"
+    colors={{
+      arc:      theme.colors.white,
+      track:    'rgba(255,255,255,0.2)',
+      label:    theme.colors.white,
+      sublabel: 'rgba(255,255,255,0.65)',
+    }}
+  />
+  <Stack vertical flex={1} gap={4}>
+    <StyledText fontSize={16} fontWeight={theme.fontWeight.bold} color={theme.colors.white}>
+      Getting started
+    </StyledText>
+    <StyledText fontSize={13} color="rgba(255,255,255,0.75)">
+      Complete 2 more steps to unlock all features.
+    </StyledText>
+  </Stack>
+</Stack>
+```
 
 ---
 
