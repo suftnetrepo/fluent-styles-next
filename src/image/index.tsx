@@ -5,6 +5,7 @@ import {
   ImageProps,
   ImageBackgroundProps,
   ImageStyle,
+  DimensionValue,
 } from 'react-native';
 import { styled } from '../utiles/styled';
 import React from 'react';
@@ -24,18 +25,19 @@ const StyledImageBackground = styled<StyledImageBackgroundProps>(ImageBackground
     }
 });
 
-interface _StyledImageProps extends StyledImageProps {
-    cycle? : boolean   
-    size?: string | number ; 
-    height?: number ;
-    width?: number ;
+interface _StyledImageProps extends Omit<StyledImageProps, 'height' | 'width'> {
+    cycle?: boolean;
+    size?: DimensionValue;
+    height?: DimensionValue;
+    width?: DimensionValue;
 }   
 
 const StyledImage = React.forwardRef<React.ComponentRef<typeof Image>, _StyledImageProps>(({ height = 100, width = 100, ...props }: _StyledImageProps, ref) => {
     const { cycle, size, ...rest } = props;
-    console.log('StyledImage props:', props);
-    const sizeStyle = cycle ? { height: Number(size), width: Number(size) } : { height, width };
-     return <Image {...rest} style={[props.style, sizeStyle]} ref={ref} />;
+    const sizeStyle: ImageStyle = cycle
+        ? { height: Number(size), width: Number(size) }
+        : { height: height as DimensionValue, width: width as DimensionValue };
+    return <Image {...rest} style={[props.style, sizeStyle]} ref={ref} />;
 });
 
 export { StyledImage, StyledImageBackground };

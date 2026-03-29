@@ -4,7 +4,7 @@ import { styled } from '../utiles/styled';
 
 type ShapeVariants = {
     cycle?: boolean | [boolean, ViewStyle];
-    size?: string | [string, ViewStyle];
+    size?: string | number | [string | number, ViewStyle];
 };
 
 type ShapeProps = ShapeVariants & ViewProps & ViewStyle;
@@ -24,8 +24,8 @@ const StyleShape = styled<ShapeProps>(View, {
             } as ViewStyle,
             false: {} as ViewStyle,
         },
-        size: (size: string) => {
-            const selected = size || 0;
+        size: (size: string | number) => {
+            const selected = size ?? 0;
             if (isNaN(Number(selected))) {
                 throw new Error('Invalid size value');
             }

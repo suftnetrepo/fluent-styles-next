@@ -2,31 +2,16 @@
 import { Pressable, PressableProps } from 'react-native';
 import { styled } from '../utiles/styled';
 import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
+import { viewStyleStringVariants } from '../utiles/viewStyleVariants';
 
-
-type StyledPressableProps = PressableProps & (Pick<ViewStyleProps, 'width'
-    | 'height'
-    | 'minHeight'
-    | 'maxHeight'
-    | 'minWidth'
-    | 'maxWidth'
-    | 'flex'
-    | 'flexDirection'
-    | 'justifyContent'
-    | 'alignItems'
-    | 'alignSelf'
-    | 'position'
-    | 'top'
-    | 'bottom'
-    | 'left'
-    | 'right'>);
+type StyledPressableProps = PressableProps & ViewStyle;
 
 const StyledPressable = styled<StyledPressableProps>(Pressable, {
     base: {
         position: 'relative',
     } as ViewStyle,
     variants: {
-
+        ...viewStyleStringVariants
     } as any
 });
 

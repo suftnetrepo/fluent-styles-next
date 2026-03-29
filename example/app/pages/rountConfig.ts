@@ -45,39 +45,44 @@ const routeConfig: {
       {
         title: "Drawer",
         name: "drawer",
-      },  
+      },
       {
         title: "Dropdown",
         name: "dropdown",
-      }, 
-       {
+      },
+      {
         title: "Image",
         name: "image",
-      }, 
+      },
       {
         title: "Badge",
         name: "badge",
-      },  
-       {
+      },
+      {
         title: "Checkbox",
         name: "checkBox",
-      }, 
-        { 
+      },
+      {
         title: "Dialogue",
         name: "dialogue",
-        }
-        ,{
-          title: 'Toast',
-          name: 'toast',
-        },
-        {
-          title: 'Notification',
-          name: 'notification',
-        },
-        {
-          title: 'Loader',
-          name: 'loader',
-        }
+      },
+      {
+        title: "Toast",
+        name: "toast",
+      },
+      {
+        title: "Notification",
+        name: "notification",
+      },
+      {
+        title: "Loader",
+        name: "loader",
+      },
+      {
+        title: "Demo",
+        name: "demo",
+      },
+      { title: "Circular Progress", name: "circularProgress" },
     ],
   },
 ];

@@ -24,6 +24,8 @@ import DialogueUsage from "./dialogue";
 import ToastUsage from "./toast";
 import NotificationUsage from "./notification";
 import LoaderUsage from "./loader";
+import Demo from "./home/quick-pad";
+import CircularProgressUsage from "./circularProgess";
 
 const Page = ({
   title,
@@ -72,7 +74,9 @@ export type _path =
   | "dialogue"
   | "toast"
   | "notification"
-  | "loader";
+  | "loader"
+  | "demo"
+  | "circularProgress";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -209,4 +213,20 @@ export const config: { path: _path; Page: any }[] = [
       </Page>
     ),
   },
+  {
+    path : "demo",
+    Page : () => (
+      <Page title="Demo">
+        <Demo />
+      </Page>
+    )
+  },
+  {
+    path: "circularProgress",
+    Page: () => (
+      <Page title="Circular Progress">
+        <CircularProgressUsage />
+      </Page>
+    )
+  }
 ];
