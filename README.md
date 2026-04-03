@@ -1429,37 +1429,199 @@ import { StyledChip } from 'fluent-styles'
 #### Usage
 
 ```tsx
-// Outlined — uncontrolled toggleable
-<StyledChip label="Hacktoberfest" variant="outlined" color="#4caf50" />
+import React, { useState } from 'react'
+import { StyledChip, Stack } from 'fluent-styles'
+import Icon from 'react-native-vector-icons/Feather'
 
-// Ingredient — starts selected
-<StyledChip label="Cinnamon" variant="ingredient" defaultSelected />
+// ── Multi-select toggle helper ────────────────────────────────────────────────
+// A common pattern: maintain a string[] of selected labels and toggle them.
+const [selected, setSelected] = useState<string[]>(['Hacktoberfest'])
 
-// Likeable — controlled
-<StyledChip
-  label="Big Data"
-  variant="likeable"
-  selected={liked}
-  onPress={(v) => setLiked(v)}
-/>
+const toggle = (label: string) =>
+  setSelected((prev) =>
+    prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+  )
 
-// Icon chip
-<StyledChip
-  label="Social Media"
-  variant="icon"
-  icon={<Icon name="refresh-cw" size={14} color="green" />}
-  color="green"
-  bgColor="#e8f5e9"
-/>
+// ── 1. Outlined — multi-select filter bar ─────────────────────────────────────
+<Stack gap={10}>
+  <Stack horizontal gap={8} flexWrap="wrap">
+    {[
+      { label: 'Enhancement',   color: '#9e9e9e' },
+      { label: 'Trends',        color: '#ff9800' },
+    ].map(({ label, color }) => (
+      <StyledChip
+        key={label}
+        label={label}
+        variant="outlined"
+        color={color}
+        selected={selected.includes(label)}
+        onPress={() => toggle(label)}
+      />
+    ))}
+  </Stack>
+  <Stack horizontal gap={8} flexWrap="wrap">
+    {[
+      { label: 'Rubi Kapustu',  color: '#2196f3' },
+      { label: 'Hacktoberfest', color: '#4caf50' },
+    ].map(({ label, color }) => (
+      <StyledChip
+        key={label}
+        label={label}
+        variant="outlined"
+        color={color}
+        selected={selected.includes(label)}
+        onPress={() => toggle(label)}
+      />
+    ))}
+  </Stack>
+  <Stack horizontal gap={8} flexWrap="wrap">
+    {[
+      { label: 'Limited', color: '#e65100' },
+      { label: 'Taken',   color: '#e91e63' },
+    ].map(({ label, color }) => (
+      <StyledChip key={label} label={label} variant="outlined" color={color}
+        selected={selected.includes(label)} onPress={() => toggle(label)} />
+    ))}
+  </Stack>
+</Stack>
 
-// Filled
-<StyledChip label="Taken" variant="filled" bgColor="#e91e8c" color="#fff" />
+// ── 2. Ingredient — recipe / dietary filter ───────────────────────────────────
+const [ingredients, setIngredients] = useState(['Cinnamon', 'Nut'])
 
-// Row of filter chips
+{[['Cheese', 'Vanilla', 'Chocolate', 'Egg'],
+  ['Honey',  'Milk',    'Banana',    'Nut'],
+  ['Cinnamon', 'Tomato', 'Yogurt'],
+].map((row, ri) => (
+  <Stack key={ri} horizontal gap={8} flexWrap="wrap">
+    {row.map((label) => (
+      <StyledChip
+        key={label}
+        label={label}
+        variant="ingredient"
+        selected={ingredients.includes(label)}
+        onPress={() => toggle(label)}
+      />
+    ))}
+  </Stack>
+))}
+
+// ── 3. Filled — label/status chips ────────────────────────────────────────────
 <Stack horizontal gap={8} flexWrap="wrap">
-  {['All', 'Running', 'Cycling', 'Yoga'].map((t) => (
-    <StyledChip key={t} label={t} variant="smooth" size="sm" />
-  ))}
+  <StyledChip label="Hacktoberfest" variant="filled" bgColor="#e8f5e9" color="#388e3c" />
+  <StyledChip label="Question"      variant="filled" bgColor="#fff3e0" color="#f57c00" />
+  <StyledChip label="Enhancement"   variant="filled" bgColor="#f3e5f5" color="#7b1fa2" />
+  {/* Selected filled chip with checkmark */}
+  <StyledChip
+    label="Taken"
+    variant="filled"
+    bgColor="#e91e8c"
+    color="#fff"
+    defaultSelected
+    showCheck
+  />
+</Stack>
+
+// ── 4. Icon chips — dynamic icon colour based on selected state ───────────────
+const [activeIcons, setActiveIcons] = useState<string[]>(['Social Media'])
+
+<Stack horizontal gap={8} flexWrap="wrap">
+  {/* Solid active: bgColor becomes fill when selected */}
+  <StyledChip
+    label="Social Media"
+    variant="icon"
+    icon={
+      <Icon
+        name="refresh-cw"
+        size={14}
+        color={activeIcons.includes('Social Media') ? '#fff' : '#2e7d32'}
+      />
+    }
+    color="#2e7d32"
+    bgColor="#2e7d32"
+    selected={activeIcons.includes('Social Media')}
+    onPress={() => toggle('Social Media')}
+  />
+  <StyledChip
+    label="Pin"
+    variant="icon"
+    icon={<Icon name="map-pin" size={14} color="#2e7d32" />}
+    color="#2e7d32"
+    bgColor="#e8f5e9"
+    selected={activeIcons.includes('Pin')}
+    onPress={() => toggle('Pin')}
+  />
+  <StyledChip
+    label="Activity"
+    variant="icon"
+    icon={<Icon name="activity" size={14} color="#2e7d32" />}
+    color="#2e7d32"
+    bgColor="#e8f5e9"
+    selected={activeIcons.includes('Activity')}
+    onPress={() => toggle('Activity')}
+  />
+</Stack>
+
+// Icon chips — mixed accent colour palette
+<Stack horizontal gap={8} flexWrap="wrap">
+  <StyledChip label="Annotation" variant="icon"
+    icon={<Icon name="edit-3"  size={14} color="#5c6bc0" />} color="#5c6bc0" bgColor="#e8eaf6" />
+  <StyledChip label="Laboratory" variant="icon"
+    icon={<Icon name="zap"     size={14} color="#5c6bc0" />} color="#5c6bc0" bgColor="#e8eaf6" />
+  <StyledChip label="History" variant="icon"
+    icon={<Icon name="clock"   size={14} color="#5c6bc0" />} color="#5c6bc0" bgColor="#e8eaf6" />
+  {/* Solid active — pre-selected */}
+  <StyledChip
+    label="Globe"
+    variant="icon"
+    icon={<Icon name="globe" size={14} color="#fff" />}
+    color="#fff"
+    bgColor="#3f51b5"
+    selected
+    onPress={() => {}}
+  />
+</Stack>
+
+// ── 5. Likeable — topic interest chips ───────────────────────────────────────
+const [liked, setLiked] = useState(['Big Data', 'New Technology'])
+
+{[['Cryptocurrency', 'Big Data'],
+  ['Software Development'],
+  ['New Technology', 'Gadgets'],
+  ['Technology Startups'],
+].map((row, ri) => (
+  <Stack key={ri} horizontal gap={8} flexWrap="wrap">
+    {row.map((label) => (
+      <StyledChip
+        key={label}
+        label={label}
+        variant="likeable"
+        selected={liked.includes(label)}
+        onPress={() => toggle(label)}
+      />
+    ))}
+  </Stack>
+))}
+
+// ── 6. Size variants side-by-side ────────────────────────────────────────────
+<Stack gap={10}>
+  <Stack horizontal gap={8} alignItems="center">
+    <StyledChip label="Small"  variant="outlined"   size="sm" color="#2196f3" />
+    <StyledChip label="Medium" variant="outlined"   size="md" color="#2196f3" />
+    <StyledChip label="Large"  variant="outlined"   size="lg" color="#2196f3" />
+  </Stack>
+  <Stack horizontal gap={8} alignItems="center">
+    <StyledChip label="Small"  variant="ingredient" size="sm" defaultSelected />
+    <StyledChip label="Medium" variant="ingredient" size="md" defaultSelected />
+    <StyledChip label="Large"  variant="ingredient" size="lg" defaultSelected />
+  </Stack>
+</Stack>
+
+// ── 7. Disabled state ────────────────────────────────────────────────────────
+<Stack horizontal gap={8} flexWrap="wrap">
+  <StyledChip label="Outlined"   variant="outlined"   color="#2196f3"   disabled />
+  <StyledChip label="Filled"     variant="filled"     bgColor="#e91e63" color="#fff" disabled />
+  <StyledChip label="Ingredient" variant="ingredient" disabled />
+  <StyledChip label="Likeable"   variant="likeable"   disabled />
 </Stack>
 ```
 
@@ -1516,43 +1678,142 @@ import { StyledBar } from 'fluent-styles'
 #### Usage
 
 ```tsx
-// Basic workout chart
-<StyledBar
-  data={[
-    { label: 'Mon', value: 45 },
-    { label: 'Tue', value: 70, active: true },
-    { label: 'Wed', value: 55 },
-    { label: 'Thu', value: null },   // rest day placeholder
-    { label: 'Fri', value: 60 },
-  ]}
-  unit="min"
-/>
+import { StyledBar, StyledCard, palettes, theme } from 'fluent-styles'
 
-// Inside a StyledCard with known padding
-// containerPaddingHorizontal = (screenPad + cardPad) × 2 = (20+20)×2 = 80
-<StyledCard padding={20}>
-  <StyledBar data={workoutData} unit="kg" containerPaddingHorizontal={80} />
+// ── Padding rule ──────────────────────────────────────────────────────────────
+// The chart auto-sizes to: screenWidth − containerPaddingHorizontal
+// When placed inside a card:
+//   screen paddingHorizontal = 20 → both sides = 40
+//   card   padding           = 20 → both sides = 40
+//   total containerPaddingHorizontal = 80   ← pass this value
+const CONTAINER_PAD = 80
+
+// ── 1. Default lime — workout duration ───────────────────────────────────────
+<StyledCard padding={20} shadow="light">
+  <StyledBar
+    data={[
+      { label: 'Sat', value: 45  },
+      { label: 'Sun', value: 60  },
+      { label: 'Mon', value: 35  },
+      { label: 'Tue', value: 70,  active: true },
+      { label: 'Wed', value: 50  },
+      { label: 'Thu', value: 30  },
+      { label: 'Fri', value: 20  },
+    ]}
+    unit="min"
+    maxValue={100}
+    containerPaddingHorizontal={CONTAINER_PAD}
+  />
 </StyledCard>
 
-// Blue water intake theme
+// ── 2. Green theme — weight tracking with null placeholders ──────────────────
+// null value renders a shorter grey placeholder bar (e.g. a rest/missing day)
 <StyledBar
-  data={waterData}
-  unit="mL"
-  maxValue={3000}
+  data={[
+    { label: '13', value: null       },   // missing — shows placeholder
+    { label: '14', value: 60.0, active: true },
+    { label: '15', value: 58.2 },
+    { label: '16', value: 59.1 },
+    { label: '17', value: 57.4 },
+    { label: '18', value: 58.0 },
+    { label: '19', value: 56.8 },
+  ]}
+  unit="kg"
+  maxValue={80}
+  containerPaddingHorizontal={CONTAINER_PAD}
   colors={{
-    activeTop:    palettes.blue[400],
-    activeBottom: palettes.blue[600],
-    tooltipBg:    palettes.blue[900],
-    inactiveBar:  palettes.blue[100],
+    activeTop:    '#4ade80',
+    activeBottom: '#16a34a',
+    tooltipBg:    '#15803d',
+    tooltipText:  '#fff',
   }}
 />
 
-// No animation, explicit width
+// ── 3. Orange — temperature, no hatch texture ─────────────────────────────────
 <StyledBar
-  data={data}
-  animated={false}
-  width={320}
+  data={[
+    { label: '13', value: null },
+    { label: '14', value: 36.9, active: true },
+    { label: '15', value: 37.1 },
+    { label: '16', value: 36.8 },
+    { label: '17', value: 37.0 },
+    { label: '18', value: 37.2 },
+    { label: '19', value: 36.5 },
+  ]}
+  unit="°C"
+  maxValue={38}
   showHatch={false}
+  containerPaddingHorizontal={CONTAINER_PAD}
+  colors={{
+    inactiveBar:  '#fed7aa',
+    activeTop:    '#fb923c',
+    activeBottom: '#ea580c',
+    tooltipBg:    '#c2410c',
+    tooltipText:  '#fff',
+  }}
+/>
+
+// ── 4. Blue — water intake, large values ──────────────────────────────────────
+<StyledBar
+  data={[
+    { label: '13', value: null        },
+    { label: '14', value: 1750, active: true },
+    { label: '15', value: 2100 },
+    { label: '16', value: 1600 },
+    { label: '17', value: 1900 },
+    { label: '18', value: 800  },
+    { label: '19', value: null  },
+  ]}
+  unit="mL"
+  maxValue={2500}
+  containerPaddingHorizontal={CONTAINER_PAD}
+  colors={{
+    inactiveBar:  '#bfdbfe',
+    hatchLine:    'rgba(59,130,246,0.15)',
+    activeTop:    '#60a5fa',
+    activeBottom: '#2563eb',
+    tooltipBg:    '#1e3a8a',
+    tooltipText:  '#fff',
+  }}
+/>
+
+// ── 5. Rose — calories burned, overridden tooltip label ───────────────────────
+// tooltipLabel lets you display a formatted string instead of the raw value
+<StyledBar
+  data={caloriesData}
+  unit="kcal"
+  maxValue={2500}
+  tooltipLabel="2,200 kcal"
+  containerPaddingHorizontal={CONTAINER_PAD}
+  colors={{
+    inactiveBar:      '#fce7f3',
+    hatchLine:        'rgba(236,72,153,0.12)',
+    activeTop:        '#f472b6',
+    activeBottom:     '#db2777',
+    tooltipBg:        '#831843',
+    tooltipText:      '#fff',
+    activeLabelColor: '#be185d',   // active x-label gets accent colour too
+  }}
+/>
+
+// ── 6. Minimal — no animation, narrow bars, indigo ───────────────────────────
+// Use animated=false for static/print-style charts.
+// barWidthRatio controls how wide bars are relative to their slot.
+<StyledBar
+  data={stepsData}
+  unit="k"
+  maxValue={100}
+  animated={false}
+  showHatch={false}
+  barWidthRatio={0.42}
+  containerPaddingHorizontal={CONTAINER_PAD}
+  colors={{
+    inactiveBar:  '#e0e7ff',
+    activeTop:    '#818cf8',
+    activeBottom: '#4338ca',
+    tooltipBg:    '#312e81',
+    tooltipText:  '#fff',
+  }}
 />
 ```
 
@@ -1624,39 +1885,117 @@ import { StyledTimeline } from 'fluent-styles'
 #### Usage
 
 ```tsx
-// Minimal JSON-driven
+import { StyledTimeline, type TimelineItem } from 'fluent-styles'
+
+// ── 1. Minimal JSON-driven ────────────────────────────────────────────────────
 <StyledTimeline
   items={[
-    { id: '1', time: '09:00', title: 'Morning Run',    subtitle: 'Cardio · 5km'  },
-    { id: '2', time: '11:30', title: 'Strength Class', subtitle: 'Upper body'    },
-    { id: '3', time: '14:00', title: 'Yoga',           subtitle: 'Recovery'      },
+    { id: '1', time: '09:00', title: 'Morning Run',    subtitle: 'Cardio · 5km' },
+    { id: '2', time: '11:30', title: 'Strength Class', subtitle: 'Upper body'   },
+    { id: '3', time: '14:00', title: 'Yoga',           subtitle: 'Recovery'     },
   ]}
 />
 
-// Custom renderItem
+// ── 2. With end time ─────────────────────────────────────────────────────────
+// endTime is shown smaller below the main time label
+<StyledTimeline
+  items={[
+    { id: '1', time: '11:35', endTime: '13:05', title: 'Cardio',         subtitle: '4 of 6 sessions' },
+    { id: '2', time: '14:45', endTime: '15:45', title: 'Muscle',         subtitle: '5 of 8 sessions' },
+    { id: '3', time: '17:00', endTime: '18:00', title: 'Weight Training', subtitle: '4 of 9 sessions' },
+  ]}
+  colors={{ dot: '#8bc34a', timeText: '#1a1a1e', endTimeText: '#9ca3af' }}
+/>
+
+// ── 3. Custom renderItem — fitness planner card ───────────────────────────────
+// Store arbitrary per-item data in the meta field; cast it inside renderItem.
+interface WorkoutMeta {
+  [key: string]: unknown
+  iconName: string
+  calories: string
+  bpm:      string
+  duration: string
+}
+
+const workoutItems: TimelineItem[] = [
+  {
+    id: '1', time: '11:35', endTime: '13:05', title: 'Cardio',
+    meta: { iconName: 'heart', calories: '1200', bpm: '90', duration: '03:00' },
+  },
+  {
+    id: '2', time: '14:45', endTime: '15:45', title: 'Muscle',
+    meta: { iconName: 'zap',   calories: '980',  bpm: '102', duration: '01:00' },
+  },
+]
+
+const WorkoutCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as unknown as WorkoutMeta
+  return (
+    <StyledCard padding={16} borderRadius={20} shadow="light" borderLeftWidth={4} borderLeftColor="#8bc34a">
+      <StyledText fontSize={16} fontWeight="800">{item.title}</StyledText>
+      <Stack horizontal gap={20} marginTop={8}>
+        <StyledText fontSize={13} color="#6b7280">{m.calories} kcal</StyledText>
+        <StyledText fontSize={13} color="#6b7280">{m.bpm} bpm</StyledText>
+        <StyledText fontSize={13} color="#6b7280">{m.duration} hr</StyledText>
+      </Stack>
+    </StyledCard>
+  )
+}
+
 <StyledTimeline
   items={workoutItems}
   renderItem={(item) => <WorkoutCard item={item} />}
+  variant="default"
+  dotShape="filled"
+  dotSize={10}
+  timeColumnWidth={58}
+  timeGap={12}
+  animated
+  colors={{ dot: '#8bc34a', line: '#e5e7eb', timeText: '#1a1a1e', endTimeText: '#9ca3af' }}
 />
 
-// Mixed: data items + inline children node
+// ── 4. Mixed: data items + appended children ──────────────────────────────────
 <StyledTimeline items={scheduleItems}>
-  <NoteCard note="Don't forget to hydrate!" />
+  {/* This node is appended as a final timeline row */}
+  <StyledCard padding={12}>
+    <StyledText>Don't forget to hydrate! 💚</StyledText>
+  </StyledCard>
 </StyledTimeline>
 
-// Blue ring dots, spacious layout
+// ── 5. Density variants ───────────────────────────────────────────────────────
+<StyledTimeline items={items} variant="compact"  />
+<StyledTimeline items={items} variant="default"  />
+<StyledTimeline items={items} variant="spacious" />
+
+// ── 6. Dot shapes ─────────────────────────────────────────────────────────────
+<StyledTimeline items={items} dotShape="filled" />   // solid dot (default)
+<StyledTimeline items={items} dotShape="ring"   />   // white fill, coloured border
+<StyledTimeline items={items} dotShape="circle" />   // hollow ring
+
+// ── 7. Blue theme with ring dots ─────────────────────────────────────────────
 <StyledTimeline
   items={items}
   variant="spacious"
   dotShape="ring"
-  colors={{ dot: '#2196f3', line: '#bbdefb' }}
+  colors={{ dot: '#2196f3', line: '#bbdefb', dotBorder: '#fff' }}
 />
 
-// Press handler
+// ── 8. Press handler — navigate on tap ───────────────────────────────────────
 <StyledTimeline
   items={items}
-  onItemPress={(item) => navigation.navigate('Detail', { id: item.id })}
+  onItemPress={(item) => navigation.navigate('SessionDetail', { id: item.id })}
 />
+
+// ── 9. Conditional rendering (rest day) ──────────────────────────────────────
+// items is [] for rest days — render an empty state instead
+{items.length > 0 ? (
+  <StyledTimeline items={items} renderItem={(item) => <WorkoutCard item={item} />} />
+) : (
+  <Stack alignItems="center" paddingVertical={48}>
+    <StyledText fontSize={18} fontWeight="800">Rest Day</StyledText>
+    <StyledText fontSize={14} color="#9ca3af">Recovery is part of the plan.</StyledText>
+  </Stack>
+)}
 ```
 
 ---
@@ -1734,66 +2073,166 @@ import { StyledRadio, StyledRadioGroup } from 'fluent-styles'
 #### Usage
 
 ```tsx
-// Vertical list — billing period
+import React, { useState } from 'react'
+import { StyledRadioGroup, StyledRadio, StyledCard, Stack, StyledText, type RadioOption } from 'fluent-styles'
+
+// ── Shared colour theme ───────────────────────────────────────────────────────
+const BLUE_COLORS = {
+  active:               '#2563eb',
+  selectedCardBg:       '#eff6ff',
+  selectedCardBorder:   '#2563eb',
+  unselectedCardBorder: '#e5e7eb',
+}
+
+// ── 1. Subscription plan — list variant with badge + price block ──────────────
+// badge and rightContent let you embed arbitrary nodes beside each option.
+const PriceBlock = ({ main, sub }: { main: string; sub: string }) => (
+  <Stack alignItems="flex-end" gap={2}>
+    <StyledText fontSize={14} fontWeight="600">{main}</StyledText>
+    <StyledText fontSize={12} color="#9ca3af">{sub}</StyledText>
+  </Stack>
+)
+
+const SaveBadge = ({ label }: { label: string }) => (
+  <Stack paddingHorizontal={8} paddingVertical={3} borderRadius={6} backgroundColor="#dcfce7">
+    <StyledText fontSize={10} fontWeight="700" color="#16a34a">{label}</StyledText>
+  </Stack>
+)
+
+const [plan, setPlan] = useState('yearly')
+
 <StyledRadioGroup
   options={[
-    { value: 'monthly', label: 'Monthly', rightContent: <StyledText>$9.99/mo</StyledText> },
-    { value: 'yearly',  label: 'Yearly',  badge: <Badge label="SAVE 33%" />,
-      rightContent: <StyledText>$6.67/mo</StyledText> },
+    {
+      value: 'yearly',
+      label: 'Yearly',
+      badge:        <SaveBadge label="SAVE 33%" />,
+      rightContent: <PriceBlock main="$19.99/month" sub="$240 billed yearly" />,
+    },
+    {
+      value: 'monthly',
+      label: 'Monthly',
+      rightContent: <PriceBlock main="$24/month" sub="$24 billed monthly" />,
+    },
   ]}
-  defaultValue="monthly"
+  value={plan}
+  onChange={setPlan}
   variant="list"
+  colors={BLUE_COLORS}
 />
 
-// Boxed card with title
+// ── 2. Billing period — boxed variant inside a card ─────────────────────────
+// `title` renders a bold heading inside the card above the options.
 <StyledRadioGroup
   title="Billing Period"
-  options={billingOptions}
+  options={[
+    { value: 'monthly', label: 'Monthly', rightContent: <StyledText>$9.99/month</StyledText> },
+    { value: 'yearly',  label: 'Yearly',  rightContent: <StyledText>$12.99/month</StyledText> },
+  ]}
   defaultValue="monthly"
   variant="boxed"
 />
 
-// Horizontal card grid — delivery method
+// ── 3. Delivery method — card variant (3-column grid, blue accent) ────────────
+// Each option becomes a compact card; columns controls the grid width.
 <StyledRadioGroup
   options={[
-    { value: 'standard', label: 'Standard', subtitle: '3–5 days' },
-    { value: 'express',  label: 'Express',  subtitle: '1–2 days' },
-    { value: 'next',     label: 'Next Day', subtitle: 'Tomorrow' },
+    { value: 'standard',  label: 'Standard',   subtitle: '4–10 business days',
+      rightContent: <StyledText fontWeight="600">$5.00</StyledText>  },
+    { value: 'express',   label: 'Express',    subtitle: '2–5 business days',
+      rightContent: <StyledText fontWeight="600" color="#2563eb">$16.00</StyledText> },
+    { value: 'superfast', label: 'Super Fast', subtitle: '1 business day',
+      rightContent: <StyledText fontWeight="600">$25.00</StyledText> },
   ]}
   defaultValue="express"
   variant="card"
   columns={3}
-  colors={{ active: '#2563eb', selectedCardBg: '#eff6ff' }}
+  gap={10}
+  colors={{ ...BLUE_COLORS, subtitle: '#2563eb' }}
 />
 
-// Controlled with onChange
-const [plan, setPlan] = useState<'monthly' | 'yearly'>('monthly')
+// ── 4. Payment method — list variant with leading card logos ──────────────────
+// leadingContent rows any node before the radio dot (logos, avatars, icons…).
+const VisaLogo = () => (
+  <Stack width={40} height={24} borderRadius={4} backgroundColor="#1a1f71"
+    alignItems="center" justifyContent="center">
+    <StyledText fontSize={11} fontWeight="900" color="#fff">VISA</StyledText>
+  </Stack>
+)
 
-<StyledRadioGroup
-  options={planOptions}
-  value={plan}
-  onChange={setPlan}
-  variant="list"
-/>
+const MastercardLogo = () => (
+  <Stack width={36} height={24} borderRadius={4} backgroundColor="#f4f4f4"
+    alignItems="center" justifyContent="center">
+    <Stack horizontal>
+      <Stack width={14} height={14} borderRadius={7} backgroundColor="#eb001b" />
+      <Stack width={14} height={14} borderRadius={7} backgroundColor="#f79e1b" style={{ marginLeft: -5 }} />
+    </Stack>
+  </Stack>
+)
 
-// Raw StyledRadio dot for custom layouts
-<StyledRadio
-  selected={isSelected}
-  color="#2563eb"
-  size="md"
-  onPress={() => setSelected(!isSelected)}
-/>
-
-// Payment options with leading logos
 <StyledRadioGroup
   options={[
-    { value: 'visa', label: 'Visa', leadingContent: <VisaLogo /> },
-    { value: 'mc',   label: 'Mastercard', leadingContent: <MCLogo /> },
+    { value: 'mc8304',   leadingContent: <MastercardLogo />, label: '**** 8304',
+      subtitle: 'Last used: Mar 26, 2022' },
+    { value: 'visa0123', leadingContent: <VisaLogo />,        label: '**** 0123',
+      subtitle: 'Never used' },
   ]}
-  defaultValue="visa"
+  defaultValue="visa0123"
   variant="list"
-  colors={{ active: '#1a1a2e' }}
+  colors={BLUE_COLORS}
 />
+
+// ── 5. Size variants — sm / md / lg ─────────────────────────────────────────
+// Size affects only the radio dot; overall row proportions stay the same.
+<Stack gap={14}>
+  {(['sm', 'md', 'lg'] as const).map((size) => (
+    <Stack key={size}>
+      <StyledText fontSize={12} color="#9ca3af" marginBottom={8}>{size}</StyledText>
+      <StyledRadioGroup
+        options={[
+          { value: 'a', label: 'Option A', rightContent: <StyledText>$5.00</StyledText>  },
+          { value: 'b', label: 'Option B', rightContent: <StyledText>$10.00</StyledText> },
+        ]}
+        defaultValue="a"
+        variant="list"
+        size={size}
+        colors={BLUE_COLORS}
+      />
+    </Stack>
+  ))}
+</Stack>
+
+// ── 6. Disabled individual options ───────────────────────────────────────────
+// Set disabled: true on any RadioOption to grey it out and block interaction.
+<StyledRadioGroup
+  options={[
+    { value: 'active',   label: 'Active option',   rightContent: <StyledText>$9.99</StyledText>  },
+    { value: 'disabled', label: 'Disabled option',  rightContent: <StyledText>$19.99</StyledText>, disabled: true },
+    { value: 'other',    label: 'Another option',   rightContent: <StyledText>$5.99</StyledText>  },
+  ]}
+  defaultValue="active"
+  variant="list"
+  colors={BLUE_COLORS}
+/>
+
+// ── 7. StyledRadio standalone — custom layout swatches ───────────────────────
+// Use StyledRadio directly when you need the dot inside your own layout.
+<StyledCard padding={16} borderRadius={14} shadow="light">
+  <Stack gap={16}>
+    {[
+      { label: 'Selected · dark',  selected: true,  color: '#111827' },
+      { label: 'Unselected',       selected: false, color: '#111827' },
+      { label: 'Selected · blue',  selected: true,  color: '#2563eb' },
+      { label: 'Selected · green', selected: true,  color: '#16a34a' },
+      { label: 'Selected · rose',  selected: true,  color: '#e11d48' },
+    ].map(({ label, selected, color }) => (
+      <Stack key={label} horizontal alignItems="center" gap={12}>
+        <StyledRadio selected={selected} color={color} size="md" />
+        <StyledText fontSize={14} color="#374151">{label}</StyledText>
+      </Stack>
+    ))}
+  </Stack>
+</StyledCard>
 ```
 
 ---
