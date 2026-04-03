@@ -32,7 +32,7 @@ export { useToast } from './toast/useToast'
 export { useNotification } from './notification/useNotification'
 export { useLoader } from './loading/useLoader'
 export { useLoaderBinding } from './loading/useLoaderBinding'
-export { Loader } from './loading/loader'
+export { Loader, LOADER_DARK, LOADER_LIGHT, type LoaderColors } from './loading/loader'
 export { useDialogue } from './dialog/useDialogue'
 export { useActionSheet } from './actionSheet/useActionSheet'
 

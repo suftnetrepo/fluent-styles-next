@@ -10,11 +10,34 @@ import {
 import {
   ComponentTheme,
   resolveTheme,
-  LoaderColors,
-  LOADER_DARK,
-  LOADER_LIGHT,
 } from '../utiles/theme'
 import { Circular } from './circular'
+
+// ─── Loader colour tokens ─────────────────────────────────────────────────────
+
+export type LoaderColors = {
+  indicator:   string
+  overlayBg:   string
+  cardBg:      string
+  cardBorder:  string
+  label:       string
+}
+
+export const LOADER_LIGHT: LoaderColors = {
+  indicator:  '#6366f1',
+  overlayBg:  'rgba(0,0,0,0.35)',
+  cardBg:     '#ffffff',
+  cardBorder: '#e4e4e7',
+  label:      '#3f3f46',
+}
+
+export const LOADER_DARK: LoaderColors = {
+  indicator:  '#818cf8',
+  overlayBg:  'rgba(0,0,0,0.6)',
+  cardBg:     '#1c1c1e',
+  cardBorder: '#3f3f46',
+  label:      '#e4e4e7',
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
