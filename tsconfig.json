@@ -22,4 +22,8 @@
     "babel.config.js"
   ],
   "exclude": ["node_modules"]
+  ,
+   "resolutions": {
+    "@types/react": "^18"
+  }
 }

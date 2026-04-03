@@ -30,6 +30,8 @@ import StyledBarDemo from "./barChart";
 import StyledChipDemo from "./chips";
 import DailyPlanScreen from "./timeLine";
 import StyledRadioDemo from "./radio";
+import StyledProgressBarDemo from "./progressBar";
+import StyledSliderDemo from "./slider";
 
 const Page = ({
   title,
@@ -85,7 +87,9 @@ export type _path =
   | "barChart"
   | "chips"
   | "timeline"
-  | "radio";
+  | "radio"
+  | "progressBar"
+  | "slider";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -269,5 +273,21 @@ export const config: { path: _path; Page: any }[] = [
         <StyledRadioDemo />
       </Page>
     )
+  },
+  {
+    path: "progressBar",
+    Page: () => (
+      <Page title="Progress Bar">
+        <StyledProgressBarDemo />
+      </Page>
+    )
+  },
+  {
+    path: "slider",
+    Page: () => (
+      <Page title="Slider">
+        <StyledSliderDemo />
+      </Page>
+     )
   }
 ];

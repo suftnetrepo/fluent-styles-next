@@ -313,9 +313,8 @@ export default function LoaderUsage() {
                       variant: "dots",
                       theme: "dark",
                       colors: {
-                        overlayBg: "rgba(15,23,42,0.60)",
-                        cardBg: "#1e293b",
-                        cardBorder: "#60a5fa",
+                    
+                       
                         label: "#dbeafe",
                         indicator: "#60a5fa",
                       },

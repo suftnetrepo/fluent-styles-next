@@ -87,6 +87,8 @@ const routeConfig: {
       { title: "Chips", name: "chips" },
       { title: "Timeline", name: "timeline" },
       { title: "Radio", name: "radio" },
+      { title: "Progress Bar", name: "progressBar" },
+      { title: "Slider", name: "slider" },
     ],
   },
 ];

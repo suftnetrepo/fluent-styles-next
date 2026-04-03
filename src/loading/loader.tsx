@@ -34,7 +34,7 @@ export const LOADER_LIGHT: LoaderColors = {
 export const LOADER_DARK: LoaderColors = {
   indicator:  '#818cf8',
   overlayBg:  'rgba(0,0,0,0.6)',
-  cardBg:     '#1c1c1e',
+  cardBg:    'rgba(0,0,0,0.6)',
   cardBorder: '#3f3f46',
   label:      '#e4e4e7',
 }
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    borderWidth:       1,
+    borderWidth:       0,
     borderRadius:      16,
     paddingVertical:   32,
     paddingHorizontal: 40,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     shadowRadius:      24,
     elevation:         12,
   },
-  inline: { alignItems: 'center', gap: 12 },
+  inline: { alignItems: 'center', gap: 12, borderWidth: 0 },
   label:  { fontSize: 14, fontWeight: '500', letterSpacing: 0.2 },
 })
 
