@@ -41,6 +41,8 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledBar](#styledbar)
   - [StyledTimeline](#styledtimeline)
   - [StyledRadio / StyledRadioGroup](#styledradio--styledradiogroup)
+  - [StyledProgressBar](#styledprogressbar)
+  - [StyledSlider](#styledslider)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -2233,6 +2235,443 @@ const MastercardLogo = () => (
     ))}
   </Stack>
 </StyledCard>
+```
+
+---
+
+### StyledProgressBar
+
+Animated progress bar with 5 variants, 5 size presets, 3 shapes, 5 label positions, and full colour overrides. Backed by `react-native-svg` for gradient and striped fills.
+
+```tsx
+import { StyledProgressBar } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `default` | Flat filled bar |
+| `striped` | Diagonal animated stripe overlay |
+| `gradient` | Left-to-right colour gradient (SVG) |
+| `segmented` | Divided into N equal tick segments |
+| `buffer` | Primary fill + secondary buffer track (media player style) |
+
+#### Sizes
+
+| Size | Height |
+|---|---|
+| `xs` | 3 px |
+| `sm` | 6 px |
+| `md` | 10 px (default) |
+| `lg` | 16 px |
+| `xl` | 24 px |
+
+#### Shapes
+
+| Shape | Border radius |
+|---|---|
+| `rounded` | `height / 2` (default) |
+| `square` | `0` |
+| `pill` | `999` |
+
+#### Label positions
+
+| Position | Placement |
+|---|---|
+| `none` | Hidden (default) |
+| `above` | Right-aligned above the bar |
+| `below` | Right-aligned below the bar |
+| `right` | Inline to the right of the bar |
+| `inside` | Centred inside the filled bar (requires `lg` or `xl`) |
+
+#### `StyledProgressColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `fill` | `blue[500]` | Filled track colour |
+| `track` | `gray[100]` | Background track colour |
+| `buffer` | `gray[300]` | Buffer layer colour (`buffer` variant) |
+| `stripe` | `rgba(255,255,255,0.25)` | Stripe overlay (`striped` variant) |
+| `gradFrom` | `blue[400]` | Gradient start (`gradient` variant) |
+| `gradTo` | `indigo[600]` | Gradient end (`gradient` variant) |
+| `label` | `gray[700]` | External label text colour |
+| `labelInside` | `white` | Inside label colour |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` | `number` | required | Current progress (0–`total`) |
+| `total` | `number` | `100` | Maximum value |
+| `bufferValue` | `number` | = `value` | Buffer position (`buffer` variant) |
+| `variant` | `ProgressVariant` | `'default'` | Visual style |
+| `size` | `ProgressSize` | `'md'` | Height preset |
+| `shape` | `ProgressShape` | `'rounded'` | Bar end shape |
+| `labelPosition` | `LabelPosition` | `'none'` | Where to show the percentage |
+| `label` | `string \| false` | auto `%` | Custom label; `false` hides it |
+| `showSteps` | `boolean` | `false` | Show `value / total` instead of `%` |
+| `segments` | `number` | `5` | Segment count (`segmented` variant) |
+| `segmentGap` | `number` | `3` | Gap between segments in px |
+| `width` | `number` | container width | Explicit pixel width |
+| `animated` | `boolean` | `true` | Animate fill on mount / value change |
+| `animationDuration` | `number` | `600` | Animation duration in ms |
+| `colors` | `StyledProgressColors` | blue theme | Colour overrides |
+| `onAnimationComplete` | `() => void` | — | Fires when animation finishes |
+
+#### Usage
+
+```tsx
+import { StyledProgressBar } from 'fluent-styles'
+
+// ── 1. Variants ───────────────────────────────────────────────────────────────
+<StyledProgressBar value={65} labelPosition="right" />
+
+<StyledProgressBar value={45} variant="striped" size="lg" labelPosition="right" />
+
+<StyledProgressBar value={72} variant="gradient" labelPosition="right"
+  colors={{ gradFrom: '#6366f1', gradTo: '#22d3ee' }} />
+
+// Segmented — workout sets: 5 of 9 complete
+<StyledProgressBar
+  value={5}
+  total={9}
+  variant="segmented"
+  segments={9}
+  showSteps
+  labelPosition="right"
+  colors={{ fill: '#8bc34a', track: '#e5e7eb' }}
+/>
+
+// Buffer — media player (loaded 60%, played 30%)
+<StyledProgressBar
+  value={30}
+  bufferValue={60}
+  variant="buffer"
+  size="sm"
+  labelPosition="right"
+  colors={{ fill: '#2563eb', buffer: '#bfdbfe', track: '#e5e7eb' }}
+/>
+
+// ── 2. Sizes side-by-side ─────────────────────────────────────────────────────
+{(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((s) => (
+  <StyledProgressBar key={s} value={65} size={s} labelPosition="right"
+    colors={{ fill: '#3b82f6' }} />
+))}
+
+// ── 3. Label positions ────────────────────────────────────────────────────────
+<StyledProgressBar value={60} labelPosition="above" />
+<StyledProgressBar value={60} labelPosition="below" />
+<StyledProgressBar value={60} labelPosition="right" />
+// Inside label requires lg or xl
+<StyledProgressBar value={60} size="lg" labelPosition="inside"
+  colors={{ fill: '#3b82f6', labelInside: '#fff' }} />
+<StyledProgressBar value={55} size="xl" variant="striped" labelPosition="inside"
+  colors={{ fill: '#8bc34a', labelInside: '#1a1a1a' }} />
+
+// ── 4. Shapes ─────────────────────────────────────────────────────────────────
+<StyledProgressBar value={65} size="lg" shape="rounded" labelPosition="right" />
+<StyledProgressBar value={65} size="lg" shape="square"  labelPosition="right" />
+<StyledProgressBar value={65} size="lg" shape="pill"    labelPosition="right" />
+
+// ── 5. Colour themes ─────────────────────────────────────────────────────────
+<StyledProgressBar value={65} size="md" labelPosition="right" colors={{ fill: '#3b82f6', track: '#dbeafe' }} />
+<StyledProgressBar value={65} size="md" labelPosition="right" colors={{ fill: '#8bc34a', track: '#ecfccb' }} />
+<StyledProgressBar value={65} size="md" labelPosition="right" colors={{ fill: '#f43f5e', track: '#ffe4e6' }} />
+<StyledProgressBar value={65} size="md" labelPosition="right" colors={{ fill: '#f59e0b', track: '#fef3c7' }} />
+
+// ── 6. Gradient themes ────────────────────────────────────────────────────────
+{[
+  { label: 'Indigo → Cyan',  from: '#6366f1', to: '#22d3ee' },
+  { label: 'Rose → Orange',  from: '#f43f5e', to: '#fb923c' },
+  { label: 'Lime → Emerald', from: '#a3e635', to: '#10b981' },
+  { label: 'Violet → Pink',  from: '#8b5cf6', to: '#ec4899' },
+].map(({ from, to }) => (
+  <StyledProgressBar value={70} variant="gradient" size="md" labelPosition="right"
+    colors={{ gradFrom: from, gradTo: to }} />
+))}
+
+// ── 7. Controlled with button strip ──────────────────────────────────────────
+const [progress, setProgress] = useState(45)
+
+<StyledProgressBar value={progress} variant="gradient" size="lg" labelPosition="above"
+  animationDuration={400}
+  colors={{ gradFrom: '#6366f1', gradTo: '#22d3ee' }} />
+
+<Stack horizontal gap={10} justifyContent="center">
+  {[0, 25, 50, 75, 100].map((v) => (
+    <StyledPressable key={v} onPress={() => setProgress(v)}
+      paddingHorizontal={14} paddingVertical={8} borderRadius={20}
+      backgroundColor={progress === v ? '#6366f1' : '#f3f4f6'}>
+      <StyledText fontSize={13} fontWeight="600"
+        color={progress === v ? '#fff' : '#374151'}>{v}%</StyledText>
+    </StyledPressable>
+  ))}
+</Stack>
+
+// ── 8. Real-world: workout card ───────────────────────────────────────────────
+{[
+  { title: 'Cardio',  progress: 65, label: '4 Of 6', color: '#dc2626', bg: '#fff0f0' },
+  { title: 'Muscle',  progress: 62, label: '5 Of 8', color: '#9333ea', bg: '#fdf4ff' },
+  { title: 'Weight',  progress: 44, label: '4 Of 9', color: '#ea580c', bg: '#fff7ed' },
+].map(({ title, progress, label, color, bg }) => (
+  <Stack key={title} marginBottom={16}>
+    <Stack horizontal alignItems="center" gap={10} marginBottom={8}>
+      <Stack width={32} height={32} borderRadius={16} backgroundColor={bg}
+        alignItems="center" justifyContent="center">
+        <Icon name="activity" size={14} color={color} />
+      </Stack>
+      <StyledText fontSize={14} fontWeight="700">{title}</StyledText>
+    </Stack>
+    <StyledProgressBar
+      value={progress}
+      size="sm"
+      labelPosition="right"
+      label={label}
+      colors={{ fill: color, track: '#f3f4f6' }}
+    />
+  </Stack>
+))}
+
+// ── 9. Real-world: file upload status ─────────────────────────────────────────
+{[
+  { name: 'design-assets.zip', size: '24.5 MB', value: 100, done: true  },
+  { name: 'report-final.pdf',  size: '3.2 MB',  value: 67,  done: false },
+  { name: 'video-export.mp4',  size: '128 MB',  value: 23,  done: false },
+].map(({ name, size, value, done }) => (
+  <Stack key={name} marginBottom={14}>
+    <Stack horizontal alignItems="center" justifyContent="space-between" marginBottom={6}>
+      <StyledText fontSize={13} fontWeight="600">{name}</StyledText>
+      <StyledText fontSize={11} color="#9ca3af">{size}</StyledText>
+    </Stack>
+    <StyledProgressBar
+      value={value}
+      size="xs"
+      shape="pill"
+      colors={{ fill: done ? '#10b981' : '#3b82f6', track: '#f3f4f6' }}
+    />
+  </Stack>
+))}
+
+// ── 10. Real-world: skills profile ────────────────────────────────────────────
+{[
+  { skill: 'React Native', pct: 92 },
+  { skill: 'TypeScript',   pct: 85 },
+  { skill: 'UI Design',    pct: 74 },
+].map(({ skill, pct }) => (
+  <Stack key={skill} horizontal alignItems="center" gap={12} marginBottom={12}>
+    <StyledText fontSize={13} fontWeight="600" width={100}>{skill}</StyledText>
+    <Stack flex={1}>
+      <StyledProgressBar value={pct} size="md" variant="gradient" labelPosition="right"
+        colors={{ gradFrom: '#6366f1', gradTo: '#8b5cf6' }} />
+    </Stack>
+  </Stack>
+))}
+```
+
+---
+
+### StyledSlider
+
+Gesture-driven slider with PanResponder, animated thumb scale, tooltip, tick marks, and 5 variants. Range mode manages two independent thumbs. Backed by `react-native-svg` for gradient fills.
+
+```tsx
+import { StyledSlider } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `default` | Single thumb, fill left of thumb |
+| `range` | Two thumbs, fill between them |
+| `stepped` | Snaps to discrete tick marks |
+| `gradient` | Gradient-filled track |
+| `buffer` | Primary thumb + secondary buffer fill (media player style) |
+
+#### Sizes
+
+| Size | Track height | Thumb diameter |
+|---|---|---|
+| `sm` | 4 px | 18 px |
+| `md` | 6 px (default) | 24 px |
+| `lg` | 10 px | 32 px |
+
+#### `StyledSliderColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `fill` | `#3b82f6` | Filled track colour |
+| `track` | `gray[200]` | Background track |
+| `buffer` | `gray[300]` | Buffer fill (`buffer` variant) |
+| `thumb` | `white` | Thumb fill |
+| `thumbBorder` | = `fill` | Thumb border colour |
+| `gradFrom` | `#60a5fa` | Gradient start (`gradient` variant) |
+| `gradTo` | `#4f46e5` | Gradient end (`gradient` variant) |
+| `tooltipBg` | `#111827` | Tooltip background |
+| `tooltipText` | `white` | Tooltip text |
+| `rangeLabel` | `gray[400]` | Min/max label colour |
+| `tick` | `gray[300]` | Inactive tick colour |
+| `tickActive` | = `fill` | Filled tick colour |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` | `number` | required | Current thumb value (or low thumb for `range`) |
+| `valueHigh` | `number` | — | High thumb value (`range` variant) |
+| `bufferValue` | `number` | — | Buffer position (`buffer` variant) |
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `step` | `number` | `1` | Step increment |
+| `variant` | `SliderVariant` | `'default'` | Visual style |
+| `size` | `SliderSize` | `'md'` | Track/thumb size preset |
+| `showTooltip` | `boolean` | `true` | Show tooltip while dragging |
+| `alwaysShowTooltip` | `boolean` | `false` | Keep tooltip permanently visible |
+| `showMinMax` | `boolean` | `false` | Display min/max labels at track ends |
+| `steps` | `number` | `5` | Number of ticks (`stepped` variant) |
+| `formatLabel` | `(v: number) => string` | `String(v)` | Custom tooltip/tick label formatter |
+| `width` | `number` | container width | Explicit pixel width |
+| `disabled` | `boolean` | `false` | Disables interaction, reduces opacity |
+| `colors` | `StyledSliderColors` | blue theme | Colour overrides |
+| `onValueChange` | `(value: number) => void` | — | Fires continuously while dragging |
+| `onSlidingComplete` | `(value: number) => void` | — | Fires once on drag release |
+| `onRangeChange` | `(low, high: number) => void` | — | Range drag callback |
+| `onRangeComplete` | `(low, high: number) => void` | — | Range drag-release callback |
+
+#### Usage
+
+```tsx
+import React, { useState } from 'react'
+import { StyledSlider, Stack, StyledText } from 'fluent-styles'
+import Icon from 'react-native-vector-icons/Feather'
+
+// ── 1. Default — basic volume control ────────────────────────────────────────
+const [vol, setVol] = useState(65)
+
+<StyledSlider value={vol} onValueChange={setVol} showMinMax />
+
+// ── 2. Range — price filter ───────────────────────────────────────────────────
+// valueHigh is required for the range variant.
+const [priceLow, setPriceLow]   = useState(20)
+const [priceHigh, setPriceHigh] = useState(75)
+
+<StyledSlider
+  variant="range"
+  value={priceLow}
+  valueHigh={priceHigh}
+  min={0}
+  max={200}
+  step={5}
+  onRangeChange={(lo, hi) => { setPriceLow(lo); setPriceHigh(hi) }}
+  showMinMax
+  formatLabel={(v) => `$${v}`}
+  colors={{ fill: '#6366f1', thumbBorder: '#6366f1', tooltipBg: '#6366f1' }}
+/>
+
+// ── 3. Stepped — star rating (snaps to 5 ticks) ───────────────────────────────
+// steps controls both the number of ticks and the snap resolution.
+const [rating, setRating] = useState(4)
+
+<StyledSlider
+  variant="stepped"
+  value={rating}
+  min={1} max={5} steps={5}
+  onValueChange={setRating}
+  alwaysShowTooltip
+  size="lg"
+  formatLabel={(v) => ['','★','★★','★★★','★★★★','★★★★★'][Math.round(v)] ?? ''}
+  colors={{
+    fill:        '#f59e0b',
+    track:       '#fef3c7',
+    thumbBorder: '#f59e0b',
+    tooltipBg:   '#f59e0b',
+    tickActive:  '#f59e0b',
+  }}
+/>
+
+// ── 4. Gradient — temperature control ────────────────────────────────────────
+const [temp, setTemp] = useState(22)
+
+<StyledSlider
+  variant="gradient"
+  value={temp}
+  min={10} max={35}
+  onValueChange={setTemp}
+  formatLabel={(v) => `${v}°`}
+  alwaysShowTooltip
+  showMinMax
+  size="lg"
+  colors={{
+    gradFrom:  '#60a5fa',
+    gradTo:    '#ef4444',
+    tooltipBg: temp < 22 ? '#60a5fa' : '#ef4444',
+  }}
+/>
+
+// ── 5. Buffer — media player seek bar ────────────────────────────────────────
+const formatTime = (s: number) =>
+  `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+
+const [played, setPlayed] = useState(95)
+const DURATION = 243
+
+<StyledSlider
+  variant="buffer"
+  value={played}
+  bufferValue={Math.min(played + 60, DURATION)}
+  min={0}
+  max={DURATION}
+  size="sm"
+  onValueChange={setPlayed}
+  formatLabel={formatTime}
+  colors={{ fill: '#2563eb', buffer: '#bfdbfe' }}
+/>
+
+// ── 6. Sizes ──────────────────────────────────────────────────────────────────
+<StyledSlider value={40} size="sm" onValueChange={() => {}} />
+<StyledSlider value={60} size="md" onValueChange={() => {}} />
+<StyledSlider value={80} size="lg" onValueChange={() => {}} />
+
+// ── 7. Colour themes ──────────────────────────────────────────────────────────
+{[
+  { fill: '#8bc34a', track: '#ecfccb', label: 'Lime'   },
+  { fill: '#f43f5e', track: '#ffe4e6', label: 'Rose'   },
+  { fill: '#f59e0b', track: '#fef3c7', label: 'Amber'  },
+  { fill: '#8b5cf6', track: '#ede9fe', label: 'Purple' },
+  { fill: '#14b8a6', track: '#ccfbf1', label: 'Teal'   },
+].map(({ fill, track }) => (
+  <StyledSlider
+    value={65}
+    onValueChange={() => {}}
+    colors={{ fill, track, thumbBorder: fill, tooltipBg: fill }}
+    formatLabel={(v) => `${v}%`}
+  />
+))}
+
+// ── 8. Real-world: Audio / brightness controls with icons ─────────────────────
+<Stack horizontal alignItems="center" gap={12}>
+  <Icon name="volume-x" size={18} color="#9ca3af" />
+  <Stack flex={1}>
+    <StyledSlider value={vol} onValueChange={setVol} showTooltip={false}
+      colors={{ fill: '#1a1a1a', track: '#e5e7eb', thumbBorder: '#1a1a1a' }} />
+  </Stack>
+  <Icon name="volume-2" size={18} color="#9ca3af" />
+  <StyledText fontSize={13} fontWeight="600" width={32}>{vol}%</StyledText>
+</Stack>
+
+<Stack horizontal alignItems="center" gap={12}>
+  <Icon name="sun" size={18} color="#9ca3af" />
+  <Stack flex={1}>
+    <StyledSlider value={bright} onValueChange={setBright} showTooltip={false}
+      colors={{ fill: '#f59e0b', track: '#fef3c7', thumbBorder: '#f59e0b' }} />
+  </Stack>
+  <Icon name="sun" size={18} color="#f59e0b" />
+  <StyledText fontSize={13} fontWeight="600" width={32}>{bright}%</StyledText>
+</Stack>
+
+// ── 9. Disabled state ─────────────────────────────────────────────────────────
+<StyledSlider value={55} disabled showMinMax />
 ```
 
 ---
