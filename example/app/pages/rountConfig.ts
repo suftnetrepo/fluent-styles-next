@@ -83,6 +83,9 @@ const routeConfig: {
         name: "demo",
       },
       { title: "Circular Progress", name: "circularProgress" },
+      { title: "Bar Chart", name: "barChart" },
+      { title: "Chips", name: "chips" },
+      { title: "Timeline", name: "timeline" },
     ],
   },
 ];

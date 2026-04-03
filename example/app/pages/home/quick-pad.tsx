@@ -1,464 +1,495 @@
-import React, { useMemo, useState } from "react";
-import { ColorValue, DimensionValue, Dimensions } from "react-native";
+import React, { useState } from 'react';
+import { Dimensions } from 'react-native';
+import Svg, {
+  Rect,
+  Path,
+  G,
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Stop,
+  Circle,
+  Text as SvgText,
+  Line,
+  ClipPath,
+  Pattern,
+} from 'react-native-svg';
+import Icon from 'react-native-vector-icons/Feather';
 import {
-  BadgeIcon,
-  StyledBadge,
-  StyledCircularProgress,
-  StyledImage,
-  StyledImageBackground,
-  StyledPressable,
   StyledSafeAreaView,
   StyledScrollView,
-  StyledText,
+  StyledPage,
+  StyledCard,
   Stack,
-  TabBar,
+  StyledText,
+  StyledPressable,
+  StyledSpacer,
   theme,
-} from "fluent-styles";
+} from 'fluent-styles';
 
-const { width } = Dimensions.get("window");
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-type Category = "All" | "Cardio" | "Muscle" | "Weight";
+const { width: W } = Dimensions.get('window');
 
-type WorkoutItem = {
-  id: string;
-  title: string;
-  level: string;
-  duration: string;
-  category: Category;
-  image: { uri: string };
+const BG        = '#f4f9ee';
+const CARD_BG   = '#ffffff';
+const LIME      = '#d4f53c';
+const LIME_DARK = '#b8e020';
+const DARK      = '#1a1a1a';
+const MUTED     = '#b0b0a8';
+const TAG_BG    = '#f0f0ea';
+const HATCH_CLR = 'rgba(0,0,0,0.07)';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type NavKey = 'home' | 'stats' | 'fire' | 'profile';
+
+// ─── Hatched bar helper ───────────────────────────────────────────────────────
+
+interface HatchedRectProps {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rx: number;
+  fill: string;
+  hatch?: boolean;
+  opacity?: number;
+}
+
+const HatchedRect: React.FC<HatchedRectProps> = ({
+  x, y, w, h, rx, fill, hatch = false, opacity = 1,
+}) => {
+  const id = `clip-${Math.round(x)}-${Math.round(y)}`;
+  const lines: React.ReactNode[] = [];
+  if (hatch) {
+    const spacing = 8;
+    for (let off = -h; off < w + h; off += spacing) {
+      lines.push(
+        <Line
+          key={off}
+          x1={x + off}       y1={y}
+          x2={x + off + h}   y2={y + h}
+          stroke={HATCH_CLR}
+          strokeWidth="5"
+        />,
+      );
+    }
+  }
+  return (
+    <G opacity={opacity}>
+      <Defs>
+        <ClipPath id={id}>
+          <Rect x={x} y={y} width={w} height={h} rx={rx} />
+        </ClipPath>
+      </Defs>
+      <Rect x={x} y={y} width={w} height={h} rx={rx} fill={fill} />
+      {hatch && <G clipPath={`url(#${id})`}>{lines}</G>}
+    </G>
+  );
 };
 
-const categories: Category[] = ["All", "Cardio", "Muscle", "Weight"];
+// ─── Workout Duration Bar Chart ───────────────────────────────────────────────
 
-const workouts: WorkoutItem[] = [
-  {
-    id: "1",
-    title: "Cardio Exercise",
-    level: "Intermediate",
-    duration: "120 Menit",
-    category: "Cardio",
-    image: {
-      uri: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=80",
-    },
-  },
-  {
-    id: "2",
-    title: "Muscle Exercise",
-    level: "Beginner",
-    duration: "90 Menit",
-    category: "Muscle",
-    image: {
-      uri: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
-    },
-  },
-  {
-    id: "3",
-    title: "Weight Exercise",
-    level: "Advanced",
-    duration: "75 Menit",
-    category: "Weight",
-    image: {
-      uri: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=900&q=80",
-    },
-  },
+interface BarDatum {
+  day: string;
+  value: number;  // 0–1 fraction
+  active: boolean;
+}
+
+const BAR_DATA: BarDatum[] = [
+  { day: 'Sat', value: 0.45, active: false },
+  { day: 'Sun', value: 0.60, active: false },
+  { day: 'Mon', value: 0.35, active: false },
+  { day: 'Twe', value: 0.85, active: true  },
+  { day: 'Wed', value: 0.50, active: false },
+  { day: 'Thu', value: 0.30, active: false },
+  { day: 'Fri', value: 0.20, active: false },
 ];
 
-const CARD_WIDTH = width * 0.66;
+const CHART_W  = W - 80;
+const CHART_H  = 180;
+const SLOT_W   = CHART_W / BAR_DATA.length;
+const BAR_W    = SLOT_W * 0.62;
+const BAR_PAD  = (SLOT_W - BAR_W) / 2;
+const MAX_BAR  = CHART_H - 36; // space for label
 
-type BottomTab = "home" | "calendar" | "heart" | "profile";
+const WorkoutChart: React.FC = () => (
+  <Svg width={CHART_W} height={CHART_H + 8}>
+    <Defs>
+      <LinearGradient id="limeGrad" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0%"   stopColor={LIME}      stopOpacity="1" />
+        <Stop offset="100%" stopColor={LIME_DARK} stopOpacity="1" />
+      </LinearGradient>
+    </Defs>
 
-function IconText({
-  children,
-  size = 20,
-  color = "#111827",
-}: {
-  children: string;
-  size?: number;
-  color?: ColorValue;
-}) {
-  return (
-    <StyledText fontSize={size} color={color as string} lineHeight={size + 2}>
-      {children}
-    </StyledText>
-  );
-}
+    {BAR_DATA.map((d, i) => {
+      const bx   = i * SLOT_W + BAR_PAD;
+      const bh   = d.value * MAX_BAR;
+      const by   = MAX_BAR - bh + 4;
+      const cx   = bx + BAR_W / 2;
+      const rx   = BAR_W / 2;
 
-function Metric({
-  value,
-  label,
-  barWidth,
-}: {
-  value: string;
-  label: string;
-  barWidth: DimensionValue;
-}) {
-  return (
-    <Stack flex={1} gap={6}>
-      <StyledText color="#FFFFFF" fontSize={15} fontWeight="700">
-        {value}
-      </StyledText>
+      return (
+        <G key={d.day}>
+          {d.active ? (
+            // Active bar: lime gradient, no hatch
+            <>
+              <Defs>
+                <LinearGradient id={`ag${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%"   stopColor={LIME}      stopOpacity="1" />
+                  <Stop offset="100%" stopColor={LIME_DARK} stopOpacity="0.7" />
+                </LinearGradient>
+              </Defs>
+              <Rect x={bx} y={by} width={BAR_W} height={bh} rx={rx} fill={`url(#ag${i})`} />
 
-      <StyledText color="rgba(255,255,255,0.72)" fontSize={12}>
-        {label}
-      </StyledText>
+              {/* Tooltip */}
+              <Rect x={cx - 30} y={by - 36} width={60} height={26} rx={13} fill={DARK} />
+              {/* Pointer */}
+              <Path
+                d={`M ${cx - 6} ${by - 12} L ${cx + 6} ${by - 12} L ${cx} ${by - 4}`}
+                fill={DARK}
+              />
+              <SvgText
+                x={cx} y={by - 18}
+                textAnchor="middle"
+                fontSize="12" fontWeight="700" fill="#fff" fontFamily="System"
+              >
+                70 min
+              </SvgText>
+            </>
+          ) : (
+            // Inactive bar: grey with diagonal hatch
+            <HatchedRect
+              x={bx} y={by} w={BAR_W} h={bh} rx={rx}
+              fill="#e8e8e0" hatch opacity={1}
+            />
+          )}
 
-      <Stack
-        width="82%"
-        height={6}
-        borderRadius={999}
-        backgroundColor="rgba(255,255,255,0.12)"
-        overflow="hidden"
-        marginTop={3}
-      >
-        <Stack
-          width={barWidth}
-          height="100%"
-          borderRadius={999}
-          backgroundColor="#F5F5F0"
-        />
-      </Stack>
-    </Stack>
-  );
-}
-
-function CategoryChip({
-  label,
-  active,
-  onPress,
-}: {
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <StyledPressable
-      onPress={onPress}
-      paddingHorizontal={22}
-      height={52}
-      minWidth={110}
-      borderRadius={999}
-      borderWidth={1}
-      borderColor={active ? "#B7F000" : "#D9D9D9"}
-      backgroundColor={active ? "#B7F000" : "#FFFFFF"}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <StyledText
-        fontSize={15}
-        fontWeight={active ? "700" : "500"}
-        color="#0F1E35"
-      >
-        {label}
-      </StyledText>
-    </StyledPressable>
-  );
-}
-
-function WorkoutCard({ item }: { item: WorkoutItem }) {
-  return (
-    <Stack width={CARD_WIDTH} gap={12}>
-      <StyledImageBackground
-        source={item.image}
-        width={CARD_WIDTH}
-        height={240}
-        borderRadius={22}
-        overflow="hidden"
-      >
-        <Stack
-          flex={1}
-          padding={16}
-          justifyContent="space-between"
-          backgroundColor="rgba(0,0,0,0.18)"
-        >
-          <Stack
-            horizontal
-            justifyContent="space-between"
-            alignItems="flex-start"
+          {/* Day label */}
+          <SvgText
+            x={cx} y={CHART_H - 2}
+            textAnchor="middle"
+            fontSize="12"
+            fill={d.active ? DARK : MUTED}
+            fontWeight={d.active ? '700' : '400'}
+            fontFamily="System"
           >
-            <StyledText color="#FFFFFF" fontSize={16} fontWeight="500">
-              {item.level}
-            </StyledText>
+            {d.day}
+          </SvgText>
+        </G>
+      );
+    })}
+  </Svg>
+);
 
+// ─── Weight Journey placeholder chart ────────────────────────────────────────
+
+const WeightChart: React.FC = () => {
+  const W2 = W - 80;
+  const H2 = 100;
+  const barCount = 7;
+  const vals = [0.4, 0.6, 0.5, 0.75, 0.55, 0.45, 0.3];
+  const sw = W2 / barCount;
+  const bw = sw * 0.62;
+  const maxH = H2 - 10;
+
+  return (
+    <Svg width={W2} height={H2}>
+      {vals.map((v, i) => {
+        const bx = i * sw + (sw - bw) / 2;
+        const bh = v * maxH;
+        const by = maxH - bh;
+        return (
+          <HatchedRect
+            key={i} x={bx} y={by} w={bw} h={bh}
+            rx={bw / 2} fill="#e8e8e0" hatch opacity={0.8}
+          />
+        );
+      })}
+    </Svg>
+  );
+};
+
+// ─── Mini bar icon (for stat cards) ──────────────────────────────────────────
+
+const MiniBars: React.FC<{ color: string; bg: string }> = ({ color, bg }) => (
+  <Svg width={52} height={36}>
+    {[
+      { x: 2,  h: 18, active: false },
+      { x: 18, h: 28, active: false },
+      { x: 34, h: 36, active: true  },
+    ].map((b, i) => (
+      <Rect
+        key={i}
+        x={b.x} y={36 - b.h} width={14} height={b.h}
+        rx={7}
+        fill={b.active ? color : bg}
+        opacity={b.active ? 1 : 0.5}
+      />
+    ))}
+  </Svg>
+);
+
+// ─── Large "7" decorative SVG ─────────────────────────────────────────────────
+
+const BigSeven: React.FC = () => (
+  <Svg width={110} height={120} viewBox="0 0 110 120" style={{ position: 'absolute', bottom: -8, right: -8 }}>
+    <Defs>
+      <LinearGradient id="sevenGrad" x1="0" y1="0" x2="1" y2="1">
+        <Stop offset="0%"   stopColor={LIME}      stopOpacity="0.9" />
+        <Stop offset="100%" stopColor={LIME_DARK} stopOpacity="0.5" />
+      </LinearGradient>
+    </Defs>
+    <Path
+      d="M10 10 H90 L45 110 H20 L60 30 H10 Z"
+      fill="url(#sevenGrad)"
+    />
+  </Svg>
+);
+
+// ─── Bottom Nav ───────────────────────────────────────────────────────────────
+
+const BottomNav: React.FC<{
+  active: NavKey;
+  onPress: (k: NavKey) => void;
+}> = ({ active, onPress }) => {
+  const items: { key: NavKey; icon: string }[] = [
+    { key: 'home',    icon: 'home'    },
+    { key: 'stats',   icon: 'bar-chart-2' },
+    { key: 'fire',    icon: 'zap'     },
+    { key: 'profile', icon: 'user'    },
+  ];
+
+  return (
+    <Stack
+      backgroundColor={CARD_BG}
+      borderTopLeftRadius={28}
+      borderTopRightRadius={28}
+      paddingBottom={20}
+      paddingTop={4}
+
+    >
+      {/* FAB-style camera button above nav */}
+      <Stack alignItems="center" style={{ marginTop: -28 }}>
+        <Stack
+          width={52}
+          height={52}
+          borderRadius={26}
+          backgroundColor={DARK}
+          alignItems="center"
+          justifyContent="center"
+      
+        >
+          <Icon name="camera" size={22} color="#fff" />
+        </Stack>
+      </Stack>
+
+      <Stack horizontal alignItems="center" paddingTop={4} paddingHorizontal={16}>
+        {items.map(({ key, icon }) => {
+          const isActive = key === active;
+          return (
             <StyledPressable
-              width={32}
-              height={32}
-              borderRadius={999}
-              backgroundColor="rgba(255,255,255,0.18)"
+              key={key}
+              flex={1}
+              height={52}
               alignItems="center"
               justifyContent="center"
+              onPress={() => onPress(key)}
             >
-              <StyledText fontSize={16} color="#FFFFFF">
-                ♡
-              </StyledText>
+              <Stack
+                width={46}
+                height={46}
+                borderRadius={23}
+                backgroundColor={isActive ? LIME : 'transparent'}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Icon
+                  name={icon}
+                  size={20}
+                  color={isActive ? DARK : MUTED}
+                />
+              </Stack>
             </StyledPressable>
-          </Stack>
-
-          <Stack />
-        </Stack>
-      </StyledImageBackground>
-
-      <Stack gap={8} paddingHorizontal={2}>
-        <StyledText fontSize={18} fontWeight="700" color="#0F1E35">
-          {item.title}
-        </StyledText>
-
-        <Stack horizontal alignItems="center" gap={8}>
-          <StyledText fontSize={14} color="#111827">
-            ◷
-          </StyledText>
-          <StyledText fontSize={14} color="#1F2937">
-            {item.duration}
-          </StyledText>
-        </Stack>
+          );
+        })}
       </Stack>
     </Stack>
   );
-}
+};
 
-function Header() {
-  return (
-    <Stack horizontal alignItems="center" justifyContent="space-between">
-      <StyledImage
-        source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
-        width={46}
-        height={46}
-        borderRadius={999}
-      />
+// ─── Period pill ──────────────────────────────────────────────────────────────
 
-      <Stack horizontal alignItems="center" gap={18}>
-        <StyledPressable>
-          <IconText size={26}>⌕</IconText>
-        </StyledPressable>
-
-        <BadgeIcon
-          icon={
-            <StyledPressable>
-              <IconText size={24}>◌</IconText>
-            </StyledPressable>
-          }
-          char=""
-          size={10}
-          top={-1}
-          right={1}
-          backgroundColor="#FF5A5F"
-        />
-      </Stack>
+const PeriodPill: React.FC<{ label: string }> = ({ label }) => (
+  <StyledPressable
+    onPress={() => {}}
+    paddingHorizontal={14}
+    paddingVertical={8}
+    borderRadius={20}
+    backgroundColor={TAG_BG}
+  >
+    <Stack horizontal alignItems="center" gap={5}>
+      <StyledText fontSize={13} fontWeight="600" color={DARK}>{label}</StyledText>
+      <Icon name="chevron-down" size={13} color={MUTED} />
     </Stack>
-  );
-}
+  </StyledPressable>
+);
 
-function ActivityCard() {
-  return (
-    <Stack backgroundColor="#1B2013" borderRadius={24} padding={20} gap={18}>
-      <Stack horizontal justifyContent="space-between" alignItems="flex-start">
-        <Stack gap={6} flex={1} paddingRight={16}>
-          <StyledText color="#FFFFFF" fontSize={21} fontWeight="700">
-            Today’s
-          </StyledText>
-          <StyledText color="#FFFFFF" fontSize={21} fontWeight="700">
-            Activities
-          </StyledText>
-          <StyledText color="rgba(255,255,255,0.65)" fontSize={15}>
-            Body Weight
-          </StyledText>
-        </Stack>
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
-       <StyledCircularProgress
-                         value={55}
-                         diameter={150}
-                         strokeWidth={32}
-                         display="percent"
-                         contentPosition="center"
-                         colors={{
-                           arc: theme.colors.yellow[500],
-                           track: theme.colors.yellow[100],
-                           label: theme.colors.yellow[700],
-                           sublabel: theme.colors.yellow[400],
-                         }}
-                       />
-      </Stack>
-
-      <Stack horizontal gap={12}>
-        <Metric value="1200 kcal" label="Calories Burned" barWidth="42%" />
-        <Metric value="90 bpm" label="Heart Rate" barWidth="54%" />
-        <Metric value="03:00 hr" label="Time" barWidth="67%" />
-      </Stack>
-    </Stack>
-  );
-}
-
-function SectionHeader({ title, action }: { title: string; action?: string }) {
-  return (
-    <Stack horizontal alignItems="center" justifyContent="space-between">
-      <StyledText fontSize={18} fontWeight="700" color="#0F1E35">
-        {title}
-      </StyledText>
-
-      {action ? (
-        <StyledPressable>
-          <StyledText fontSize={16} fontWeight="500" color="#B7F000">
-            {action}
-          </StyledText>
-        </StyledPressable>
-      ) : (
-        <Stack />
-      )}
-    </Stack>
-  );
-}
-
-export default function FitnessHomeScreen() {
-  const [selectedCategory, setSelectedCategory] = useState<Category>("All");
-  const [tab, setTab] = useState<BottomTab>("home");
-
-  const filteredWorkouts = useMemo(() => {
-    if (selectedCategory === "All") return workouts;
-    return workouts.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory]);
+export default function MyActivityScreen() {
+  const [activeNav, setNav] = useState<NavKey>('stats');
 
   return (
-    <StyledSafeAreaView flex={1} backgroundColor="#FFFFFF">
+    <Stack flex={1} backgroundColor={BG}>
       <StyledScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 22,
-          paddingTop: 18,
-          paddingBottom: 120,
-        }}
+        contentContainerStyle={{ paddingBottom: 16 }}
       >
-        <Stack gap={28}>
-          <Header />
+   
 
-          <ActivityCard />
-
-          <Stack gap={18}>
-            <SectionHeader title="Category" />
-
-            <StyledScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 12, paddingRight: 18 }}
-            >
-              {categories.map((category) => (
-                <CategoryChip
-                  key={category}
-                  label={category}
-                  active={selectedCategory === category}
-                  onPress={() => setSelectedCategory(category)}
-                />
-              ))}
-            </StyledScrollView>
+          {/* ── Title ── */}
+          <Stack paddingHorizontal={20} paddingTop={16} paddingBottom={18}>
+            <StyledText fontSize={28} fontWeight="900" color={DARK}>My Activity</StyledText>
           </Stack>
 
-          <Stack gap={18}>
-            <SectionHeader title="Popular" action="See All" />
+          {/* ── Stat cards 2×2 ── */}
+          <Stack paddingHorizontal={20} gap={10}>
 
-            <StyledScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 18, paddingRight: 24 }}
-            >
-              {filteredWorkouts.map((item) => (
-                <WorkoutCard key={item.id} item={item} />
-              ))}
-            </StyledScrollView>
+            {/* Row 1 */}
+            <Stack horizontal gap={10}>
+
+              {/* 77% Completed */}
+              <StyledCard
+                flex={1}
+                backgroundColor={CARD_BG}
+                borderRadius={22}
+                padding={18}
+                shadow="light"
+                overflow="hidden"
+                minHeight={130}
+              >
+                <BigSeven />
+                <StyledText fontSize={30} fontWeight="900" color={DARK}>77%</StyledText>
+                <StyledSpacer height={4} />
+                <StyledText fontSize={13} color={MUTED}>Completed</StyledText>
+              </StyledCard>
+
+              {/* 256 kcal */}
+              <StyledCard
+                flex={1}
+                backgroundColor={LIME}
+                borderRadius={22}
+                padding={18}
+                shadow="light"
+                overflow="hidden"
+                minHeight={130}
+              >
+                <Stack flex={1} justifyContent="space-between">
+                  <Stack>
+                    <Stack horizontal alignItems="flex-end" gap={4}>
+                      <StyledText fontSize={28} fontWeight="900" color={DARK}>256</StyledText>
+                      <StyledText fontSize={13} fontWeight="600" color={DARK} marginBottom={4}>/kcal</StyledText>
+                    </Stack>
+                    <StyledText fontSize={13} color={DARK} fontWeight="500">Calories burn</StyledText>
+                  </Stack>
+                  <Stack alignItems="flex-end">
+                    <MiniBars color={CARD_BG} bg="rgba(255,255,255,0.5)" />
+                  </Stack>
+                </Stack>
+              </StyledCard>
+            </Stack>
+
+            {/* Row 2 */}
+            <Stack horizontal gap={10}>
+
+              {/* Core Target */}
+              <StyledCard
+                flex={1}
+                backgroundColor={CARD_BG}
+                borderRadius={22}
+                padding={18}
+                shadow="light"
+                minHeight={110}
+              >
+                <StyledText fontSize={16} fontWeight="800" color={DARK}>Core Target</StyledText>
+                <StyledSpacer height={4} />
+                <StyledText fontSize={13} color={MUTED}>Fitness focus</StyledText>
+              </StyledCard>
+
+              {/* 03 kg */}
+              <StyledCard
+                flex={1}
+                backgroundColor={CARD_BG}
+                borderRadius={22}
+                padding={18}
+                shadow="light"
+                overflow="hidden"
+                minHeight={110}
+              >
+                <Stack flex={1} justifyContent="space-between">
+                  <Stack>
+                    <Stack horizontal alignItems="flex-end" gap={4}>
+                      <StyledText fontSize={28} fontWeight="900" color={DARK}>03</StyledText>
+                      <StyledText fontSize={13} fontWeight="600" color={MUTED} marginBottom={4}>/kg</StyledText>
+                    </Stack>
+                    <StyledText fontSize={13} color={MUTED}>Weight lose</StyledText>
+                  </Stack>
+                  <Stack alignItems="flex-end">
+                    <MiniBars color={LIME} bg="#f0f0e0" />
+                  </Stack>
+                </Stack>
+              </StyledCard>
+            </Stack>
           </Stack>
-        </Stack>
+
+          <StyledSpacer height={24} />
+
+          {/* ── Tracking Stats title ── */}
+          <Stack paddingHorizontal={20} marginBottom={14}>
+            <StyledText fontSize={22} fontWeight="900" color={DARK}>Tracking Stats</StyledText>
+          </Stack>
+
+          {/* ── Workout Duration card ── */}
+          <Stack paddingHorizontal={20} marginBottom={14}>
+            <StyledCard backgroundColor={CARD_BG} borderRadius={22} padding={20} shadow="light">
+              <Stack horizontal alignItems="flex-start" justifyContent="space-between" marginBottom={4}>
+                <Stack>
+                  <StyledText fontSize={17} fontWeight="800" color={DARK}>Workout Duration</StyledText>
+                  <StyledSpacer height={3} />
+                  <StyledText fontSize={13} color={MUTED}>Total Time Spent in training</StyledText>
+                </Stack>
+                <PeriodPill label="Weekly" />
+              </Stack>
+
+              <StyledSpacer height={16} />
+              <WorkoutChart />
+            </StyledCard>
+          </Stack>
+
+          {/* ── Weight Journey card ── */}
+          <Stack paddingHorizontal={20}>
+            <StyledCard backgroundColor={CARD_BG} borderRadius={22} padding={20} shadow="light">
+              <Stack horizontal alignItems="flex-start" justifyContent="space-between" marginBottom={4}>
+                <Stack>
+                  <StyledText fontSize={17} fontWeight="800" color={DARK}>Weight Journey</StyledText>
+                  <StyledSpacer height={3} />
+                  <StyledText fontSize={13} color={MUTED}>Last 7 Days</StyledText>
+                </Stack>
+                <PeriodPill label="Weekly" />
+              </Stack>
+              <StyledSpacer height={16} />
+              <WeightChart />
+            </StyledCard>
+          </Stack>
+
+          <StyledSpacer height={16} />
+     
       </StyledScrollView>
 
-      <Stack
-        position="absolute"
-        left={0}
-        right={0}
-        bottom={0}
-        backgroundColor="#FFFFFF"
-        paddingHorizontal={20}
-        paddingTop={8}
-        paddingBottom={20}
-      >
-        <Stack
-          horizontal
-          alignItems="center"
-          justifyContent="space-between"
-          borderTopWidth={1}
-          borderTopColor="#EEF2F7"
-          paddingTop={10}
-        >
-          <Stack vertical flex={1}>
-            <TabBar
-              options={[
-                {
-                  value: "home",
-                  label: "",
-                  iconRender: (color) => (
-                    <IconText size={32} color={color}>
-                      ⌂
-                    </IconText>
-                  ),
-                },
-                {
-                  value: "calendar",
-                  label: "",
-                  iconRender: (color) => (
-                    <IconText size={32} color={color}>
-                      ◫
-                    </IconText>
-                  ),
-                },
-                {
-                  value: "heart",
-                  label: "",
-                  iconRender: (color) => (
-                    <IconText size={32} color={color}>
-                      ♡
-                    </IconText>
-                  ),
-                },
-                {
-                  value: "profile",
-                  label: "",
-                  iconRender: (color) => (
-                    <IconText size={32} color={color}>
-                      ◯
-                    </IconText>
-                  ),
-                },
-              ]}
-              value={tab}
-              onChange={setTab}
-              indicator={false}
-              showBorder={false}
-              colors={{
-                background: "#FFFFFF",
-                activeText: "#1D2216",
-                text: "#A1A1AA",
-              }}
-              style={{ justifyContent: "space-between", alignItems: "center" }}
-            />
-          </Stack>
-
-          {/* <Stack
-            position="absolute"
-            alignSelf="center"
-            top={-10}
-            left="50%"
-            marginLeft={-32}
-          >
-            <StyledPressable
-              width={64}
-              height={64}
-              borderRadius={999}
-              backgroundColor="#B7F000"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <StyledText fontSize={34} color="#111827" fontWeight="400">
-                +
-              </StyledText>
-            </StyledPressable>
-          </Stack> */}
-        </Stack>
-      </Stack>
-    </StyledSafeAreaView>
+      {/* ── Bottom Nav ── */}
+      <BottomNav active={activeNav} onPress={setNav} />
+    </Stack>
   );
 }

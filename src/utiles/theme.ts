@@ -1,14 +1,8 @@
 import { useColorScheme } from 'react-native'
-import { fontStyles } from "./fontStyles"
-
-// ─── Common theme selector ────────────────────────────────────────────────────
+import { fontStyles } from './fontStyles'
 
 export type ComponentTheme = 'dark' | 'light' | 'system'
 
-/**
- * Resolves 'system' to the device's current color scheme.
- * Returns `'light'` or `'dark'`.
- */
 export function resolveTheme(
   theme: ComponentTheme,
   deviceScheme: ReturnType<typeof useColorScheme>,
@@ -25,6 +19,7 @@ const palettes = {
   transparent: 'rgba(0, 0, 0, 0)',
   transparent05: 'rgba(0, 0, 0, 0.5)',
   transparent09: 'rgba(0, 0, 0, 0.9)',
+
   rose: {
     50: '#fff1f2',
     100: '#ffe4e6',
@@ -314,9 +309,10 @@ const palettes = {
     800: '#f4f4f5',
     900: '#fafafa',
   },
-};
+} as const
 
 const darkColors = {
+  primary: palettes.blue[400],
   button_hover: palettes.indigo[600],
   button_primary: palettes.indigo[500],
   cardBg: palettes.coolGray[800],
@@ -326,13 +322,10 @@ const darkColors = {
   hover: palettes.blue[800],
   pressed: palettes.blue[900],
   pressed_secondary: palettes.blue[400],
-
-  primary: palettes.blue[400],
-};
+}
 
 const lightColors = {
   primary: palettes.amber[500],
-
   button_hover: palettes.indigo[700],
   button_primary: palettes.indigo[600],
   cardBg: palettes.coolGray[50],
@@ -342,24 +335,56 @@ const lightColors = {
   hover: palettes.blue[100],
   pressed: palettes.blue[200],
   pressed_secondary: palettes.blue[400],
-};
+}
 
 const theme = {
   colors: {
     ...palettes,
     ...lightColors,
+
+    background: palettes.gray[50],
+    surface: palettes.white,
+    surfaceMuted: palettes.gray[100],
+    text: palettes.gray[900],
+    textMuted: palettes.gray[500],
+    textSoft: palettes.gray[400],
+    border: palettes.gray[200],
+    divider: palettes.gray[200],
+    success: palettes.green[600],
+    warning: palettes.amber[500],
+    danger: palettes.red[600],
+    info: palettes.blue[600],
   },
+
   space: {
-    '0': 0,
-    '1': 1,
-    '2': 2,
-    '4': 4,
-    '8': 8,
-    '16': 16,
-    '32': 32,
-    '64': 64,
-    '128': 128,
+    0: 0,
+    1: 1,
+    2: 2,
+    4: 4,
+    6: 6,
+    8: 8,
+    10: 10,
+    12: 12,
+    14: 14,
+    16: 16,
+    18: 18,
+    20: 20,
+    24: 24,
+    28: 28,
+    32: 32,
+    36: 36,
+    40: 40,
+    44: 44,
+    48: 48,
+    56: 56,
+    64: 64,
+    72: 72,
+    80: 80,
+    96: 96,
+    112: 112,
+    128: 128,
   },
+
   fontWeight: {
     thin: '100',
     extraLight: '200',
@@ -371,8 +396,19 @@ const theme = {
     extraBold: '800',
     black: '900',
   },
+
   fontSize: {
-    base: 8,
+    xs: 10,
+    sm: 12,
+    md: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 28,
+    '4xl': 32,
+    '5xl': 40,
+
     nano: 10,
     micro: 12,
     small: 14,
@@ -384,189 +420,132 @@ const theme = {
     xxxlarge: 30,
     splash: 40,
   },
+
+  lineHeight: {
+    xs: 14,
+    sm: 16,
+    md: 18,
+    base: 20,
+    lg: 24,
+    xl: 28,
+    '2xl': 32,
+    '3xl': 36,
+    '4xl': 40,
+    '5xl': 48,
+  },
+
+  radius: {
+    none: 0,
+    xs: 4,
+    sm: 6,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    '2xl': 20,
+    '3xl': 24,
+    full: 9999,
+  },
+
+  borderWidth: {
+    none: 0,
+    hairline: 0.5,
+    thin: 1,
+    medium: 1.5,
+    thick: 2,
+    heavy: 3,
+  },
+
+  iconSize: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 20,
+    xl: 24,
+    '2xl': 28,
+    '3xl': 32,
+  },
+
+  opacity: {
+    disabled: 0.4,
+    muted: 0.65,
+    overlay: 0.5,
+    pressed: 0.8,
+  },
+
+  zIndex: {
+    base: 0,
+    dropdown: 1000,
+    sticky: 1100,
+    overlay: 1200,
+    modal: 1300,
+    toast: 1400,
+    tooltip: 1500,
+  },
+
+  size: {
+    xs: 24,
+    sm: 32,
+    md: 40,
+    lg: 48,
+    xl: 56,
+    '2xl': 64,
+  },
+
+  shadow: {
+    none: {
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0,
+    },
+    sm: {
+      shadowColor: palettes.black,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.08,
+      shadowRadius: 2,
+      elevation: 1,
+    },
+    md: {
+      shadowColor: palettes.black,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    lg: {
+      shadowColor: palettes.black,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.16,
+      shadowRadius: 16,
+      elevation: 6,
+    },
+  },
+
   textAlign: {
-    left: {textAlign: 'left'},
-    right: {textAlign: 'right'},
-    center: {textAlign: 'center'},
-    justify: {textAlign: 'justify'},
+    left: { textAlign: 'left' },
+    right: { textAlign: 'right' },
+    center: { textAlign: 'center' },
+    justify: { textAlign: 'justify' },
+  },
+
+  component: {
+    buttonHeight: {
+      sm: 32,
+      md: 40,
+      lg: 48,
+    },
+    inputHeight: {
+      sm: 36,
+      md: 44,
+      lg: 52,
+    },
+    tabBarHeight: 64,
+    headerHeight: 56,
+    bottomSheetHandleWidth: 40,
   },
 } as const
 
 export type Theme = typeof theme
 
-export { theme, lightColors, darkColors, palettes, fontStyles };
-
-// ─── Toast color tokens ───────────────────────────────────────────────────────
-
-export type ToastColors = {
-  /** Background of the toast pill. */
-  successBg:          string
-  successBorder:      string
-  successLabel:       string
-  errorBg:            string
-  errorBorder:        string
-  errorLabel:         string
-  warningBg:          string
-  warningBorder:      string
-  warningLabel:       string
-  infoBg:             string
-  infoBorder:         string
-  infoLabel:          string
-  /** Body description text colour (shared across all variants). */
-  description:        string
-  /** The small × close button. */
-  closeIcon:          string
-}
-
-export const TOAST_DARK: ToastColors = {
-  successBg:     '#0d1f0f', successBorder: '#22c55e', successLabel: '#22c55e',
-  errorBg:       '#1f0d0d', errorBorder:   '#ef4444', errorLabel:   '#ef4444',
-  warningBg:     '#1f1a0d', warningBorder: '#f59e0b', warningLabel: '#f59e0b',
-  infoBg:        '#0d1220', infoBorder:    '#3b82f6', infoLabel:    '#3b82f6',
-  description:   '#9ca3af',
-  closeIcon:     '#6b7280',
-}
-
-export const TOAST_LIGHT: ToastColors = {
-  successBg:     '#f0fdf4', successBorder: '#16a34a', successLabel: '#15803d',
-  errorBg:       '#fef2f2', errorBorder:   '#dc2626', errorLabel:   '#b91c1c',
-  warningBg:     '#fffbeb', warningBorder: '#d97706', warningLabel: '#b45309',
-  infoBg:        '#eff6ff', infoBorder:    '#2563eb', infoLabel:    '#1d4ed8',
-  description:   '#6b7280',
-  closeIcon:     '#9ca3af',
-}
-
-// ─── Notification color tokens ────────────────────────────────────────────────
-
-export type NotificationColors = {
-  background:      string
-  border:          string
-  source:          string
-  title:           string
-  timestamp:       string
-  body:            string
-  avatarBg:        string
-  avatarBorder:    string
-  avatarInitials:  string
-  actionBg:        string
-  actionBorder:    string
-  actionLabel:     string
-  closeIcon:       string
-}
-
-export const NOTIFICATION_DARK: NotificationColors = {
-  background:     '#18181b',
-  border:         '#3f3f46',
-  source:         '#71717a',
-  title:          '#f4f4f5',
-  timestamp:      '#52525b',
-  body:           '#a1a1aa',
-  avatarBg:       '#27272a',
-  avatarBorder:   '#3f3f46',
-  avatarInitials: '#a1a1aa',
-  actionBg:       '#27272a',
-  actionBorder:   '#3f3f46',
-  actionLabel:    '#e4e4e7',
-  closeIcon:      '#52525b',
-}
-
-export const NOTIFICATION_LIGHT: NotificationColors = {
-  background:     '#ffffff',
-  border:         '#e5e5ea',
-  source:         '#8e8e93',
-  title:          '#1c1c1e',
-  timestamp:      '#aeaeb2',
-  body:           '#636366',
-  avatarBg:       '#f2f2f7',
-  avatarBorder:   '#e5e5ea',
-  avatarInitials: '#636366',
-  actionBg:       '#f2f2f7',
-  actionBorder:   '#e5e5ea',
-  actionLabel:    '#1c1c1e',
-  closeIcon:      '#aeaeb2',
-}
-
-// ─── Loader color tokens ──────────────────────────────────────────────────────
-
-export type LoaderColors = {
-  /** Overlay backdrop. */
-  overlayBg:    string
-  /** Card background (overlay mode). */
-  cardBg:       string
-  cardBorder:   string
-  /** Spinner / pulse / dots tint. */
-  indicator:    string
-  label:        string
-}
-
-export const LOADER_DARK: LoaderColors = {
-  overlayBg:  'rgba(0,0,0,0.72)',
-  cardBg:     '#18181b',
-  cardBorder: '#3f3f46',
-  indicator:  '#6366f1',
-  label:      '#a1a1aa',
-}
-
-export const LOADER_LIGHT: LoaderColors = {
-  overlayBg:  'rgba(0,0,0,0.4)',
-  cardBg:     '#ffffff',
-  cardBorder: '#e5e5ea',
-  indicator:  '#6366f1',
-  label:      '#636366',
-}
-
-// ─── Dialogue color tokens ────────────────────────────────────────────────────
-
-export type DialogueColors = {
-  background:        string
-  border:            string
-  title:             string
-  message:           string
-  divider:           string
-  primaryBg:         string
-  primaryBorder:     string
-  primaryLabel:      string
-  secondaryBg:       string
-  secondaryBorder:   string
-  secondaryLabel:    string
-  destructiveBg:     string
-  destructiveBorder: string
-  destructiveLabel:  string
-}
-
-export const DIALOGUE_DARK: DialogueColors = {
-  background:        '#18181b',
-  border:            '#3f3f46',
-  title:             '#f4f4f5',
-  message:           '#a1a1aa',
-  divider:           '#27272a',
-  primaryBg:         '#6366f1',
-  primaryBorder:     '#818cf8',
-  primaryLabel:      '#ffffff',
-  secondaryBg:       '#27272a',
-  secondaryBorder:   '#3f3f46',
-  secondaryLabel:    '#e4e4e7',
-  destructiveBg:     '#450a0a',
-  destructiveBorder: '#ef4444',
-  destructiveLabel:  '#fca5a5',
-}
-
-export const DIALOGUE_LIGHT: DialogueColors = {
-  background:        '#ffffff',
-  border:            '#e5e5ea',
-  title:             '#1c1c1e',
-  message:           '#636366',
-  divider:           '#f2f2f7',
-  primaryBg:         '#6366f1',
-  primaryBorder:     '#818cf8',
-  primaryLabel:      '#ffffff',
-  secondaryBg:       '#f2f2f7',
-  secondaryBorder:   '#e5e5ea',
-  secondaryLabel:    '#1c1c1e',
-  destructiveBg:     '#fff1f0',
-  destructiveBorder: '#ff3b30',
-  destructiveLabel:  '#ff3b30',
-}
-
-
-
+export { theme, lightColors, darkColors, palettes, fontStyles }

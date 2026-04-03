@@ -36,7 +36,7 @@ interface _StyledImageProps extends Omit<StyledImageProps, 'height' | 'width'> {
 const StyledImage = React.forwardRef<React.ComponentRef<typeof Image>, _StyledImageProps>(({ height = 100, width = 100, ...props }: _StyledImageProps, ref) => {
     const { cycle, size, ...rest } = props;
     const sizeStyle: ImageStyle = cycle
-        ? { height: Number(size), width: Number(size) }
+        ? { height: Number(size) as DimensionValue, width: Number(size) as DimensionValue, borderRadius: 9999  }
         : { height: height as DimensionValue, width: width as DimensionValue };
     return <Image {...rest} style={[props.style, sizeStyle]} ref={ref} />;
 });

@@ -26,6 +26,9 @@ import NotificationUsage from "./notification";
 import LoaderUsage from "./loader";
 import Demo from "./home/quick-pad";
 import CircularProgressUsage from "./circularProgess";
+import StyledBarDemo from "./barChart";
+import StyledChipDemo from "./chips";
+import DailyPlanScreen from "./timeLine";
 
 const Page = ({
   title,
@@ -77,7 +80,10 @@ export type _path =
   | "notification"
   | "loader"
   | "demo"
-  | "circularProgress";
+  | "circularProgress"
+  | "barChart"
+  | "chips"
+  | "timeline";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -227,6 +233,30 @@ export const config: { path: _path; Page: any }[] = [
     Page: () => (
       <Page title="Circular Progress">
         <CircularProgressUsage />
+      </Page>
+    )
+  },
+  {
+    path: "barChart",
+    Page: () => (
+      <Page title="Bar Chart">
+        <StyledBarDemo />
+      </Page>
+    )
+  },
+  {
+    path: "chips",
+    Page: () => (
+      <Page title="Chips">
+        <StyledChipDemo />
+      </Page>
+    )
+  },
+  {
+    path: "timeline",
+    Page: () => (
+      <Page title="Timeline">
+        <DailyPlanScreen />
       </Page>
     )
   }

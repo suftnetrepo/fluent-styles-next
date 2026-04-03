@@ -7,5 +7,10 @@
       "~/*": ["./app/*"],
       "fluent-styles": ["./../src"]
     }
-  }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "declarations.d.ts"
+  ]
 }

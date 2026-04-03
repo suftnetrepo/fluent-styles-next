@@ -65,8 +65,12 @@
     "react-native": "*",
     "rc-field-form": "*",
     "react-native-safe-area-context": "*",
-    "react-native-svg": "*"
+    "react-native-svg": "*",
+    "react-native-vector-icons": ">=10.0.0"
   },
+  "peerDependenciesMeta": {
+  "react-native-vector-icons": { "optional": true }
+},
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
@@ -100,7 +104,9 @@
     "ts-jest": "^29.3.2",
     "typescript": "~5.3.3",
     "eslint": "^8.57.1",
-    "prettier": "~3.2.0"
+    "prettier": "~3.2.0",
+    "react-native-vector-icons": "^10.2.0",
+"@types/react-native-vector-icons": "^6.4.18"
   },
   "resolutions": {
     "@types/react": "^18",
