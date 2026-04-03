@@ -29,6 +29,7 @@ import CircularProgressUsage from "./circularProgess";
 import StyledBarDemo from "./barChart";
 import StyledChipDemo from "./chips";
 import DailyPlanScreen from "./timeLine";
+import StyledRadioDemo from "./radio";
 
 const Page = ({
   title,
@@ -83,7 +84,8 @@ export type _path =
   | "circularProgress"
   | "barChart"
   | "chips"
-  | "timeline";
+  | "timeline"
+  | "radio";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -257,6 +259,14 @@ export const config: { path: _path; Page: any }[] = [
     Page: () => (
       <Page title="Timeline">
         <DailyPlanScreen />
+      </Page>
+    )
+  },
+  {
+    path: "radio",
+    Page: () => (
+      <Page title="Radio">
+        <StyledRadioDemo />
       </Page>
     )
   }

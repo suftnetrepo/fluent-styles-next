@@ -86,6 +86,7 @@ const routeConfig: {
       { title: "Bar Chart", name: "barChart" },
       { title: "Chips", name: "chips" },
       { title: "Timeline", name: "timeline" },
+      { title: "Radio", name: "radio" },
     ],
   },
 ];

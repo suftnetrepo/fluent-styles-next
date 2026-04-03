@@ -465,7 +465,7 @@ const SummaryStrip: React.FC<{ items: TimelineItem[] }> = ({ items }) => {
       ].map(({ icon, label }) => (
         <Stack key={label} horizontal alignItems="center" gap={6}
           paddingHorizontal={12} paddingVertical={7} borderRadius={20}
-          backgroundColor={palettes.white}>
+          backgroundColor={palettes.gray[100]}>
           <Icon name={icon} size={13} color={LIME_DARK} />
           <StyledText fontSize={13} fontWeight="600" color={DARK}>{label}</StyledText>
         </Stack>
@@ -566,7 +566,7 @@ export default function DailyPlanScreen() {
   };
 
   return (
-    <Stack flex={1} marginVertical={16} backgroundColor={BG}>
+    <Stack flex={1} marginVertical={16} backgroundColor={theme.colors.gray[200]}>
 
       {/* ── CalendarProvider owns both the week strip + scroll content ── */}
       <CalendarProvider
@@ -612,7 +612,7 @@ export default function DailyPlanScreen() {
             {/* Column headers */}
             {items.length > 0 && (
               <Stack horizontal alignItems="center" justifyContent="space-between"
-                paddingHorizontal={20} marginBottom={14}>
+                paddingHorizontal={20} marginBottom={14} >
                 <Stack horizontal gap={20}>
                   <StyledText fontSize={13} fontWeight="600" color={MUTED}>Time</StyledText>
                   <StyledText fontSize={13} fontWeight="600" color={MUTED}>Exercise</StyledText>

@@ -189,5 +189,3 @@ const styles = StyleSheet.create({
   label:  { fontSize: 14, fontWeight: '500', letterSpacing: 0.2 },
 })
 
-export { LOADER_DARK, LOADER_LIGHT }
-export type { LoaderColors }
