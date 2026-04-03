@@ -37,6 +37,10 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledShape](#styledshape)
   - [Loader](#loader)
   - [StyledCircularProgress](#styledcircularprogress)
+  - [StyledChip](#styledchip)
+  - [StyledBar](#styledbar)
+  - [StyledTimeline](#styledtimeline)
+  - [StyledRadio / StyledRadioGroup](#styledradio--styledradiogroup)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -1374,6 +1378,422 @@ import { StyledCircularProgress } from 'fluent-styles'
     </StyledText>
   </Stack>
 </Stack>
+```
+
+---
+
+### StyledChip
+
+A multi-variant chip/tag component with controlled and uncontrolled selection, animated checkmarks, and six visual variants.
+
+```tsx
+import { StyledChip } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `outlined` | Border + tinted bg when selected (default) |
+| `filled` | Solid background, changes tone on select |
+| `smooth` | Soft grey background, no border |
+| `ingredient` | Dark-bg when selected (recipe/filter chips) |
+| `likeable` | Pink heart chip — toggles like state |
+| `icon` | Leading icon with accent styling |
+
+#### Size presets
+
+| Size | Padding H | Padding V | Font | Icon | Radius |
+|---|---|---|---|---|---|
+| `sm` | 10 | 5 | 11 | 12 | 20 |
+| `md` | 14 | 8 | 13 | 14 | 24 |
+| `lg` | 18 | 11 | 15 | 16 | 28 |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | — | Chip text |
+| `variant` | `ChipVariant` | `'outlined'` | Visual style |
+| `size` | `ChipSize` | `'md'` | Size preset |
+| `selected` | `boolean` | — | Controlled selection state |
+| `defaultSelected` | `boolean` | `false` | Uncontrolled initial state |
+| `onPress` | `(selected: boolean) => void` | — | Fires with new selection value |
+| `color` | `string` | theme default | Accent colour (border, text, icon) |
+| `bgColor` | `string` | variant default | Fill background |
+| `icon` | `React.ReactNode` | — | Leading icon node (used with `'icon'` variant) |
+| `showCheck` | `boolean` | `true` | Show checkmark when selected |
+| `disabled` | `boolean` | `false` | Reduces opacity, disables press |
+| `borderRadius` | `number` | size preset | Override border radius |
+
+#### Usage
+
+```tsx
+// Outlined — uncontrolled toggleable
+<StyledChip label="Hacktoberfest" variant="outlined" color="#4caf50" />
+
+// Ingredient — starts selected
+<StyledChip label="Cinnamon" variant="ingredient" defaultSelected />
+
+// Likeable — controlled
+<StyledChip
+  label="Big Data"
+  variant="likeable"
+  selected={liked}
+  onPress={(v) => setLiked(v)}
+/>
+
+// Icon chip
+<StyledChip
+  label="Social Media"
+  variant="icon"
+  icon={<Icon name="refresh-cw" size={14} color="green" />}
+  color="green"
+  bgColor="#e8f5e9"
+/>
+
+// Filled
+<StyledChip label="Taken" variant="filled" bgColor="#e91e8c" color="#fff" />
+
+// Row of filter chips
+<Stack horizontal gap={8} flexWrap="wrap">
+  {['All', 'Running', 'Cycling', 'Yoga'].map((t) => (
+    <StyledChip key={t} label={t} variant="smooth" size="sm" />
+  ))}
+</Stack>
+```
+
+---
+
+### StyledBar
+
+An animated SVG bar chart with gradient active bars, optional hatch texture on inactive bars, and a floating tooltip. Backed by `react-native-svg`.
+
+```tsx
+import { StyledBar } from 'fluent-styles'
+```
+
+#### `StyledBarDatum`
+
+| Field | Type | Description |
+|---|---|---|
+| `label` | `string` | X-axis label |
+| `value` | `number \| null` | Bar height value; `null` renders a grey placeholder bar |
+| `active` | `boolean` | Marks the active/highlighted bar (renders gradient + tooltip) |
+
+#### `StyledBarColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `inactiveBar` | `gray[200]` | Inactive bar fill |
+| `hatchLine` | `rgba(0,0,0,0.07)` | Hatch stripe colour on inactive bars |
+| `activeTop` | `#d4f53c` | Active bar gradient top |
+| `activeBottom` | `#a8c820` | Active bar gradient bottom |
+| `tooltipBg` | `gray[900]` | Tooltip bubble background |
+| `tooltipText` | `white` | Tooltip text colour |
+| `activeLabelColor` | `gray[900]` | Label colour for active bar |
+| `inactiveLabelColor` | `gray[400]` | Label colour for inactive bars |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `data` | `StyledBarDatum[]` | — | Array of bar data |
+| `maxValue` | `number` | max of values | Explicit Y-axis ceiling |
+| `width` | `number` | screen width − padding | SVG canvas width in px |
+| `containerPaddingHorizontal` | `number` | `80` | Horizontal padding to subtract from screen width |
+| `height` | `number` | `180` | Plot area height in px |
+| `barWidthRatio` | `number` | `0.62` | Bar width as fraction of slot width |
+| `labelHeight` | `number` | `28` | Height reserved below bars for labels |
+| `showHatch` | `boolean` | `true` | Render hatch texture on inactive bars |
+| `hatchSpacing` | `number` | `8` | Pixel gap between hatch lines |
+| `tooltipLabel` | `string` | auto from active value | Override tooltip text |
+| `unit` | `string` | `''` | Unit suffix appended to auto tooltip (e.g. `'min'`) |
+| `colors` | `StyledBarColors` | lime theme | Colour overrides |
+| `animated` | `boolean` | `true` | Animate bars growing from zero on mount |
+| `animationDuration` | `number` | `600` | Animation duration in ms |
+
+#### Usage
+
+```tsx
+// Basic workout chart
+<StyledBar
+  data={[
+    { label: 'Mon', value: 45 },
+    { label: 'Tue', value: 70, active: true },
+    { label: 'Wed', value: 55 },
+    { label: 'Thu', value: null },   // rest day placeholder
+    { label: 'Fri', value: 60 },
+  ]}
+  unit="min"
+/>
+
+// Inside a StyledCard with known padding
+// containerPaddingHorizontal = (screenPad + cardPad) × 2 = (20+20)×2 = 80
+<StyledCard padding={20}>
+  <StyledBar data={workoutData} unit="kg" containerPaddingHorizontal={80} />
+</StyledCard>
+
+// Blue water intake theme
+<StyledBar
+  data={waterData}
+  unit="mL"
+  maxValue={3000}
+  colors={{
+    activeTop:    palettes.blue[400],
+    activeBottom: palettes.blue[600],
+    tooltipBg:    palettes.blue[900],
+    inactiveBar:  palettes.blue[100],
+  }}
+/>
+
+// No animation, explicit width
+<StyledBar
+  data={data}
+  animated={false}
+  width={320}
+  showHatch={false}
+/>
+```
+
+---
+
+### StyledTimeline
+
+A data-driven vertical timeline with animated dots, three density variants, three dot shapes, custom renderers, and full colour overrides.
+
+```tsx
+import { StyledTimeline } from 'fluent-styles'
+```
+
+#### `TimelineItem`
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Unique identifier |
+| `time` | `string` | Primary time label (e.g. `'09:00'`) |
+| `endTime` | `string` | Optional end time shown smaller below |
+| `title` | `string` | Bold title in default content renderer |
+| `subtitle` | `string` | Secondary line (muted) |
+| `description` | `string` | Tertiary detail line |
+| `content` | `React.ReactNode` | Custom content — replaces default renderer for this item |
+| `meta` | `Record<string, unknown>` | Arbitrary metadata for use in `renderItem` |
+
+#### Variants
+
+| Variant | Gap between rows |
+|---|---|
+| `compact` | 12 px |
+| `default` | 20 px |
+| `spacious` | 32 px |
+
+#### Dot shapes
+
+| Shape | Appearance |
+|---|---|
+| `circle` | Hollow ring (transparent fill, coloured border) |
+| `ring` | White fill with coloured border |
+| `filled` | Solid fill (default) |
+
+#### `StyledTimelineColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `line` | `gray[200]` | Vertical connector line colour |
+| `dot` | `#8bc34a` | Dot fill / border colour |
+| `dotBorder` | `white` | Inner ring background (for `ring` shape) |
+| `timeText` | `gray[900]` | Primary time label colour |
+| `endTimeText` | `gray[400]` | End-time label colour |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | `TimelineItem[]` | `[]` | Data-driven item list |
+| `renderItem` | `(item, index) => ReactNode` | — | Custom row content renderer |
+| `children` | `ReactNode` | — | Extra rows appended after `items` |
+| `variant` | `TimelineVariant` | `'default'` | Row density |
+| `dotShape` | `TimelineDotShape` | `'filled'` | Dot style |
+| `dotSize` | `number` | `10` | Dot diameter in px |
+| `timeColumnWidth` | `number` | `56` | Width of left time column in px |
+| `timeGap` | `number` | `16` | Horizontal gap between dot column and content |
+| `animated` | `boolean` | `true` | Pop-in animation on each dot |
+| `colors` | `StyledTimelineColors` | — | Colour overrides |
+| `onItemPress` | `(item: TimelineItem) => void` | — | Press handler for rows |
+
+#### Usage
+
+```tsx
+// Minimal JSON-driven
+<StyledTimeline
+  items={[
+    { id: '1', time: '09:00', title: 'Morning Run',    subtitle: 'Cardio · 5km'  },
+    { id: '2', time: '11:30', title: 'Strength Class', subtitle: 'Upper body'    },
+    { id: '3', time: '14:00', title: 'Yoga',           subtitle: 'Recovery'      },
+  ]}
+/>
+
+// Custom renderItem
+<StyledTimeline
+  items={workoutItems}
+  renderItem={(item) => <WorkoutCard item={item} />}
+/>
+
+// Mixed: data items + inline children node
+<StyledTimeline items={scheduleItems}>
+  <NoteCard note="Don't forget to hydrate!" />
+</StyledTimeline>
+
+// Blue ring dots, spacious layout
+<StyledTimeline
+  items={items}
+  variant="spacious"
+  dotShape="ring"
+  colors={{ dot: '#2196f3', line: '#bbdefb' }}
+/>
+
+// Press handler
+<StyledTimeline
+  items={items}
+  onItemPress={(item) => navigation.navigate('Detail', { id: item.id })}
+/>
+```
+
+---
+
+### StyledRadio / StyledRadioGroup
+
+Production-ready radio button system with three sub-components and three layout variants. Supports controlled and uncontrolled modes, generic value types, animated dot transitions, and full colour overrides.
+
+```tsx
+import { StyledRadio, StyledRadioGroup } from 'fluent-styles'
+```
+
+#### Sub-components
+
+| Component | Description |
+|---|---|
+| `StyledRadio` | Raw animated radio dot — for custom layouts |
+| `StyledRadioGroup` | Full managed group with `list`, `card`, and `boxed` variants |
+
+#### Sizes (`RadioSize`)
+
+| Size | Outer | Inner dot | Border |
+|---|---|---|---|
+| `sm` | 16 | 7 | 1.5 |
+| `md` | 20 | 9 | 2.0 |
+| `lg` | 24 | 11 | 2.5 |
+
+#### Variants (`RadioVariant`)
+
+| Variant | Description |
+|---|---|
+| `list` | Full-width bordered rows — each option is a standalone pressable card |
+| `card` | Horizontal grid (configurable columns) — compact cards for delivery/plan selection |
+| `boxed` | Single card wrapper with a title + divider-separated rows inside |
+
+#### `RadioOption<T>`
+
+| Field | Type | Description |
+|---|---|---|
+| `value` | `T` | Unique option value (string or number) |
+| `label` | `string` | Primary label text |
+| `subtitle` | `string` | Secondary description line |
+| `rightContent` | `ReactNode` | Content displayed on the right (price, tag, etc.) |
+| `leadingContent` | `ReactNode` | Leading content (logo, icon, etc.) |
+| `badge` | `ReactNode` | Inline badge after the label (e.g. `"SAVE 33%"`) |
+| `disabled` | `boolean` | Disables this specific option |
+
+#### `StyledRadioColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `active` | `gray[900]` | Active dot and border colour |
+| `inactive` | `gray[300]` | Inactive ring colour |
+| `selectedCardBg` | `active + 5% opacity` | Selected item background |
+| `selectedCardBorder` | `active` | Selected item border |
+| `unselectedCardBorder` | `gray[200]` | Unselected item border |
+| `label` | `gray[900]` | Label text colour |
+| `subtitle` | `gray[400]` | Subtitle text colour |
+
+#### `StyledRadioGroupProps<T>`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `options` | `RadioOption<T>[]` | — | Options to render |
+| `value` | `T` | — | Controlled selected value |
+| `defaultValue` | `T` | — | Initial value for uncontrolled mode |
+| `onChange` | `(value: T) => void` | — | Called when selection changes |
+| `variant` | `RadioVariant` | `'list'` | Layout variant |
+| `size` | `RadioSize` | `'md'` | Dot size preset |
+| `title` | `string` | — | Section title (shown in `boxed` variant) |
+| `colors` | `StyledRadioColors` | — | Colour overrides |
+| `columns` | `number` | `3` | Columns for `card` variant |
+| `gap` | `number` | `10` | Gap between cards in `card` variant |
+
+#### Usage
+
+```tsx
+// Vertical list — billing period
+<StyledRadioGroup
+  options={[
+    { value: 'monthly', label: 'Monthly', rightContent: <StyledText>$9.99/mo</StyledText> },
+    { value: 'yearly',  label: 'Yearly',  badge: <Badge label="SAVE 33%" />,
+      rightContent: <StyledText>$6.67/mo</StyledText> },
+  ]}
+  defaultValue="monthly"
+  variant="list"
+/>
+
+// Boxed card with title
+<StyledRadioGroup
+  title="Billing Period"
+  options={billingOptions}
+  defaultValue="monthly"
+  variant="boxed"
+/>
+
+// Horizontal card grid — delivery method
+<StyledRadioGroup
+  options={[
+    { value: 'standard', label: 'Standard', subtitle: '3–5 days' },
+    { value: 'express',  label: 'Express',  subtitle: '1–2 days' },
+    { value: 'next',     label: 'Next Day', subtitle: 'Tomorrow' },
+  ]}
+  defaultValue="express"
+  variant="card"
+  columns={3}
+  colors={{ active: '#2563eb', selectedCardBg: '#eff6ff' }}
+/>
+
+// Controlled with onChange
+const [plan, setPlan] = useState<'monthly' | 'yearly'>('monthly')
+
+<StyledRadioGroup
+  options={planOptions}
+  value={plan}
+  onChange={setPlan}
+  variant="list"
+/>
+
+// Raw StyledRadio dot for custom layouts
+<StyledRadio
+  selected={isSelected}
+  color="#2563eb"
+  size="md"
+  onPress={() => setSelected(!isSelected)}
+/>
+
+// Payment options with leading logos
+<StyledRadioGroup
+  options={[
+    { value: 'visa', label: 'Visa', leadingContent: <VisaLogo /> },
+    { value: 'mc',   label: 'Mastercard', leadingContent: <MCLogo /> },
+  ]}
+  defaultValue="visa"
+  variant="list"
+  colors={{ active: '#1a1a2e' }}
+/>
 ```
 
 ---
