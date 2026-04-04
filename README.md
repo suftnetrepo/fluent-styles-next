@@ -43,6 +43,7 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledRadio / StyledRadioGroup](#styledradio--styledradiogroup)
   - [StyledProgressBar](#styledprogressbar)
   - [StyledSlider](#styledslider)
+  - [StyledDatePicker](#styleddatepicker)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -2672,6 +2673,241 @@ const DURATION = 243
 
 // ── 9. Disabled state ─────────────────────────────────────────────────────────
 <StyledSlider value={55} disabled showMinMax />
+```
+
+---
+
+### StyledDatePicker
+
+Pure-JS date / time picker — no native dependencies. Built entirely on fluent-styles primitives. Supports 5 modes, 3 display variants, scroll-drum time selection, month grid, date range, `minDate` / `maxDate` guards, and full colour overrides.
+
+```tsx
+import { StyledDatePicker } from 'fluent-styles'
+```
+
+#### Modes
+
+| Mode | Description |
+|---|---|
+| `date` | Calendar grid — pick a single day (default) |
+| `time` | Scroll-drum hour / minute / AM-PM picker |
+| `datetime` | Calendar grid + time drum combined |
+| `range` | Two-tap calendar — start then end date |
+| `month` | Month grid + year scroll drum |
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `inline` | Always-visible calendar embedded in the layout (default) |
+| `sheet` | Picker slides up in a Modal bottom-sheet |
+| `input` | Tappable input field that opens the sheet |
+
+#### Sizes
+
+| Size | Day-cell size | Font |
+|---|---|---|
+| `sm` | 34 px | 13 px |
+| `md` | 40 px (default) | 15 px |
+| `lg` | 48 px | 17 px |
+
+#### `StyledDatePickerColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `selected` | `gray[900]` | Selected day circle fill |
+| `selectedText` | `white` | Selected day text |
+| `today` | `#3b82f6` | Today ring / text colour |
+| `rangeFill` | `selected + 9% alpha` | Fill between range start/end |
+| `dayText` | `gray[800]` | Regular day text |
+| `disabledText` | `gray[300]` | Out-of-range day text |
+| `headerText` | `gray[900]` | Month/year header text |
+| `background` | `white` | Sheet / inline background |
+| `inputBorder` | `gray[200]` | Input field border |
+| `confirmBg` | `gray[900]` | Confirm button background |
+| `confirmText` | `white` | Confirm button text |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `mode` | `DatePickerMode` | `'date'` | Calendar mode |
+| `variant` | `DatePickerVariant` | `'inline'` | Display variant |
+| `size` | `DatePickerSize` | `'md'` | Day-cell size preset |
+| `value` | `Date \| null` | — | Selected date (`date` / `time` / `datetime` / `month`) |
+| `valueStart` | `Date \| null` | — | Range start date (`range` mode) |
+| `valueEnd` | `Date \| null` | — | Range end date (`range` mode) |
+| `minDate` | `Date` | — | Earliest selectable date |
+| `maxDate` | `Date` | — | Latest selectable date |
+| `showTodayButton` | `boolean` | `true` | Show "Today" shortcut button |
+| `showConfirm` | `boolean` | `true` | Show Confirm button in sheet |
+| `confirmLabel` | `string` | `'Done'` | Confirm button label |
+| `placeholder` | `string` | — | Input variant placeholder text |
+| `label` | `string` | — | Input variant field label |
+| `formatDisplay` | `(date: Date) => string` | auto | Custom input display formatter |
+| `colors` | `StyledDatePickerColors` | dark theme | Colour overrides |
+| `onChange` | `(date: Date) => void` | — | Fires on every date selection |
+| `onRangeChange` | `(start, end: Date\|null) => void` | — | Fires when either range thumb changes |
+| `onConfirm` | `(date: Date\|null) => void` | — | Fires when Confirm is tapped |
+| `disabled` | `boolean` | `false` | Disables all interaction |
+
+#### Usage
+
+```tsx
+import React, { useState } from 'react'
+import { StyledDatePicker } from 'fluent-styles'
+
+// ── 1. Date — always-visible inline calendar ──────────────────────────────────
+const [date, setDate] = useState<Date | null>(new Date())
+
+<StyledDatePicker
+  mode="date"
+  variant="inline"
+  value={date}
+  onChange={setDate}
+  showTodayButton
+/>
+
+// ── 2. Date — input field that opens a bottom-sheet ──────────────────────────
+const [apptDate, setApptDate] = useState<Date | null>(null)
+
+<StyledDatePicker
+  mode="date"
+  variant="input"
+  label="Appointment date"
+  placeholder="Pick a date"
+  value={apptDate}
+  onChange={setApptDate}
+  onConfirm={setApptDate}
+  confirmLabel="Confirm date"
+/>
+
+// ── 3. Date range — inline with indigo fill ───────────────────────────────────
+// Tap once for start, tap again for end.
+const [rangeS, setRangeS] = useState<Date | null>(null)
+const [rangeE, setRangeE] = useState<Date | null>(null)
+
+<StyledDatePicker
+  mode="range"
+  variant="inline"
+  valueStart={rangeS}
+  valueEnd={rangeE}
+  onRangeChange={(s, e) => { setRangeS(s); setRangeE(e) }}
+  colors={{ selected: '#6366f1', rangeFill: '#eef2ff', today: '#6366f1' }}
+/>
+
+// ── 4. Time — scroll drum ─────────────────────────────────────────────────────
+const [time, setTime] = useState<Date | null>(new Date())
+
+<StyledDatePicker
+  mode="time"
+  variant="inline"
+  value={time}
+  onChange={setTime}
+  showTodayButton={false}
+/>
+
+// ── 5. Date + Time combined ───────────────────────────────────────────────────
+const [dt, setDt] = useState<Date | null>(new Date())
+
+<StyledDatePicker
+  mode="datetime"
+  variant="inline"
+  value={dt}
+  onChange={setDt}
+  colors={{ selected: '#0f172a', today: '#6366f1' }}
+/>
+
+// ── 6. Month picker ───────────────────────────────────────────────────────────
+const [month, setMonth] = useState<Date | null>(new Date())
+
+<StyledDatePicker
+  mode="month"
+  variant="inline"
+  value={month}
+  onChange={setMonth}
+  colors={{ selected: '#059669', today: '#059669' }}
+/>
+
+// ── 7. Colour themes ──────────────────────────────────────────────────────────
+// Lime
+<StyledDatePicker mode="date" variant="inline" value={lime} onChange={setLime}
+  colors={{ selected: '#8bc34a', today: '#8bc34a', confirmBg: '#8bc34a' }} />
+
+// Rose
+<StyledDatePicker mode="date" variant="inline" value={rose} onChange={setRose}
+  colors={{ selected: '#e11d48', today: '#e11d48', rangeFill: '#fff1f2' }} />
+
+// Indigo
+<StyledDatePicker mode="date" variant="inline" value={indigo} onChange={setIndigo}
+  colors={{ selected: '#6366f1', today: '#6366f1', rangeFill: '#eef2ff' }} />
+
+// Amber
+<StyledDatePicker mode="date" variant="inline" value={amber} onChange={setAmber}
+  colors={{ selected: '#d97706', today: '#d97706', confirmBg: '#d97706' }} />
+
+// ── 8. Real-world: Hotel booking ──────────────────────────────────────────────
+// Two input pickers; check-out minDate is bound to check-in.
+const [checkIn,  setCheckIn]  = useState<Date | null>(null)
+const [checkOut, setCheckOut] = useState<Date | null>(null)
+
+<StyledDatePicker
+  mode="date" variant="input"
+  label="Check-in" placeholder="Select check-in"
+  value={checkIn}
+  onChange={setCheckIn}
+  onConfirm={setCheckIn}
+  minDate={new Date()}
+  colors={{ selected: '#0ea5e9', today: '#0ea5e9', confirmBg: '#0ea5e9' }}
+/>
+<StyledDatePicker
+  mode="date" variant="input"
+  label="Check-out" placeholder="Select check-out"
+  value={checkOut}
+  onChange={setCheckOut}
+  onConfirm={setCheckOut}
+  minDate={checkIn ?? new Date()}
+  colors={{ selected: '#0ea5e9', today: '#0ea5e9', confirmBg: '#0ea5e9' }}
+/>
+
+// ── 9. Real-world: Event scheduler ───────────────────────────────────────────
+// Separate date + time inputs, purple theme.
+const [eventDate, setEventDate] = useState<Date | null>(null)
+const [eventTime, setEventTime] = useState<Date | null>(null)
+
+<StyledDatePicker
+  mode="date" variant="input"
+  label="Event date" placeholder="Choose date"
+  value={eventDate} onChange={setEventDate} onConfirm={setEventDate}
+  colors={{ selected: '#8b5cf6', today: '#8b5cf6', confirmBg: '#8b5cf6' }}
+/>
+<StyledDatePicker
+  mode="time" variant="input"
+  label="Event time" placeholder="Choose time"
+  value={eventTime} onChange={setEventTime} onConfirm={setEventTime}
+  formatDisplay={(d) => d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+  colors={{ selected: '#8b5cf6', today: '#8b5cf6', confirmBg: '#8b5cf6' }}
+/>
+
+// ── 10. Real-world: Report period ────────────────────────────────────────────
+// Month-mode input pickers with amber theme.
+const [reportFrom, setReportFrom] = useState<Date | null>(null)
+const [reportTo,   setReportTo]   = useState<Date | null>(null)
+
+<StyledDatePicker
+  mode="month" variant="input"
+  label="From month" placeholder="Select start month"
+  value={reportFrom} onChange={setReportFrom} onConfirm={setReportFrom}
+  formatDisplay={(d) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+  colors={{ selected: '#f59e0b', today: '#f59e0b', confirmBg: '#f59e0b' }}
+/>
+<StyledDatePicker
+  mode="month" variant="input"
+  label="To month" placeholder="Select end month"
+  value={reportTo} onChange={setReportTo} onConfirm={setReportTo}
+  formatDisplay={(d) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+  colors={{ selected: '#f59e0b', today: '#f59e0b', confirmBg: '#f59e0b' }}
+/>
 ```
 
 ---
