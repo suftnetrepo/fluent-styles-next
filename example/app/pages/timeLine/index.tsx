@@ -1,14 +1,20 @@
 /**
- * DailyPlanScreen.tsx
- * ────────────────────
- * Daily fitness planner using:
- *  • react-native-calendars  — horizontal week strip (CalendarProvider + WeekCalendar)
- *  • StyledTimeline          — vertical workout schedule
- *  • fluent-styles           — all layout / UI primitives
+ * StyledTimelineDemo.tsx
+ * ───────────────────────
+ * Comprehensive showcase of StyledTimeline across 8 real-world use cases:
+ *
+ *  1. Workout Schedule       — fitness cards with progress + stats
+ *  2. Order Tracking         — delivery status with step states
+ *  3. Medical History        — doctor visits with severity badges
+ *  4. Project Milestones     — kanban-style with avatars + due dates
+ *  5. Transaction History    — debit/credit with amounts
+ *  6. Notification Feed      — social/app notifications with icons
+ *  7. Travel Itinerary       — flights + hotels + activities
+ *  8. Interview Pipeline     — hiring stages with status chips
  */
 
-import React, { useState, useCallback } from 'react';
-import { CalendarProvider } from 'react-native-calendars';
+import React, { useState } from 'react';
+import { Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {
   StyledSafeAreaView,
@@ -21,412 +27,82 @@ import {
   StyledImage,
   StyledSpacer,
   StyledDivider,
+  TabBar,
+  TabItem,
   theme,
   palettes,
-    StyledTimeline,
+  StyledTimeline,
   type TimelineItem,
 } from 'fluent-styles';
+import RealTimeScreen from './realTime';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+const { width: W } = Dimensions.get('window');
+const CARD_PAD = 16;
+const CONTAINER_PAD = 40; // screen padding only (no extra card wrapping)
 
-const LIME      = '#c6ef3e';
-const LIME_DARK = '#8bc34a';
-const DARK      = '#1a1a1e';
-const MUTED     = '#9ca3af';
-const BG        = '#f5f5f5';
+// ─── Section header ───────────────────────────────────────────────────────────
 
-// ─── Workout meta type ────────────────────────────────────────────────────────
-
-interface WorkoutMeta {
-  [key: string]: unknown;
-  iconName:      string;
-  progress:      number;
-  progressLabel: string;
-  calories:      string;
-  bpm:           string;
-  duration:      string;
-  bgColor:       string;
-  iconColor:     string;
-}
-
-// ─── Week navigation helpers ──────────────────────────────────────────────────
-
-const DAY_LABELS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun',
-                      'Jul','Aug','Sep','Oct','Nov','Dec'];
-
-/**
- * Safe ISO date helpers — all arithmetic done in LOCAL time,
- * serialised as YYYY-MM-DD without any UTC conversion.
- * This avoids the timezone-offset bug where toISOString() rolls
- * a local midnight date back to the previous UTC day, producing
- * duplicate date strings when a week spans a month boundary.
- */
-
-/** Format a Date as "YYYY-MM-DD" using local calendar fields */
-function toISO(d: Date): string {
-  const y  = d.getFullYear();
-  const m  = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${dd}`;
-}
-
-/** Parse an ISO string into a local-time Date at midnight */
-function fromISO(iso: string): Date {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-
-/** ISO string for today in local time */
-const isoToday = (): string => toISO(new Date());
-
-/** Shift an ISO date string by `days` — safe across month/year boundaries */
-function shiftDate(iso: string, days: number): string {
-  const d = fromISO(iso);
-  d.setDate(d.getDate() + days);
-  return toISO(d);
-}
-
-/**
- * Returns exactly 7 unique ISO date strings for the Sun–Sat week
- * that contains `date`. Uses local-time arithmetic to avoid UTC rollover.
- */
-function getWeekDates(date: string): string[] {
-  const d   = fromISO(date);
-  const dow = d.getDay(); // 0 = Sunday
-  // Find the Sunday that starts this week
-  const sunday = new Date(d);
-  sunday.setDate(d.getDate() - dow);
-  // Build 7 days from that Sunday
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(sunday);
-    day.setDate(sunday.getDate() + i);
-    return toISO(day);
-  });
-}
-
-/** "Sep 2024" label for a given ISO date — uses local-time fromISO */
-function monthLabel(iso: string): string {
-  const d = fromISO(iso);
-  return `${MONTH_LABELS[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-// ─── Schedule templates (offset from today) ──────────────────────────────────
-//
-// Keys are day offsets from today (0 = today, -1 = yesterday, +1 = tomorrow…).
-// buildSchedule() maps these to real ISO dates at runtime so the demo is
-// always anchored to the current date regardless of when the app is opened.
-
-interface WorkoutTemplate {
-  id: string; time: string; endTime: string; title: string; meta: WorkoutMeta;
-}
-
-const SCHEDULE_TEMPLATES: Record<number, WorkoutTemplate[]> = {
-  [-3]: [
-    { id: 'tm3a', time: '08:00', endTime: '09:30', title: 'Morning Yoga',
-      meta: { iconName: 'wind', progress: 0.9, progressLabel: '9 Of 10',
-        calories: '240', bpm: '64', duration: '01:30',
-        bgColor: '#f0fdf4', iconColor: '#16a34a' } },
-  ],
-  [-2]: [
-    { id: 'tm2a', time: '07:00', endTime: '08:00', title: 'Cycling',
-      meta: { iconName: 'activity', progress: 0.5, progressLabel: '3 Of 6',
-        calories: '640', bpm: '138', duration: '01:00',
-        bgColor: '#eff6ff', iconColor: '#2563eb' } },
-    { id: 'tm2b', time: '18:00', endTime: '19:00', title: 'Stretch',
-      meta: { iconName: 'feather', progress: 0.8, progressLabel: '4 Of 5',
-        calories: '120', bpm: '62', duration: '01:00',
-        bgColor: '#fdf4ff', iconColor: '#9333ea' } },
-  ],
-  // Today — 3 sessions
-  [0]: [
-    { id: 't0a', time: '11:35', endTime: '13:05', title: 'Cardio',
-      meta: { iconName: 'heart', progress: 0.65, progressLabel: '4 Of 6',
-        calories: '1200', bpm: '90', duration: '03:00',
-        bgColor: '#fff0f0', iconColor: '#dc2626' } },
-    { id: 't0b', time: '14:45', endTime: '15:45', title: 'Muscle',
-      meta: { iconName: 'zap', progress: 0.62, progressLabel: '5 Of 8',
-        calories: '980', bpm: '102', duration: '01:00',
-        bgColor: '#fdf4ff', iconColor: '#9333ea' } },
-    { id: 't0c', time: '17:00', endTime: '18:00', title: 'Weight Training',
-      meta: { iconName: 'trending-up', progress: 0.44, progressLabel: '4 Of 9',
-        calories: '800', bpm: '85', duration: '01:00',
-        bgColor: '#fff7ed', iconColor: '#ea580c' } },
-  ],
-  [1]: [
-    { id: 't1a', time: '06:30', endTime: '07:30', title: 'Morning Run',
-      meta: { iconName: 'navigation', progress: 0, progressLabel: '0 Of 6',
-        calories: '520', bpm: '145', duration: '01:00',
-        bgColor: '#f0fdf4', iconColor: '#16a34a' } },
-    { id: 't1b', time: '16:00', endTime: '17:00', title: 'Swimming',
-      meta: { iconName: 'droplet', progress: 0, progressLabel: '0 Of 6',
-        calories: '430', bpm: '120', duration: '01:00',
-        bgColor: '#eff6ff', iconColor: '#0284c7' } },
-  ],
-  [2]: [
-    { id: 't2a', time: '09:00', endTime: '10:30', title: 'HIIT Session',
-      meta: { iconName: 'zap', progress: 0, progressLabel: '0 Of 8',
-        calories: '750', bpm: '165', duration: '01:30',
-        bgColor: '#fff7ed', iconColor: '#ea580c' } },
-  ],
-  // +3 = rest day (empty array)
-  [3]: [],
-  [4]: [
-    { id: 't4a', time: '10:00', endTime: '11:30', title: 'Boxing',
-      meta: { iconName: 'shield', progress: 0, progressLabel: '0 Of 10',
-        calories: '870', bpm: '155', duration: '01:30',
-        bgColor: '#fff0f0', iconColor: '#dc2626' } },
-    { id: 't4b', time: '19:00', endTime: '20:00', title: 'Evening Yoga',
-      meta: { iconName: 'sun', progress: 0, progressLabel: '0 Of 10',
-        calories: '120', bpm: '60', duration: '01:00',
-        bgColor: '#fefce8', iconColor: '#ca8a04' } },
-  ],
-};
-
-/**
- * Builds the live schedule keyed by real ISO dates.
- * Called once at module level so it's stable for the app session.
- */
-function buildSchedule(): Record<string, TimelineItem[]> {
-  const today = isoToday();
-  const result: Record<string, TimelineItem[]> = {};
-  Object.entries(SCHEDULE_TEMPLATES).forEach(([offsetStr, templates]) => {
-    const offset  = parseInt(offsetStr, 10);
-    const isoDate = shiftDate(today, offset);
-    result[isoDate] = templates.map((t) => ({
-      id:      t.id,
-      time:    t.time,
-      endTime: t.endTime,
-      title:   t.title,
-      meta:    t.meta,
-    }));
-  });
-  return result;
-}
-
-// Live schedule — always relative to today
-const SCHEDULE = buildSchedule();
-
-// Dot markers — derived from live schedule
-const MARKED_DATES = Object.fromEntries(
-  Object.entries(SCHEDULE)
-    .filter(([, items]) => items.length > 0)
-    .map(([date]) => [date, { marked: true, dotColor: LIME_DARK }]),
-);
-
-
-// ─── WeekStrip ────────────────────────────────────────────────────────────────
-//
-// Full week navigation strip built entirely from fluent-styles.
-//
-// Navigation:
-//  • < / > chevrons shift the visible week ±7 days
-//  • Tapping any day selects it AND moves to that week if needed
-//  • "Today" pill resets to the current week + selects today
-//
-// Props:
-//  selectedDate  — ISO string of the currently selected date
-//  markedDates   — set of ISO strings that have a dot indicator
-//  onSelect      — called with ISO string when a day is tapped or week changes
-
-interface WeekStripProps {
-  /** ISO date string of the currently selected/highlighted day */
-  selectedDate: string;
-  /** ISO date string anchoring which week is visible (owned by parent) */
-  anchorDate:   string;
-  /** Called when the user navigates weeks or taps a day — parent updates both */
-  onSelect:     (date: string) => void;
-  /** Called only when the user navigates weeks, so parent can update anchorDate */
-  onAnchorChange: (date: string) => void;
-  /** Dates that should show a dot indicator */
-  markedDates:  Record<string, unknown>;
-}
-
-const WeekStrip: React.FC<WeekStripProps> = ({
-  selectedDate,
-  anchorDate,
-  onSelect,
-  onAnchorChange,
-  markedDates,
-}) => {
-  // Derive visible week purely from anchorDate — no local state, no side effects
-  const weekDates  = getWeekDates(anchorDate);
-  const todayIso   = isoToday();
-  const isThisWeek = getWeekDates(todayIso).includes(weekDates[0]);
-
-  const prevWeek = () => onAnchorChange(shiftDate(anchorDate, -7));
-  const nextWeek = () => onAnchorChange(shiftDate(anchorDate,  7));
-  const goToday  = () => { onAnchorChange(todayIso); onSelect(todayIso); };
-
-  return (
-    <Stack
-      backgroundColor={palettes.white}
-      borderBottomWidth={1}
-      borderBottomColor={theme.colors.gray[100]}
-    >
-      {/* ── Month label row + navigation arrows ── */}
-      <Stack
-        horizontal
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal={16}
-        paddingTop={10}
-        paddingBottom={4}
-      >
-        {/* Prev week */}
-        <StyledPressable
-          onPress={prevWeek}
-          width={32} height={32} borderRadius={16}
-          backgroundColor={theme.colors.gray[100]}
-          alignItems="center" justifyContent="center"
-        >
-          <Icon name="chevron-left" size={16} color={DARK} />
-        </StyledPressable>
-
-        {/* Month + year + optional Today pill */}
-        <Stack horizontal alignItems="center" gap={10}>
-          <StyledText fontSize={14} fontWeight="700" color={DARK}>
-            {monthLabel(weekDates[3])}
-          </StyledText>
-          {!isThisWeek && (
-            <StyledPressable
-              onPress={goToday}
-              paddingHorizontal={10} paddingVertical={3}
-              borderRadius={12} backgroundColor={LIME}
-            >
-              <StyledText fontSize={11} fontWeight="700" color={DARK}>Today</StyledText>
-            </StyledPressable>
-          )}
-        </Stack>
-
-        {/* Next week */}
-        <StyledPressable
-          onPress={nextWeek}
-          width={32} height={32} borderRadius={16}
-          backgroundColor={theme.colors.gray[100]}
-          alignItems="center" justifyContent="center"
-        >
-          <Icon name="chevron-right" size={16} color={DARK} />
-        </StyledPressable>
-      </Stack>
-
-      {/* ── Day cells ── */}
-      <Stack horizontal alignItems="center" paddingHorizontal={4} paddingBottom={10}>
-        {weekDates.map((iso) => {
-          const d          = fromISO(iso);
-          const dayNum     = d.getDate();
-          const label      = DAY_LABELS[d.getDay()];
-          const isSelected = iso === selectedDate;
-          const isToday    = iso === todayIso;
-          const hasDot     = !!markedDates[iso];
-
-          return (
-            <StyledPressable
-              key={iso}
-              flex={1}
-              alignItems="center"
-              paddingVertical={2}
-              onPress={() => { onSelect(iso); onAnchorChange(iso); }}
-            >
-              {/* Day name */}
-              <StyledText
-                fontSize={11}
-                fontWeight="500"
-                color={isSelected ? LIME_DARK : MUTED}
-                marginBottom={5}
-              >
-                {label}
-              </StyledText>
-
-              {/* Date circle */}
-              <Stack
-                width={36} height={36} borderRadius={18}
-                backgroundColor={isSelected ? LIME : 'transparent'}
-                alignItems="center" justifyContent="center"
-              >
-                <StyledText
-                  fontSize={17}
-                  fontWeight={isSelected ? '800' : isToday ? '800' : '600'}
-                  color={isSelected ? DARK : isToday ? LIME_DARK : theme.colors.gray[800]}
-                >
-                  {dayNum}
-                </StyledText>
-              </Stack>
-
-              {/* Workout dot */}
-              <Stack
-                width={5} height={5} borderRadius={2.5} marginTop={4}
-                backgroundColor={hasDot ? (isSelected ? DARK : LIME_DARK) : 'transparent'}
-              />
-            </StyledPressable>
-          );
-        })}
-      </Stack>
+const SectionHeader: React.FC<{ title: string; subtitle?: string; color?: string }> = ({
+  title, subtitle, color = theme.colors.gray[900],
+}) => (
+  <Stack paddingHorizontal={20} paddingTop={28} paddingBottom={14}>
+    <Stack horizontal alignItems="center" gap={8}>
+      <Stack width={4} height={22} borderRadius={2} backgroundColor={color} />
+      <StyledText fontSize={18} fontWeight="900" color={theme.colors.gray[900]}>
+        {title}
+      </StyledText>
     </Stack>
-  );
-};
-
-// ─── Progress bar ─────────────────────────────────────────────────────────────
-
-const ProgressBar: React.FC<{ progress: number; label: string }> = ({ progress, label }) => (
-  <Stack horizontal alignItems="center" gap={8} marginBottom={12}>
-    <StyledText fontSize={12} color={MUTED} width={56}>Exercise</StyledText>
-    <Stack flex={1} height={5} borderRadius={3} backgroundColor={theme.colors.gray[100]}>
-      <Stack
-        width={`${Math.round(progress * 100)}%` as any}
-        height={5}
-        borderRadius={3}
-        backgroundColor={LIME_DARK}
-      />
-    </Stack>
-    <StyledText fontSize={12} color={MUTED}>{label}</StyledText>
+    {subtitle && (
+      <StyledText fontSize={13} color={theme.colors.gray[400]} marginTop={4} marginLeft={12}>
+        {subtitle}
+      </StyledText>
+    )}
   </Stack>
 );
 
-// ─── Workout card ─────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
+// 1. WORKOUT SCHEDULE
+// ═════════════════════════════════════════════════════════════════════════════
+
+const WorkoutProgressBar: React.FC<{ progress: number; label: string }> = ({ progress, label }) => (
+  <Stack horizontal alignItems="center" gap={8} marginBottom={10}>
+    <StyledText fontSize={11} color={theme.colors.gray[400]} width={48}>Exercise</StyledText>
+    <Stack flex={1} height={4} borderRadius={2} backgroundColor={theme.colors.gray[100]}>
+      <Stack width={`${progress * 100}%` as any} height={4} borderRadius={2} backgroundColor="#8bc34a" />
+    </Stack>
+    <StyledText fontSize={11} color={theme.colors.gray[400]}>{label}</StyledText>
+  </Stack>
+);
 
 const WorkoutCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
-  const m = item.meta as unknown as WorkoutMeta;
+  const m = item.meta as any;
   return (
-    <StyledCard
-      backgroundColor={palettes.white}
-      borderRadius={20}
-      padding={16}
-      shadow="light"
-      marginBottom={4}
-      borderLeftWidth={4}
-      borderLeftColor={m.iconColor}
-    >
-      <Stack horizontal alignItems="center" justifyContent="space-between" marginBottom={12}>
-        <Stack horizontal alignItems="center" gap={10}>
-          <Stack
-            width={38} height={38} borderRadius={19}
-            backgroundColor={m.bgColor} alignItems="center" justifyContent="center"
-          >
-            <Icon name={m.iconName} size={17} color={m.iconColor} />
+    <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={14} shadow="light" marginBottom={2}>
+      <Stack horizontal alignItems="center" justifyContent="space-between" marginBottom={10}>
+        <Stack horizontal alignItems="center" gap={8}>
+          <Stack width={36} height={36} borderRadius={18} backgroundColor="#f0f7e6"
+            alignItems="center" justifyContent="center">
+            <Icon name={m.icon} size={16} color="#5a8a1e" />
           </Stack>
-          <StyledText fontSize={16} fontWeight="800" color={DARK}>{item.title}</StyledText>
+          <StyledText fontSize={15} fontWeight="800" color={theme.colors.gray[900]}>{item.title}</StyledText>
         </Stack>
         <StyledPressable onPress={() => {}}>
-          <Icon name="more-vertical" size={17} color={MUTED} />
+          <Icon name="more-vertical" size={16} color={theme.colors.gray[400]} />
         </StyledPressable>
       </Stack>
-
-      <ProgressBar progress={m.progress} label={m.progressLabel} />
-      <StyledDivider borderBottomColor={theme.colors.gray[50]} marginBottom={12} />
-
+      <WorkoutProgressBar progress={m.progress} label={m.progressLabel} />
       <Stack horizontal>
         {[
           { v: m.calories, u: 'kcal', l: 'Calories Burn' },
           { v: m.bpm,      u: 'bpm',  l: 'Heart Rate'    },
           { v: m.duration, u: 'hr',   l: 'Time'          },
         ].map(({ v, u, l }) => (
-          <Stack key={l} flex={1} gap={3}>
+          <Stack key={l} flex={1} gap={2}>
             <Stack horizontal alignItems="flex-end" gap={2}>
-              <StyledText fontSize={20} fontWeight="900" color={DARK}>{v}</StyledText>
-              <StyledText fontSize={11} color={MUTED} marginBottom={2}>{u}</StyledText>
+              <StyledText fontSize={18} fontWeight="900" color={theme.colors.gray[900]}>{v}</StyledText>
+              <StyledText fontSize={11} color={theme.colors.gray[400]} marginBottom={2}>{u}</StyledText>
             </Stack>
-            <StyledText fontSize={11} color={MUTED}>{l}</StyledText>
+            <StyledText fontSize={11} color={theme.colors.gray[400]}>{l}</StyledText>
           </Stack>
         ))}
       </Stack>
@@ -434,226 +110,540 @@ const WorkoutCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
   );
 };
 
-// ─── Rest day ─────────────────────────────────────────────────────────────────
+const workoutItems: TimelineItem[] = [
+  { id: 'w1', time: '06:00', endTime: '07:00', title: 'Morning Run',
+    meta: { icon: 'wind', progress: 1,    progressLabel: '6 Of 6', calories: '520',  bpm: '142', duration: '01:00' } },
+  { id: 'w2', time: '11:35', endTime: '13:05', title: 'Cardio',
+    meta: { icon: 'heart', progress: 0.65, progressLabel: '4 Of 6', calories: '1200', bpm: '90',  duration: '03:00' } },
+  { id: 'w3', time: '14:50', endTime: '15:15', title: 'Weight Training',
+    meta: { icon: 'activity', progress: 0.44, progressLabel: '4 Of 9', calories: '800',  bpm: '85',  duration: '01:30' } },
+  { id: 'w4', time: '18:00', endTime: '19:00', title: 'Yoga & Stretch',
+    meta: { icon: 'feather', progress: 0, progressLabel: '0 Of 5', calories: '300',  bpm: '65',  duration: '01:00' } },
+];
 
-const RestDay: React.FC = () => (
-  <Stack alignItems="center" paddingVertical={48} gap={12}>
-    <Stack width={72} height={72} borderRadius={36} backgroundColor="#f0fdf4"
-      alignItems="center" justifyContent="center">
-      <Icon name="moon" size={28} color={LIME_DARK} />
-    </Stack>
-    <StyledText fontSize={18} fontWeight="800" color={DARK}>Rest Day</StyledText>
-    <StyledText fontSize={14} color={MUTED} textAlign="center">
-      Recovery is part of the plan.{'\n'}Rest up and come back stronger 💚
-    </StyledText>
-  </Stack>
-);
+// ═════════════════════════════════════════════════════════════════════════════
+// 2. ORDER TRACKING
+// ═════════════════════════════════════════════════════════════════════════════
 
-// ─── Summary strip ────────────────────────────────────────────────────────────
+type OrderStatus = 'done' | 'active' | 'pending';
 
-const SummaryStrip: React.FC<{ items: TimelineItem[] }> = ({ items }) => {
-  if (!items.length) return null;
-  const totalCal = items.reduce((s, i) => {
-    const m = i.meta as unknown as WorkoutMeta;
-    return s + parseInt(m.calories.replace(',', ''), 10);
-  }, 0);
+const STATUS_COLOR: Record<OrderStatus, string> = {
+  done:    '#4caf50',
+  active:  '#2196f3',
+  pending: theme.colors.gray[300],
+};
+
+const STATUS_BG: Record<OrderStatus, string> = {
+  done:    '#e8f5e9',
+  active:  '#e3f2fd',
+  pending: theme.colors.gray[100],
+};
+
+const OrderStepCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as any;
+  const status: OrderStatus = m.status;
   return (
-    <Stack horizontal gap={10} marginBottom={16} flexWrap="wrap">
-      {[
-        { icon: 'layers', label: `${items.length} sessions`          },
-        { icon: 'zap',    label: `${totalCal.toLocaleString()} kcal` },
-      ].map(({ icon, label }) => (
-        <Stack key={label} horizontal alignItems="center" gap={6}
-          paddingHorizontal={12} paddingVertical={7} borderRadius={20}
-          backgroundColor={palettes.gray[100]}>
-          <Icon name={icon} size={13} color={LIME_DARK} />
-          <StyledText fontSize={13} fontWeight="600" color={DARK}>{label}</StyledText>
+    <Stack
+      paddingVertical={12}
+      paddingHorizontal={14}
+      borderRadius={14}
+      backgroundColor={STATUS_BG[status]}
+      marginBottom={4}
+      borderLeftWidth={3}
+      borderLeftColor={STATUS_COLOR[status]}
+    >
+      <Stack horizontal alignItems="center" justifyContent="space-between">
+        <Stack gap={3}>
+          <StyledText fontSize={14} fontWeight="700"
+            color={status === 'pending' ? theme.colors.gray[400] : theme.colors.gray[900]}>
+            {item.title}
+          </StyledText>
+          {item.subtitle && (
+            <StyledText fontSize={12} color={theme.colors.gray[400]}>{item.subtitle}</StyledText>
+          )}
         </Stack>
-      ))}
+        {status === 'done' && (
+          <Stack width={28} height={28} borderRadius={14} backgroundColor="#4caf50"
+            alignItems="center" justifyContent="center">
+            <Icon name="check" size={14} color="#fff" />
+          </Stack>
+        )}
+        {status === 'active' && (
+          <Stack paddingHorizontal={10} paddingVertical={4} borderRadius={12} backgroundColor="#2196f3">
+            <StyledText fontSize={11} fontWeight="700" color="#fff">Live</StyledText>
+          </Stack>
+        )}
+      </Stack>
     </Stack>
   );
 };
 
-// ─── Bottom nav ───────────────────────────────────────────────────────────────
-
-type NavKey = 'home' | 'calendar' | 'add' | 'heart' | 'profile';
-
-const NAV_ITEMS: { key: NavKey; icon: string; label: string }[] = [
-  { key: 'home',     icon: 'home',     label: 'Home'     },
-  { key: 'calendar', icon: 'calendar', label: 'Plan'     },
-  { key: 'heart',    icon: 'heart',    label: 'Health'   },
-  { key: 'profile',  icon: 'user',     label: 'Profile'  },
+const orderItems: TimelineItem[] = [
+  { id: 'o1', time: '09:12', title: 'Order Placed',    subtitle: 'Order #FS-8821 confirmed',   meta: { status: 'done'    } },
+  { id: 'o2', time: '10:45', title: 'Preparing',       subtitle: 'Kitchen is preparing your order', meta: { status: 'done' } },
+  { id: 'o3', time: '11:30', title: 'Out for Delivery', subtitle: 'Rider: James · 4.2km away',  meta: { status: 'active'  } },
+  { id: 'o4', time: '12:00', title: 'Delivered',       subtitle: 'Estimated arrival',           meta: { status: 'pending' } },
 ];
 
-const BottomNav: React.FC<{
-  active: NavKey;
-  onPress: (k: NavKey) => void;
-}> = ({ active, onPress }) => (
-  <Stack horizontal alignItems="center" backgroundColor={palettes.white}
-    paddingVertical={8} paddingHorizontal={8}
-    borderTopWidth={1} borderTopColor={theme.colors.gray[100]}>
-    {NAV_ITEMS.map(({ key, icon, label }, i) => {
-      const isActive = key === active;
-      return (
-        <React.Fragment key={key}>
-          {i === 2 && (
-            <StyledPressable
-              onPress={() => onPress('add')}
-              width={58} height={58} borderRadius={29}
-              backgroundColor={LIME} alignItems="center" justifyContent="center"
-              marginHorizontal={4}
-              style={{ marginTop: -20, elevation: 6, shadowColor: LIME_DARK,
-                shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } }}
-            >
-              <Icon name="plus" size={26} color={DARK} />
-            </StyledPressable>
+// ═════════════════════════════════════════════════════════════════════════════
+// 3. MEDICAL HISTORY
+// ═════════════════════════════════════════════════════════════════════════════
+
+const SEVERITY_COLOR: Record<string, string> = {
+  routine:  '#4caf50',
+  moderate: '#ff9800',
+  urgent:   '#f44336',
+};
+
+const MedCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as any;
+  return (
+    <StyledCard backgroundColor={palettes.white} borderRadius={16} padding={14} shadow="light" marginBottom={2}>
+      <Stack horizontal alignItems="flex-start" justifyContent="space-between" marginBottom={6}>
+        <Stack flex={1} gap={2}>
+          <StyledText fontSize={14} fontWeight="800" color={theme.colors.gray[900]}>{item.title}</StyledText>
+          <StyledText fontSize={12} color={theme.colors.gray[400]}>{item.subtitle}</StyledText>
+        </Stack>
+        <Stack paddingHorizontal={10} paddingVertical={4} borderRadius={12}
+          backgroundColor={`${SEVERITY_COLOR[m.severity]}22`}>
+          <StyledText fontSize={11} fontWeight="700" color={SEVERITY_COLOR[m.severity]}>
+            {m.severity}
+          </StyledText>
+        </Stack>
+      </Stack>
+      {m.notes && (
+        <StyledText fontSize={12} color={theme.colors.gray[500]} marginTop={4}>
+          {m.notes}
+        </StyledText>
+      )}
+      {m.prescriptions && (
+        <Stack horizontal gap={6} marginTop={8} flexWrap="wrap">
+          {(m.prescriptions as string[]).map((p: string) => (
+            <Stack key={p} paddingHorizontal={9} paddingVertical={4} borderRadius={12}
+              backgroundColor={theme.colors.blue?.[50] ?? '#e3f2fd'}>
+              <StyledText fontSize={11} color={theme.colors.blue?.[700] ?? '#1565c0'}>💊 {p}</StyledText>
+            </Stack>
+          ))}
+        </Stack>
+      )}
+    </StyledCard>
+  );
+};
+
+const medItems: TimelineItem[] = [
+  { id: 'm1', time: 'Jan 2024', title: 'Annual Checkup',       subtitle: 'Dr. Patel · General Practice',
+    meta: { severity: 'routine',  notes: 'Blood pressure normal. Cholesterol slightly elevated.', prescriptions: ['Statins 10mg'] } },
+  { id: 'm2', time: 'Mar 2024', title: 'Knee Pain Consultation', subtitle: 'Dr. Okonkwo · Orthopaedics',
+    meta: { severity: 'moderate', notes: 'Mild ligament strain. Advised physiotherapy for 6 weeks.', prescriptions: ['Ibuprofen 400mg', 'Physio x3/week'] } },
+  { id: 'm3', time: 'Apr 2024', title: 'Emergency — Chest Pain', subtitle: 'City Hospital A&E',
+    meta: { severity: 'urgent',   notes: 'ECG normal. Diagnosed as musculoskeletal pain. Discharged same day.', prescriptions: ['Paracetamol', 'Rest'] } },
+  { id: 'm4', time: 'Jun 2024', title: 'Follow-up Bloods',      subtitle: 'Dr. Patel · General Practice',
+    meta: { severity: 'routine',  notes: 'Cholesterol improved. Continue current medication.', prescriptions: [] } },
+];
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 4. PROJECT MILESTONES
+// ═════════════════════════════════════════════════════════════════════════════
+
+const MilestoneCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as any;
+  const statusColor = m.status === 'completed' ? '#4caf50'
+    : m.status === 'in_progress' ? '#2196f3' : theme.colors.gray[400];
+
+  return (
+    <StyledCard backgroundColor={palettes.white} borderRadius={16} padding={14} shadow="light" marginBottom={2}>
+      <Stack horizontal alignItems="flex-start" justifyContent="space-between" marginBottom={8}>
+        <Stack flex={1} gap={2}>
+          <StyledText fontSize={14} fontWeight="800" color={theme.colors.gray[900]}>{item.title}</StyledText>
+          <StyledText fontSize={12} color={theme.colors.gray[400]}>Due: {m.due}</StyledText>
+        </Stack>
+        <Stack paddingHorizontal={10} paddingVertical={4} borderRadius={12}
+          backgroundColor={`${statusColor}18`}>
+          <StyledText fontSize={11} fontWeight="700" color={statusColor}>
+            {m.status.replace('_', ' ')}
+          </StyledText>
+        </Stack>
+      </Stack>
+      <StyledText fontSize={12} color={theme.colors.gray[500]} marginBottom={10}>
+        {item.description}
+      </StyledText>
+      {/* Assignee avatars */}
+      <Stack horizontal alignItems="center" gap={8}>
+        <Stack horizontal>
+          {(m.assignees as string[]).map((url: string, i: number) => (
+            <Stack key={i} style={{ marginLeft: i > 0 ? -10 : 0 }}
+              borderWidth={2} borderColor={palettes.white} borderRadius={14}>
+              <StyledImage source={{ uri: url }} width={28} height={28} cycle size={28} borderRadius={14} />
+            </Stack>
+          ))}
+        </Stack>
+        <StyledText fontSize={11} color={theme.colors.gray[400]}>
+          {(m.assignees as string[]).length} assignees
+        </StyledText>
+      </Stack>
+    </StyledCard>
+  );
+};
+
+const milestoneItems: TimelineItem[] = [
+  { id: 'p1', time: 'Sprint 1', title: 'Design System Setup', description: 'Tokens, typography, spacing and component foundations.',
+    meta: { due: '01 Mar', status: 'completed', assignees: [
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop',
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop',
+    ]} },
+  { id: 'p2', time: 'Sprint 2', title: 'Core Components', description: 'Button, Input, Card, Badge, Divider, Stack.',
+    meta: { due: '15 Mar', status: 'completed', assignees: [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop',
+    ]} },
+  { id: 'p3', time: 'Sprint 3', title: 'Chart & Data Viz', description: 'StyledBar, StyledTimeline, BMI gauge.',
+    meta: { due: '01 Apr', status: 'in_progress', assignees: [
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop',
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop',
+    ]} },
+  { id: 'p4', time: 'Sprint 4', title: 'Documentation & Release', description: 'README, demos, npm publish.',
+    meta: { due: '20 Apr', status: 'pending', assignees: [
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop',
+    ]} },
+];
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5. TRANSACTION HISTORY
+// ═════════════════════════════════════════════════════════════════════════════
+
+const TxCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as any;
+  const isCredit = m.type === 'credit';
+  return (
+    <Stack
+      horizontal
+      alignItems="center"
+      justifyContent="space-between"
+      paddingVertical={12}
+      paddingHorizontal={14}
+      borderRadius={14}
+      backgroundColor={palettes.white}
+      marginBottom={4}
+    
+    >
+      <Stack horizontal alignItems="center" gap={12} flex={1}>
+        <Stack width={40} height={40} borderRadius={20}
+          backgroundColor={isCredit ? '#e8f5e9' : '#fce4ec'}
+          alignItems="center" justifyContent="center">
+          <Icon name={isCredit ? 'arrow-down-left' : 'arrow-up-right'} size={18}
+            color={isCredit ? '#388e3c' : '#c62828'} />
+        </Stack>
+        <Stack flex={1} gap={2}>
+          <StyledText fontSize={14} fontWeight="700" color={theme.colors.gray[900]}>{item.title}</StyledText>
+          <StyledText fontSize={12} color={theme.colors.gray[400]}>{item.subtitle}</StyledText>
+        </Stack>
+      </Stack>
+      <StyledText fontSize={15} fontWeight="800"
+        color={isCredit ? '#388e3c' : '#c62828'}>
+        {isCredit ? '+' : '-'}${m.amount}
+      </StyledText>
+    </Stack>
+  );
+};
+
+const txItems: TimelineItem[] = [
+  { id: 't1', time: '09:14', title: 'Salary Deposit',   subtitle: 'Employer · Direct transfer', meta: { type: 'credit', amount: '4,200.00' } },
+  { id: 't2', time: '10:02', title: 'Netflix',          subtitle: 'Subscription · auto-debit',  meta: { type: 'debit',  amount: '15.99'    } },
+  { id: 't3', time: '12:30', title: 'Grocery Store',    subtitle: 'Card payment · Tesco',       meta: { type: 'debit',  amount: '87.40'    } },
+  { id: 't4', time: '14:55', title: 'PayPal Transfer',  subtitle: 'From @mike_doe',             meta: { type: 'credit', amount: '250.00'   } },
+  { id: 't5', time: '17:10', title: 'Electricity Bill', subtitle: 'Direct debit · April',      meta: { type: 'debit',  amount: '63.20'    } },
+];
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 6. NOTIFICATION FEED
+// ═════════════════════════════════════════════════════════════════════════════
+
+const NotifCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m = item.meta as any;
+  return (
+    <Stack
+      horizontal
+      alignItems="flex-start"
+      gap={10}
+      paddingVertical={10}
+      paddingHorizontal={12}
+      borderRadius={14}
+      backgroundColor={m.unread ? `${m.color}10` : palettes.white}
+      marginBottom={4}
+      borderLeftWidth={m.unread ? 3 : 0}
+      borderLeftColor={m.color}
+    >
+      <Stack width={38} height={38} borderRadius={19}
+        backgroundColor={`${m.color}22`} alignItems="center" justifyContent="center">
+        <Icon name={m.icon} size={17} color={m.color} />
+      </Stack>
+      <Stack flex={1} gap={3}>
+        <StyledText fontSize={13} fontWeight={m.unread ? '700' : '500'} color={theme.colors.gray[900]}>
+          {item.title}
+        </StyledText>
+        <StyledText fontSize={12} color={theme.colors.gray[500]} numberOfLines={2}>
+          {item.subtitle}
+        </StyledText>
+      </Stack>
+      {m.unread && (
+        <Stack width={8} height={8} borderRadius={4} backgroundColor={m.color} marginTop={4} />
+      )}
+    </Stack>
+  );
+};
+
+const notifItems: TimelineItem[] = [
+  { id: 'n1', time: '2m ago',   title: 'Sarah liked your post',    subtitle: '"My morning run PR — 5k in 22 mins!"', meta: { icon: 'heart',     color: '#e91e63', unread: true  } },
+  { id: 'n2', time: '15m ago',  title: 'New comment',              subtitle: 'James: "Great work, keep it up! 💪"', meta: { icon: 'message-circle', color: '#2196f3', unread: true  } },
+  { id: 'n3', time: '1h ago',   title: 'Workout reminder',         subtitle: 'Time for your afternoon Cardio session.', meta: { icon: 'bell', color: '#ff9800', unread: false } },
+  { id: 'n4', time: '3h ago',   title: 'Goal achieved! 🎉',        subtitle: 'You hit your weekly step goal of 50,000 steps.', meta: { icon: 'award', color: '#4caf50', unread: false } },
+  { id: 'n5', time: 'Yesterday',title: 'App update available',     subtitle: 'Version 2.4.1 — bug fixes and performance.', meta: { icon: 'download', color: '#9c27b0', unread: false } },
+];
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 7. TRAVEL ITINERARY
+// ═════════════════════════════════════════════════════════════════════════════
+
+const TYPE_COLOR: Record<string, { bg: string; icon: string; color: string }> = {
+  flight:  { bg: '#e3f2fd', color: '#1565c0', icon: 'navigation' },
+  hotel:   { bg: '#fce4ec', color: '#880e4f', icon: 'home'       },
+  activity:{ bg: '#e8f5e9', color: '#1b5e20', icon: 'map-pin'    },
+  food:    { bg: '#fff8e1', color: '#e65100', icon: 'coffee'     },
+};
+
+const TravelCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m   = item.meta as any;
+  const cfg = TYPE_COLOR[m.type] ?? TYPE_COLOR.activity;
+  return (
+    <StyledCard backgroundColor={palettes.white} borderRadius={16} padding={14} shadow="light" marginBottom={4}>
+      <Stack horizontal alignItems="flex-start" gap={12}>
+        <Stack width={44} height={44} borderRadius={12} backgroundColor={cfg.bg}
+          alignItems="center" justifyContent="center">
+          <Icon name={cfg.icon} size={19} color={cfg.color} />
+        </Stack>
+        <Stack flex={1} gap={3}>
+          <Stack horizontal alignItems="center" justifyContent="space-between">
+            <StyledText fontSize={14} fontWeight="800" color={theme.colors.gray[900]}>{item.title}</StyledText>
+            <Stack paddingHorizontal={8} paddingVertical={3} borderRadius={10} backgroundColor={cfg.bg}>
+              <StyledText fontSize={10} fontWeight="700" color={cfg.color}>{m.type}</StyledText>
+            </Stack>
+          </Stack>
+          <StyledText fontSize={12} color={theme.colors.gray[500]}>{item.subtitle}</StyledText>
+          {m.detail && (
+            <StyledText fontSize={12} color={theme.colors.gray[400]}>{m.detail}</StyledText>
           )}
-          <StyledPressable flex={1} alignItems="center" paddingVertical={4}
-            onPress={() => onPress(key)}>
-            <Icon name={icon} size={22} color={isActive ? DARK : MUTED} />
-            {isActive && (
-              <Stack width={5} height={5} borderRadius={2.5}
-                backgroundColor={LIME_DARK} marginTop={3} />
-            )}
-            <StyledText fontSize={10}
-              fontWeight={isActive ? '700' : '400'}
-              color={isActive ? DARK : MUTED} marginTop={2}>
-              {label}
-            </StyledText>
-          </StyledPressable>
-        </React.Fragment>
-      );
-    })}
-  </Stack>
-);
+        </Stack>
+      </Stack>
+    </StyledCard>
+  );
+};
 
-// ─── Screen ───────────────────────────────────────────────────────────────────
+const travelItems: TimelineItem[] = [
+  { id: 'tr1', time: 'Day 1\n06:00', title: 'Flight LHR → DXB',   subtitle: 'Emirates EK006 · Terminal 3',   meta: { type: 'flight',   detail: 'Seat 14A · 7h 20min'           } },
+  { id: 'tr2', time: 'Day 1\n15:20', title: 'Check-in: Burj Al Arab', subtitle: 'Jumeirah Beach, Dubai',     meta: { type: 'hotel',    detail: 'Deluxe Sea View · 3 nights'    } },
+  { id: 'tr3', time: 'Day 2\n10:00', title: 'Desert Safari',      subtitle: 'Dune bashing + camel ride',    meta: { type: 'activity', detail: 'Pickup at hotel lobby 09:45'  } },
+  { id: 'tr4', time: 'Day 2\n19:00', title: 'Al Hadheerah Dinner',subtitle: 'Bedouin-style outdoor dinner', meta: { type: 'food',     detail: 'Reservation for 2 · Table 7'  } },
+  { id: 'tr5', time: 'Day 3\n09:00', title: 'Burj Khalifa',       subtitle: 'At the Top SKY — 148th floor', meta: { type: 'activity', detail: 'Tickets pre-booked'            } },
+  { id: 'tr6', time: 'Day 4\n08:00', title: 'Flight DXB → LHR',   subtitle: 'Emirates EK003',               meta: { type: 'flight',   detail: 'Seat 22C · 7h 45min'           } },
+];
 
-// TODAY is always the real current date — computed at render time
-const TODAY = isoToday();
+// ═════════════════════════════════════════════════════════════════════════════
+// 8. INTERVIEW PIPELINE
+// ═════════════════════════════════════════════════════════════════════════════
 
-export default function DailyPlanScreen() {
-  const [selectedDate, setSelectedDate] = useState(TODAY);
-  const [anchorDate,  setAnchorDate]    = useState(TODAY);   // drives visible week
-  const [activeNav, setNav]             = useState<NavKey>('calendar');
+const STAGE_CFG: Record<string, { color: string; bg: string }> = {
+  passed:    { color: '#4caf50', bg: '#e8f5e9' },
+  scheduled: { color: '#2196f3', bg: '#e3f2fd' },
+  pending:   { color: '#ff9800', bg: '#fff8e1' },
+  rejected:  { color: '#f44336', bg: '#ffebee' },
+};
 
-  const todayIso = isoToday();                        // fresh — safe across midnight
-  const items    = SCHEDULE[selectedDate] ?? [];
-  const dateObj  = fromISO(selectedDate);
-  const isToday  = selectedDate === todayIso;
+const InterviewCard: React.FC<{ item: TimelineItem }> = ({ item }) => {
+  const m   = item.meta as any;
+  const cfg = STAGE_CFG[m.status] ?? STAGE_CFG.pending;
+  return (
+    <Stack
+      paddingVertical={12}
+      paddingHorizontal={14}
+      borderRadius={14}
+      backgroundColor={palettes.white}
+      marginBottom={4}
+    
+    >
+      <Stack horizontal alignItems="center" justifyContent="space-between" marginBottom={4}>
+        <StyledText fontSize={14} fontWeight="800" color={theme.colors.gray[900]}>{item.title}</StyledText>
+        <Stack paddingHorizontal={10} paddingVertical={4} borderRadius={12} backgroundColor={cfg.bg}>
+          <StyledText fontSize={11} fontWeight="700" color={cfg.color}>{m.status}</StyledText>
+        </Stack>
+      </Stack>
+      <StyledText fontSize={12} color={theme.colors.gray[400]} marginBottom={m.interviewer ? 6 : 0}>
+        {item.subtitle}
+      </StyledText>
+      {m.interviewer && (
+        <Stack horizontal alignItems="center" gap={6}>
+          <Icon name="user" size={12} color={theme.colors.gray[400]} />
+          <StyledText fontSize={12} color={theme.colors.gray[400]}>{m.interviewer}</StyledText>
+        </Stack>
+      )}
+    </Stack>
+  );
+};
 
-  const dayLabel  = isToday
-    ? 'Today'
-    : dateObj.toLocaleDateString('en-US', { weekday: 'long' });  // non-today day name
-  const monthYear = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+const interviewItems: TimelineItem[] = [
+  { id: 'i1', time: '12 Mar', title: 'Application Submitted', subtitle: 'Senior React Native Engineer · Acme Corp', meta: { status: 'passed',    interviewer: null                       } },
+  { id: 'i2', time: '14 Mar', title: 'Recruiter Screen',      subtitle: '30 min call · HR assessment',             meta: { status: 'passed',    interviewer: 'Emily Clarke · Talent'    } },
+  { id: 'i3', time: '18 Mar', title: 'Technical Round 1',     subtitle: 'Live coding · 90 minutes',                meta: { status: 'passed',    interviewer: 'David Kim · Engineering'  } },
+  { id: 'i4', time: '22 Mar', title: 'System Design',         subtitle: 'Architecture discussion · 60 min',        meta: { status: 'scheduled', interviewer: 'Sarah Obi · Staff Eng'    } },
+  { id: 'i5', time: '26 Mar', title: 'Final Panel',           subtitle: 'Culture + values · Executive round',      meta: { status: 'pending',   interviewer: 'C-Suite Panel'            } },
+];
 
-  // When CalendarProvider fires date changes, sync both
-  const onDateChanged = useCallback((date: string) => {
-    setSelectedDate(date);
-    setAnchorDate(date);
-  }, []);
+// ═════════════════════════════════════════════════════════════════════════════
+// TAB NAV
+// ═════════════════════════════════════════════════════════════════════════════
 
-  // Full marked dates: dots + selected highlight
-  const markedDates = {
-    ...MARKED_DATES,
-    [selectedDate]: {
-      selected:          true,
-      selectedColor:     LIME,
-      selectedTextColor: DARK,
-      marked:            !!(SCHEDULE[selectedDate]?.length),
-      dotColor:          LIME_DARK,
-    },
+type DemoTab =
+  | 'workout' | 'order' | 'medical' | 'project'
+  | 'finance' | 'notif' | 'travel'  | 'hiring' | 'realTime';
+
+const TABS: TabItem<DemoTab>[] = [
+  { value: 'workout', label: 'Workout'  },
+  { value: 'order',   label: 'Delivery' },
+  { value: 'medical', label: 'Medical'  },
+  { value: 'project', label: 'Project'  },
+  { value: 'finance', label: 'Finance'  },
+  { value: 'notif',   label: 'Notifs'   },
+  { value: 'travel',  label: 'Travel'   },
+  { value: 'hiring',  label: 'Hiring'   },
+  { value: 'realTime', label: 'Real Time' },
+];
+
+const TAB_META: Record<DemoTab, { title: string; subtitle: string; color: string; dot: string }> = {
+  workout: { title: 'Workout Schedule',    subtitle: 'Daily fitness plan with stats',     color: '#8bc34a', dot: '#8bc34a' },
+  order:   { title: 'Order Tracking',      subtitle: 'Real-time delivery steps',          color: '#2196f3', dot: '#2196f3' },
+  medical: { title: 'Medical History',     subtitle: 'Doctor visits & prescriptions',     color: '#f44336', dot: '#f44336' },
+  project: { title: 'Project Milestones',  subtitle: 'Sprint progress with team',         color: '#9c27b0', dot: '#9c27b0' },
+  finance: { title: 'Transactions',        subtitle: 'Today\'s account activity',         color: '#4caf50', dot: '#4caf50' },
+  notif:   { title: 'Notification Feed',   subtitle: 'Unread & recent activity',          color: '#ff9800', dot: '#ff9800' },
+  travel:  { title: 'Travel Itinerary',    subtitle: 'Dubai 4-day trip',                  color: '#1565c0', dot: '#1565c0' },
+  hiring:  { title: 'Interview Pipeline',  subtitle: 'Senior RN Engineer application',    color: '#795548', dot: '#795548' },
+  realTime: { title: 'Real-Time ', subtitle: 'Simulating live updates every 5 seconds', color: '#009688', dot: '#009688' },
+};
+
+// ═════════════════════════════════════════════════════════════════════════════
+// SCREEN
+// ═════════════════════════════════════════════════════════════════════════════
+
+export default function StyledTimelineDemo() {
+  const [activeTab, setTab] = useState<DemoTab>('workout');
+  const meta = TAB_META[activeTab];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'workout':
+        return (
+          <StyledTimeline items={workoutItems} renderItem={(item) => <WorkoutCard item={item} />}
+            variant="default" dotShape="filled" dotSize={10} timeColumnWidth={58}
+            colors={{ dot: meta.dot, line: theme.colors.gray[200], endTimeText: theme.colors.gray[400] }} />
+        );
+      case 'order':
+        return (
+          <StyledTimeline items={orderItems} renderItem={(item) => <OrderStepCard item={item} />}
+            variant="spacious" dotShape="ring" dotSize={14} timeColumnWidth={58}
+            colors={{ dot: meta.dot, line: '#bbdefb', dotBorder: palettes.white }} />
+        );
+      case 'medical':
+        return (
+          <StyledTimeline items={medItems} renderItem={(item) => <MedCard item={item} />}
+            variant="spacious" dotShape="ring" dotSize={12} timeColumnWidth={68}
+            colors={{ dot: meta.dot, line: '#ffcdd2', dotBorder: palettes.white }} />
+        );
+      case 'project':
+        return (
+          <StyledTimeline items={milestoneItems} renderItem={(item) => <MilestoneCard item={item} />}
+            variant="spacious" dotShape="filled" dotSize={10} timeColumnWidth={68}
+            colors={{ dot: meta.dot, line: '#e1bee7' }} />
+        );
+      case 'finance':
+        return (
+          <StyledTimeline items={txItems} renderItem={(item) => <TxCard item={item} />}
+            variant="compact" dotShape="circle" dotSize={8} timeColumnWidth={54}
+            colors={{ dot: meta.dot, line: theme.colors.gray[200] }} />
+        );
+      case 'notif':
+        return (
+          <StyledTimeline items={notifItems} renderItem={(item) => <NotifCard item={item} />}
+            variant="compact" dotShape="filled" dotSize={8} timeColumnWidth={72}
+            colors={{ dot: meta.dot, line: theme.colors.gray[100] }} />
+        );
+      case 'travel':
+        return (
+          <StyledTimeline items={travelItems} renderItem={(item) => <TravelCard item={item} />}
+            variant="spacious" dotShape="ring" dotSize={14} timeColumnWidth={72}
+            colors={{ dot: meta.dot, line: '#bbdefb', dotBorder: palettes.white }} />
+        );
+      case 'hiring':
+        return (
+          <StyledTimeline items={interviewItems} renderItem={(item) => <InterviewCard item={item} />}
+            variant="default" dotShape="filled" dotSize={10} timeColumnWidth={58}
+            colors={{ dot: meta.dot, line: '#d7ccc8' }} />
+        );
+        case 'realTime':    
+          return (
+            <RealTimeScreen />
+          );
+    }
   };
 
   return (
-    <Stack flex={1} marginVertical={16} backgroundColor={theme.colors.gray[200]}>
+    <Stack flex={1} backgroundColor="#f8f8f8">
 
-      {/* ── CalendarProvider owns both the week strip + scroll content ── */}
-      <CalendarProvider
-        date={selectedDate}
-        onDateChanged={onDateChanged}
-        style={{ flex: 1, borderRadius: 8, overflow: 'hidden', backgroundColor: palettes.white }}
-      >
-        {/* ── Custom week strip — built from fluent-styles, pixel-perfect layout ── */}
-        <WeekStrip
-          selectedDate={selectedDate}
-          anchorDate={anchorDate}
-          markedDates={MARKED_DATES}
-          onSelect={(date) => { setSelectedDate(date); setAnchorDate(date); }}
-          onAnchorChange={setAnchorDate}
+      {/* Header */}
+      <Stack paddingHorizontal={20} paddingTop={16} paddingBottom={4}
+        backgroundColor={palettes.white} >
+        <StyledText fontSize={22} fontWeight="900" color={theme.colors.gray[900]}>
+          StyledTimeline
+        </StyledText>
+        <StyledText fontSize={13} color={theme.colors.gray[400]} marginBottom={12}>
+          8 real-world use cases
+        </StyledText>
+
+        {/* Scrollable tabs */}
+        <TabBar
+          options={TABS}
+          value={activeTab}
+          onChange={setTab}
+          indicator="line"
+          tabAlign="scroll"
+          showBorder
+          fontSize={13}
+          height={44}
+          colors={{
+            background:  palettes.white,
+            activeText:  meta.color,
+            text:        theme.colors.gray[400],
+            indicator:   meta.color,
+            border:      theme.colors.gray[100],
+          }}
         />
+      </Stack>
 
-        <StyledSpacer marginVertical={8} />
-
-        {/* ── Scrollable schedule body ── */}
-        <StyledScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 24 }}
-        >
-
-            {/* Day heading + avatar */}
-            <Stack horizontal alignItems="flex-start" justifyContent="space-between"
-              paddingHorizontal={20}  paddingBottom={12}>
-              <Stack gap={2}>
-                <StyledText fontSize={28} fontWeight="900" color={DARK}>{dayLabel}</StyledText>
-                <StyledText fontSize={14} color={MUTED}>{monthYear}</StyledText>
-              </Stack>
-              <StyledImage
-                source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop' }}
-                width={50} height={50} cycle size={50} borderRadius={25}
-              />
-            </Stack>
-
-            {/* Summary chips */}
-            <Stack paddingHorizontal={20}>
-              <SummaryStrip items={items} />
-            </Stack>
-
-            {/* Column headers */}
-            {items.length > 0 && (
-              <Stack horizontal alignItems="center" justifyContent="space-between"
-                paddingHorizontal={20} marginBottom={14} >
-                <Stack horizontal gap={20}>
-                  <StyledText fontSize={13} fontWeight="600" color={MUTED}>Time</StyledText>
-                  <StyledText fontSize={13} fontWeight="600" color={MUTED}>Exercise</StyledText>
-                </Stack>
-                <StyledPressable onPress={() => {}}>
-                  <Icon name="sliders" size={16} color={MUTED} />
-                </StyledPressable>
-              </Stack>
-            )}
-
-            {/* Timeline / rest day */}
-            <Stack paddingHorizontal={16}>
-              {items.length > 0 ? (
-                <StyledTimeline
-                  items={items}
-                  renderItem={(item) => <WorkoutCard item={item} />}
-                  variant="default"
-                  dotShape="filled"
-                  dotSize={10}
-                  timeColumnWidth={58}
-                  timeGap={12}
-                  animated
-                  colors={{
-                    dot:         LIME_DARK,
-                    line:        theme.colors.gray[200],
-                    timeText:    DARK,
-                    endTimeText: MUTED,
-                  }}
-                />
-              ) : (
-                <RestDay />
-              )}
-            </Stack>
-
+      <StyledScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
      
-        </StyledScrollView>
-      </CalendarProvider>
 
-      {/* ── Bottom nav ── */}
-      <BottomNav active={activeNav} onPress={setNav} />
+          <SectionHeader
+            title={meta.title}
+            subtitle={meta.subtitle}
+            color={meta.color}
+          />
 
+          <Stack paddingHorizontal={20}>
+            {renderContent()}
+          </Stack>
+
+    
+      </StyledScrollView>
     </Stack>
   );
 }

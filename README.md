@@ -44,6 +44,10 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledProgressBar](#styledprogressbar)
   - [StyledSlider](#styledslider)
   - [StyledDatePicker](#styleddatepicker)
+  - [StyledBottomSheet](#styledbottomsheet)
+  - [StyledEmptyState](#styledemptystate)
+  - [StyledSearchBar](#styledsearchbar)
+  - [StyledSkeleton](#styledskeleton)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -2908,6 +2912,639 @@ const [reportTo,   setReportTo]   = useState<Date | null>(null)
   formatDisplay={(d) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
   colors={{ selected: '#f59e0b', today: '#f59e0b', confirmBg: '#f59e0b' }}
 />
+```
+
+---
+
+### StyledBottomSheet
+
+Gesture-driven bottom sheet built on `PanResponder` with spring physics, configurable snap points, backdrop, scrollable content, and built-in header. Mounts inside a `Modal` — no portal required.
+
+```tsx
+import { StyledBottomSheet } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `default` | Standard bottom sheet sliding up from the bottom |
+| `modal` | Full-modal style with stronger overlay |
+| `sidebar` | Slides in from the side (landscape / tablet) |
+
+#### Themes
+
+| Theme | Surface |
+|---|---|
+| `light` | White background, gray handle (default) |
+| `dark` | `gray[900]` background, lighter handle and text |
+
+#### `BottomSheetColors`
+
+| Field | Default (light) | Description |
+|---|---|---|
+| `background` | `white` | Sheet surface colour |
+| `overlay` | `rgba(0,0,0,0.45)` | Backdrop tint |
+| `handle` | `gray[300]` | Drag handle pill |
+| `headerBorder` | `gray[100]` | Line under header |
+| `headerTitle` | `gray[900]` | Title text |
+| `headerSub` | `gray[400]` | Subtitle text |
+| `closeIconBg` | `gray[100]` | Close button background |
+| `closeIcon` | `gray[600]` | Close button icon colour |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `visible` | `boolean` | required | Controls sheet visibility |
+| `onClose` | `() => void` | required | Called when sheet should close |
+| `snapPoints` | `(number \| string)[]` | `['40%','75%']` | Snap heights in px or `'50%'` percent strings |
+| `initialSnap` | `number` | `0` | Index of snap point to open at |
+| `title` | `ReactNode` | — | Header title |
+| `subtitle` | `ReactNode` | — | Header subtitle |
+| `showHandle` | `boolean` | `true` | Show drag handle pill |
+| `showClose` | `boolean` | `false` | Show ✕ close button |
+| `closeOnBackdrop` | `boolean` | `true` | Tap backdrop to close |
+| `destroyOnClose` | `boolean` | `false` | Unmount children when hidden |
+| `scrollable` | `boolean` | `false` | Wrap content in a `ScrollView` |
+| `variant` | `BottomSheetVariant` | `'default'` | Visual variant |
+| `sheetTheme` | `BottomSheetTheme` | `'light'` | Built-in colour theme |
+| `colors` | `Partial<BottomSheetColors>` | — | Per-token colour overrides |
+| `borderRadius` | `number` | `20` | Top corner radius |
+| `onOpen` | `() => void` | — | Fires when open animation starts |
+| `onOpened` | `() => void` | — | Fires when open animation ends |
+| `onClosed` | `() => void` | — | Fires when close animation ends |
+
+#### Usage
+
+```tsx
+import React, { useState } from 'react'
+import { StyledBottomSheet, Stack, StyledText, StyledPressable } from 'fluent-styles'
+
+const [visible, setVisible] = useState(false)
+
+// ── 1. Plain sheet ────────────────────────────────────────────────────────────
+<StyledBottomSheet visible={visible} onClose={() => setVisible(false)}>
+  <Stack padding={24} gap={8}>
+    <StyledText fontSize={16} fontWeight="700">Plain sheet</StyledText>
+    <StyledText fontSize={14} color="#6b7280">No header — just your content.</StyledText>
+  </Stack>
+</StyledBottomSheet>
+
+// ── 2. With title + subtitle ──────────────────────────────────────────────────
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Notifications"
+  subtitle="Your recent alerts"
+  showClose
+>
+  <Stack padding={20} gap={12}>{/* content */}</Stack>
+</StyledBottomSheet>
+
+// ── 3. Multiple snap points ───────────────────────────────────────────────────
+// Drag between 25 %, 50 %, and 85 % of screen height.
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Three snaps"
+  showClose
+  snapPoints={['25%', '50%', '85%']}
+>
+  <Stack padding={20}>{/* content */}</Stack>
+</StyledBottomSheet>
+
+// ── 4. Scrollable content ─────────────────────────────────────────────────────
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Long list"
+  showClose
+  scrollable
+  snapPoints={['60%']}
+>
+  <Stack padding={20} gap={10}>
+    {Array.from({ length: 30 }).map((_, i) => (
+      <StyledText key={i}>Item {i + 1}</StyledText>
+    ))}
+  </Stack>
+</StyledBottomSheet>
+
+// ── 5. Dark theme ─────────────────────────────────────────────────────────────
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Dark sheet"
+  subtitle="Midnight surface"
+  showClose
+  sheetTheme="dark"
+>
+  <Stack padding={20} gap={12}>{/* content */}</Stack>
+</StyledBottomSheet>
+
+// ── 6. Colour token overrides (indigo) ────────────────────────────────────────
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Indigo theme"
+  showClose
+  colors={{
+    background:   '#eef2ff',
+    handle:       '#a5b4fc',
+    headerTitle:  '#312e81',
+    headerBorder: '#c7d2fe',
+    closeIconBg:  '#c7d2fe',
+    closeIcon:    '#4f46e5',
+  }}
+>
+  <Stack padding={20}>{/* content */}</Stack>
+</StyledBottomSheet>
+
+// ── 7. Real-world: share sheet ────────────────────────────────────────────────
+<StyledBottomSheet
+  visible={shareOpen}
+  onClose={() => setShareOpen(false)}
+  title="Share post"
+  subtitle="Choose where to send"
+  showClose
+  snapPoints={['42%']}
+>
+  <Stack padding={20} gap={16}>
+    <Stack horizontal gap={20} justifyContent="center">
+      {[{ icon: '💬', label: 'Messages' }, { icon: '✉️', label: 'Mail' },
+        { icon: '🔗', label: 'Copy link' }, { icon: '📋', label: 'More' }]
+        .map(({ icon, label }) => (
+          <Stack key={label} alignItems="center" gap={6}>
+            <StyledPressable width={52} height={52} borderRadius={26}
+              backgroundColor="#f3f4f6" alignItems="center" justifyContent="center"
+              onPress={() => setShareOpen(false)}>
+              <StyledText fontSize={22}>{icon}</StyledText>
+            </StyledPressable>
+            <StyledText fontSize={11} color="#9ca3af">{label}</StyledText>
+          </Stack>
+        ))}
+    </Stack>
+  </Stack>
+</StyledBottomSheet>
+
+// ── 8. Real-world: options menu ───────────────────────────────────────────────
+<StyledBottomSheet
+  visible={optionsOpen}
+  onClose={() => setOptionsOpen(false)}
+  title="Post options"
+  showClose
+  snapPoints={['48%']}
+>
+  <Stack paddingHorizontal={20} paddingBottom={16}>
+    {[
+      { icon: '✏️', label: 'Edit post',   color: '#1f2937' },
+      { icon: '🔗', label: 'Copy link',   color: '#1f2937' },
+      { icon: '🗑️', label: 'Delete post', color: '#e11d48' },
+    ].map(({ icon, label, color }, idx, arr) => (
+      <Stack key={label}>
+        <StyledPressable flexDirection="row" gap={14} paddingVertical={14} alignItems="center"
+          onPress={() => setOptionsOpen(false)}>
+          <StyledText fontSize={20}>{icon}</StyledText>
+          <StyledText fontSize={15} fontWeight="600" color={color}>{label}</StyledText>
+        </StyledPressable>
+        {idx < arr.length - 1 && <StyledDivider borderBottomColor="#f3f4f6" />}
+      </Stack>
+    ))}
+  </Stack>
+</StyledBottomSheet>
+
+// ── 9. Locked sheet (no backdrop dismiss) ─────────────────────────────────────
+<StyledBottomSheet
+  visible={visible}
+  onClose={() => setVisible(false)}
+  title="Locked"
+  showClose
+  closeOnBackdrop={false}
+>
+  <Stack padding={20}>
+    <StyledText>Use the ✕ button to dismiss — backdrop tap is disabled.</StyledText>
+  </Stack>
+</StyledBottomSheet>
+```
+
+---
+
+### StyledEmptyState
+
+Animated zero-state / empty-data display with 5 variants, an illustration slot (emoji, icon, or any `ReactNode`), primary + secondary action buttons, fade-in entrance animation, and a compact horizontal layout mode.
+
+```tsx
+import { StyledEmptyState } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `default` | Centred illustration + title + description + actions |
+| `card` | Same as default, rendered inside a subtle card surface |
+| `minimal` | Compact — small emoji, lighter text, single button |
+| `illustrated` | Large illustration circle, bolder visual weight |
+| `action` | Full-bleed coloured panel, designed for CTA prominence |
+
+#### `EmptyStateColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `background` | `transparent` | Container background |
+| `illustrationBg` | `gray[100]` | Illustration circle fill |
+| `title` | `gray[900]` | Title text colour |
+| `description` | `gray[400]` | Description text colour |
+| `primaryBg` | `gray[900]` | Primary button background |
+| `primaryText` | `white` | Primary button text |
+| `primaryBorder` | `gray[900]` | Primary button border |
+| `secondaryBg` | `transparent` | Secondary button background |
+| `secondaryText` | `gray[700]` | Secondary button text |
+| `secondaryBorder` | `gray[200]` | Secondary button border |
+| `border` | `gray[100]` | Card variant border |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `EmptyStateVariant` | `'default'` | Visual style |
+| `illustration` | `ReactNode` | — | Emoji string, icon component, or any node |
+| `title` | `string` | — | Heading text |
+| `description` | `string` | — | Supporting body text |
+| `actions` | `EmptyStateAction[]` | `[]` | Array of action buttons |
+| `compact` | `boolean` | `false` | Horizontal layout for banners / list cells |
+| `animated` | `boolean` | `true` | Fade + slide-up entrance animation |
+| `colors` | `Partial<EmptyStateColors>` | — | Colour overrides |
+| `padding` | `number` | `32` | Padding around the container |
+
+`EmptyStateAction` shape: `{ label: string; onPress: () => void; icon?: ReactNode; variant?: 'primary' | 'secondary' }`
+
+#### Usage
+
+```tsx
+import { StyledEmptyState } from 'fluent-styles'
+
+// ── 1. Default ────────────────────────────────────────────────────────────────
+<StyledEmptyState
+  illustration="📭"
+  title="No messages yet"
+  description="When you receive a message, it'll show up here."
+  actions={[{ label: 'Start a conversation', onPress: () => {} }]}
+/>
+
+// ── 2. Card variant with two actions ─────────────────────────────────────────
+<StyledEmptyState
+  variant="card"
+  illustration="🔍"
+  title="No results found"
+  description="Try adjusting your search or filters."
+  actions={[
+    { label: 'Clear filters',       onPress: () => {}, variant: 'secondary' },
+    { label: 'Try different terms', onPress: () => {}, variant: 'primary' },
+  ]}
+/>
+
+// ── 3. Minimal ────────────────────────────────────────────────────────────────
+<StyledEmptyState
+  variant="minimal"
+  illustration="🌿"
+  title="Nothing here yet"
+  description="Add your first item to get started."
+  actions={[{ label: '+ Add item', onPress: () => {} }]}
+/>
+
+// ── 4. Illustrated ────────────────────────────────────────────────────────────
+<StyledEmptyState
+  variant="illustrated"
+  illustration="🗂️"
+  title="No files uploaded"
+  description="Drop your documents here or tap the button below."
+  actions={[
+    { label: 'Upload file',  onPress: () => {}, variant: 'primary'   },
+    { label: 'Browse Drive', onPress: () => {}, variant: 'secondary' },
+  ]}
+/>
+
+// ── 5. Action-focused with colour override ────────────────────────────────────
+<StyledEmptyState
+  variant="action"
+  illustration="🚀"
+  title="Ready to launch?"
+  description="Set up your first project and deploy in seconds."
+  actions={[{ label: 'Create project', onPress: () => {} }]}
+  colors={{
+    background:       '#4f46e5',
+    illustrationBg:   'rgba(255,255,255,0.15)',
+    title:            '#ffffff',
+    description:      'rgba(255,255,255,0.75)',
+    primaryBg:        '#ffffff',
+    primaryText:      '#4338ca',
+    primaryBorder:    '#ffffff',
+  }}
+/>
+
+// ── 6. Compact (horizontal banner) ───────────────────────────────────────────
+<StyledEmptyState
+  compact
+  illustration="📬"
+  title="No notifications"
+  description="You're all caught up."
+  actions={[{ label: 'Mark all read', onPress: () => {} }]}
+/>
+
+// ── 7. No animation ───────────────────────────────────────────────────────────
+<StyledEmptyState
+  illustration="📋"
+  title="Empty"
+  animated={false}
+/>
+```
+
+---
+
+### StyledSearchBar
+
+Animated search input with focus ring, clear button, cancel, suggestion dropdown, and custom left icon / right action slots.
+
+```tsx
+import { StyledSearchBar } from 'fluent-styles'
+```
+
+#### Variants
+
+| Variant | Description |
+|---|---|
+| `filled` | Solid grey background, no border (default) |
+| `outline` | Transparent background, visible border |
+| `ghost` | No background or border — blends into any surface |
+| `floating` | Drop-shadow, white background |
+
+#### Sizes
+
+| Size | Height | Font | Icon | Border radius |
+|---|---|---|---|---|
+| `sm` | 36 px | 13 px | 14 px | 10 px |
+| `md` | 44 px (default) | 15 px | 16 px | 12 px |
+| `lg` | 52 px | 17 px | 18 px | 14 px |
+
+#### `SearchBarColors`
+
+| Field | Default | Description |
+|---|---|---|
+| `background` | `gray[100]` | Input container fill |
+| `border` | `gray[200]` | Resting border |
+| `focusBorder` | `gray[900]` | Focused border |
+| `placeholder` | `gray[400]` | Placeholder text |
+| `text` | `gray[900]` | Input text |
+| `icon` | `gray[400]` | Search icon |
+| `clearBg` | `gray[300]` | Clear button background |
+| `clearIcon` | `gray[600]` | Clear button icon |
+| `cancelText` | `gray[900]` | Cancel button label |
+| `suggestionBg` | `white` | Suggestion dropdown background |
+| `suggestionText` | `gray[800]` | Suggestion item text |
+| `suggestionBorder` | `gray[100]` | Suggestion row divider |
+| `divider` | `gray[100]` | Divider between suggestions |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `SearchBarVariant` | `'filled'` | Visual style |
+| `size` | `SearchBarSize` | `'md'` | Height / font preset |
+| `placeholder` | `string` | `'Search…'` | Placeholder text |
+| `value` | `string` | — | Controlled value |
+| `onChangeText` | `(text: string) => void` | — | Text change handler |
+| `onSubmit` | `(text: string) => void` | — | Submit / search action |
+| `onCancel` | `() => void` | — | Cancel button handler |
+| `onClear` | `() => void` | — | Clear button handler |
+| `showCancel` | `boolean` | `false` | Show cancel button on focus |
+| `cancelLabel` | `string` | `'Cancel'` | Cancel button label |
+| `leftIcon` | `ReactNode` | search icon | Custom left icon |
+| `rightAction` | `ReactNode` | — | Right-side action slot (filter, voice, etc.) |
+| `suggestions` | `SearchSuggestion[]` | — | Dropdown suggestion items |
+| `onSuggestionPress` | `(item: SearchSuggestion) => void` | — | Suggestion tap handler |
+| `loading` | `boolean` | `false` | Replaces icon with spinner |
+| `disabled` | `boolean` | `false` | Disables input |
+| `autoFocus` | `boolean` | `false` | Focus on mount |
+| `colors` | `Partial<SearchBarColors>` | — | Colour overrides |
+| `borderRadius` | `number` | size preset | Border radius override |
+
+`SearchSuggestion` shape: `{ id: string; label: string; subtitle?: string; icon?: ReactNode }`
+
+Accepts all `TextInputProps` (except `style`).
+
+#### Usage
+
+```tsx
+import React, { useState } from 'react'
+import { StyledSearchBar, type SearchSuggestion } from 'fluent-styles'
+
+const [query, setQuery] = useState('')
+
+// ── 1. Variants ───────────────────────────────────────────────────────────────
+<StyledSearchBar variant="filled"   value={query} onChangeText={setQuery} />
+<StyledSearchBar variant="outline"  value={query} onChangeText={setQuery} />
+<StyledSearchBar variant="ghost"    value={query} onChangeText={setQuery} />
+<StyledSearchBar variant="floating" value={query} onChangeText={setQuery} />
+
+// ── 2. Sizes ──────────────────────────────────────────────────────────────────
+<StyledSearchBar size="sm" placeholder="Small" />
+<StyledSearchBar size="md" placeholder="Medium (default)" />
+<StyledSearchBar size="lg" placeholder="Large" />
+
+// ── 3. Cancel button ──────────────────────────────────────────────────────────
+<StyledSearchBar
+  value={query}
+  onChangeText={setQuery}
+  showCancel
+  onCancel={() => setQuery('')}
+/>
+
+// ── 4. Suggestion dropdown ────────────────────────────────────────────────────
+const SUGGESTIONS: SearchSuggestion[] = [
+  { id: '1', label: 'React Native', subtitle: 'Framework' },
+  { id: '2', label: 'TypeScript',   subtitle: 'Language'  },
+]
+
+<StyledSearchBar
+  variant="outline"
+  value={query}
+  onChangeText={setQuery}
+  suggestions={SUGGESTIONS.filter(s =>
+    s.label.toLowerCase().includes(query.toLowerCase())
+  )}
+  onSuggestionPress={(item) => setQuery(item.label)}
+  showCancel
+  onCancel={() => setQuery('')}
+/>
+
+// ── 5. Right action slot (filter / voice) ─────────────────────────────────────
+<StyledSearchBar
+  placeholder="Search with filter…"
+  rightAction={
+    <StyledPressable onPress={() => {}} paddingHorizontal={8} paddingVertical={4}
+      borderRadius={8} backgroundColor="#f3f4f6">
+      <StyledText fontSize={14}>⚙️</StyledText>
+    </StyledPressable>
+  }
+/>
+
+// ── 6. Custom left icon ───────────────────────────────────────────────────────
+<StyledSearchBar
+  placeholder="Search locations…"
+  leftIcon={<StyledText fontSize={16}>📍</StyledText>}
+/>
+
+// ── 7. Loading & disabled states ──────────────────────────────────────────────
+<StyledSearchBar variant="filled"  value="react native" loading />
+<StyledSearchBar variant="outline" value="disabled"     disabled />
+
+// ── 8. Dark theme colour override ─────────────────────────────────────────────
+<StyledSearchBar
+  variant="filled"
+  value={query}
+  onChangeText={setQuery}
+  colors={{
+    background:       '#1f2937',
+    border:           '#374151',
+    focusBorder:      '#818cf8',
+    placeholder:      '#6b7280',
+    text:             '#f9fafb',
+    icon:             '#6b7280',
+    clearBg:          '#4b5563',
+    clearIcon:        '#e5e7eb',
+    cancelText:       '#f9fafb',
+    suggestionBg:     '#1f2937',
+    suggestionText:   '#f9fafb',
+    suggestionBorder: '#374151',
+  }}
+/>
+```
+
+---
+
+### StyledSkeleton
+
+Animated loading placeholder with shimmer and pulse animations, 4 primitive shapes, 5 pre-built layout templates, and a `SkeletonBone` export for custom compositions.
+
+```tsx
+import { StyledSkeleton, SkeletonBone } from 'fluent-styles'
+```
+
+#### Templates
+
+Pre-composed layouts that reflect common UI patterns. Pass `repeat` to stack multiple copies.
+
+| Template | Layout |
+|---|---|
+| `card` | Banner image + title line + two text lines + avatar row |
+| `list-item` | Circle avatar + two text lines |
+| `profile` | Large avatar + name + subtitle + stats row |
+| `article` | Full-width image + three text lines |
+| `grid` | 2 × 2 card grid |
+
+#### Shapes (primitives)
+
+| Shape | Border radius |
+|---|---|
+| `rect` | `0` — sharp corners |
+| `rounded` | `8` px |
+| `text` | `4` px — matches typical text line height |
+| `circle` | `width / 2` — perfect circle |
+
+#### Animation types
+
+| Value | Behaviour |
+|---|---|
+| `shimmer` | Horizontal highlight sweep (default) |
+| `pulse` | Opacity fade in/out |
+| `none` | Static — no animation |
+
+#### `SkeletonColors`
+
+| Field | Default (light) | Description |
+|---|---|---|
+| `base` | `gray[100]` | Bone background colour |
+| `highlight` | `gray[50]` | Shimmer highlight colour |
+| `shimmer` | `rgba(255,255,255,0.65)` | Shimmer overlay |
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `width` | `number \| \`${number}%\`` | — | Bone width (primitive mode) |
+| `height` | `number` | — | Bone height (primitive mode) |
+| `shape` | `SkeletonShape` | `'rounded'` | Bone shape |
+| `borderRadius` | `number` | shape default | Custom border radius |
+| `template` | `SkeletonTemplate` | — | Render a pre-built layout |
+| `repeat` | `number` | `1` | Repeat template N times |
+| `animation` | `SkeletonAnimation` | `'shimmer'` | Animation type |
+| `speed` | `number` | `1400` | Cycle duration in ms — lower = faster |
+| `skeletonTheme` | `SkeletonTheme` | `'light'` | Built-in colour theme |
+| `colors` | `Partial<SkeletonColors>` | — | Per-token colour overrides |
+
+#### Usage
+
+```tsx
+import { StyledSkeleton, SkeletonBone } from 'fluent-styles'
+
+// ── 1. Templates ──────────────────────────────────────────────────────────────
+<StyledSkeleton template="card"      animation="shimmer" />
+<StyledSkeleton template="list-item" animation="shimmer" repeat={3} />
+<StyledSkeleton template="profile"   animation="shimmer" />
+<StyledSkeleton template="article"   animation="shimmer" />
+<StyledSkeleton template="grid"      animation="shimmer" />
+
+// ── 2. Toggle with loaded content ─────────────────────────────────────────────
+const [loading, setLoading] = useState(true)
+
+{loading
+  ? <StyledSkeleton template="card" animation="shimmer" />
+  : <MyContentCard />
+}
+
+// ── 3. Primitive shapes ───────────────────────────────────────────────────────
+// Text lines
+<StyledSkeleton width="100%" height={13} shape="text" animation="shimmer" />
+<StyledSkeleton width="85%"  height={13} shape="text" animation="shimmer" />
+<StyledSkeleton width="65%"  height={13} shape="text" animation="shimmer" />
+
+// Banner image
+<StyledSkeleton width="100%" height={160} shape="rounded" animation="shimmer" />
+
+// Avatars
+<StyledSkeleton width={48}  height={48}  shape="circle" animation="shimmer" />
+<StyledSkeleton width={64}  height={64}  shape="circle" animation="shimmer" />
+
+// ── 4. Animation types ────────────────────────────────────────────────────────
+<StyledSkeleton width="100%" height={14} animation="shimmer" />
+<StyledSkeleton width="100%" height={14} animation="pulse" />
+<StyledSkeleton width="100%" height={14} animation="none" />
+
+// ── 5. Speed control ──────────────────────────────────────────────────────────
+<StyledSkeleton width="100%" height={14} animation="shimmer" speed={600}  /> {/* fast */}
+<StyledSkeleton width="100%" height={14} animation="shimmer" speed={1400} /> {/* default */}
+<StyledSkeleton width="100%" height={14} animation="shimmer" speed={2200} /> {/* slow */}
+
+// ── 6. Dark theme ─────────────────────────────────────────────────────────────
+<StyledSkeleton template="profile" animation="shimmer" skeletonTheme="dark" />
+
+// ── 7. Colour overrides (indigo) ──────────────────────────────────────────────
+<StyledSkeleton width="100%" height={13} shape="text" animation="pulse"
+  colors={{ base: '#e0e7ff', highlight: '#eef2ff', shimmer: 'rgba(99,102,241,0.15)' }} />
+
+// ── 8. Custom layout with SkeletonBone ────────────────────────────────────────
+// SkeletonBone renders a single animated bone directly — useful for bespoke layouts.
+<Stack horizontal gap={14} alignItems="center" padding={16}>
+  <SkeletonBone width={48} height={48} shape="circle" animation="shimmer" speed={1400}
+    colors={{ base: '#fde68a', highlight: '#fef9c3', shimmer: 'rgba(245,158,11,0.25)' }} />
+  <Stack flex={1} gap={8}>
+    <SkeletonBone width="70%" height={14} shape="text" animation="shimmer" speed={1400}
+      colors={{ base: '#fde68a', highlight: '#fef9c3', shimmer: 'rgba(245,158,11,0.25)' }} />
+    <SkeletonBone width="45%" height={12} shape="text" animation="shimmer" speed={1400}
+      colors={{ base: '#fde68a', highlight: '#fef9c3', shimmer: 'rgba(245,158,11,0.25)' }} />
+  </Stack>
+</Stack>
 ```
 
 ---

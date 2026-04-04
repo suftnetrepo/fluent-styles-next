@@ -8,6 +8,7 @@ import {
   type StyledPageProps,
   theme,
   StyledDatePicker,
+  StyledBottomSheet,
 } from "fluent-styles";
 import { useNavigation } from "@react-navigation/native";
 import Button from "./button";
@@ -34,6 +35,10 @@ import StyledRadioDemo from "./radio";
 import StyledProgressBarDemo from "./progressBar";
 import StyledSliderDemo from "./slider";
 import StyledDatePickerDemo from "./datePicker";
+import { SkeletonDemo } from "./skeleton";
+import { EmptyStateDemo } from "./emptyState";
+import { SearchBarDemo } from "./searchBar";
+import { BottomSheetDemo } from "./bottomSheet";
 
 const Page = ({
   title,
@@ -84,7 +89,6 @@ export type _path =
   | "toast"
   | "notification"
   | "loader"
-  | "demo"
   | "circularProgress"
   | "barChart"
   | "chips"
@@ -92,7 +96,11 @@ export type _path =
   | "radio"
   | "progressBar"
   | "slider"
-  | "datePicker";
+  | "datePicker"
+  | "skeleton"
+  | "emptyState"
+  | 'searchBar'
+  | "bottomSheet";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -230,14 +238,6 @@ export const config: { path: _path; Page: any }[] = [
     ),
   },
   {
-    path : "demo",
-    Page : () => (
-      <Page title="Demo">
-        <Demo />
-      </Page>
-    )
-  },
-  {
     path: "circularProgress",
     Page: () => (
       <Page title="Circular Progress">
@@ -300,5 +300,36 @@ export const config: { path: _path; Page: any }[] = [
           <StyledDatePickerDemo />
         </Page>
        )
-  }
+  },
+  {
+    path: "skeleton",
+    Page: () => (
+      <Page title="Skeleton">
+        <SkeletonDemo />
+      </Page>
+     )
+  },
+  {
+    path: "emptyState",
+    Page: () => (
+      <Page title="Empty State">
+        <EmptyStateDemo />
+      </Page>
+     )  
+  },
+  {path: "searchBar",
+   Page: () => (
+    <Page title="Search Bar">
+      <SearchBarDemo />
+    </Page>
+   ) 
+    },
+    {
+      path: "bottomSheet",
+      Page: () => (
+        <Page title="Bottom Sheet">
+          <BottomSheetDemo />
+        </Page>
+       )
+    }
 ];
