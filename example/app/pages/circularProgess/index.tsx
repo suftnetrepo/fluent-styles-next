@@ -12,6 +12,7 @@ import {
   StyledCircularProgress,
   StyledCard,
   StyledScrollView,
+  StyledPressable
 } from "fluent-styles";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -27,7 +28,8 @@ const Section = ({
     <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
       {label}
     </StyledText>
-    {children}
+    <> {children}</>
+   
   </Stack>
 );
 
