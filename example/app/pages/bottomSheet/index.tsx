@@ -54,7 +54,7 @@ export const BottomSheetDemo: React.FC = () => {
   const is    = (id: string) => activeSheet === id
 
   return (
-    <Stack flex={1} borderRadius={32} marginTop={16} backgroundColor={theme.colors.gray[1]}>
+    <Stack flex={1} borderRadius={16} marginTop={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 80 }}>
 
         {/* Basic */}

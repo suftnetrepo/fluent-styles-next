@@ -1,12 +1,9 @@
-import React, { Fragment } from "react";
-import { StyleSheet, Text } from "react-native";
+import React from "react";
 
 import {
   theme,
   Stack,
   StyledScrollView,
-  StyledSpacer,
-  StyledSeperator,
   StyledText,
   StyledImage,
   StyledImageBackground,
@@ -15,7 +12,7 @@ import {
 // ─── Small emoji helper ──────────────────────────────────────────────────────
 
 const E = ({ e }: { e: string }) => (
-  <Text style={{ fontSize: 18 }}>{e}</Text>
+  <StyledText fontSize={theme.fontSize.normal}>{e}</StyledText>
 );
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────
@@ -27,23 +24,14 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <Stack paddingVertical={0}>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
     <>
-      <StyledSeperator
-        leftLabel={label}
-        leftLabelProps={{
-          color: theme.colors.gray[800],
-          fontSize: theme.fontSize.normal,
-        }}
-        borderRadius={8}
-        paddingVertical={8}
-        marginVertical={8}
-        borderBottomColor={theme.colors.gray[500]}
-        borderBottomWidth={0.5}
-        backgroundColor={theme.colors.gray[1]}
-      />
-      {children}
+        {children}
     </>
+
   </Stack>
 );
 
@@ -70,11 +58,8 @@ const photos = {
 
 export default function ImageUsage() {
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <Stack padding={16} backgroundColor={theme.colors.gray[50]}>
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
           {/* 1. Basic image */}
           <Section label="Basic image">
             <Stack gap={12}>
@@ -245,7 +230,7 @@ export default function ImageUsage() {
                 height={180}
                 resizeMode="cover"
               />
-              <Stack padding={16} gap={8}>
+              <Stack padding={16} gap={4}>
                 <StyledText fontSize={18} fontWeight={800}>
                   Modern workspace
                 </StyledText>
@@ -305,7 +290,6 @@ export default function ImageUsage() {
                 <StyledText color={theme.colors.white} fontSize={24} fontWeight={800}>
                   Build better mobile UI
                 </StyledText>
-                <StyledSpacer marginVertical={4} />
                 <StyledText color={theme.colors.white}>
                   Use image backgrounds for banners, heroes, and featured content.
                 </StyledText>
@@ -456,8 +440,7 @@ export default function ImageUsage() {
               </StyledText>
             </Stack>
           </Section>
-        </Stack>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }

@@ -1,21 +1,16 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
-  ChevronRight,
   Stack,
   StyledText,
-  StyledDivider,
   theme,
   StyledScrollView,
-  StyleShape,
-  StyledSpacer,
   StyledCard,
+  StyledPressable,
   StyledButton,
-  StyledSeperator,
   useActionSheet,
   useToast,
   actionSheetService,
 } from "fluent-styles";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 const ActionSheet = () => {
   const actionSheet = useActionSheet();
   const toast = useToast();
@@ -141,20 +136,12 @@ const ActionSheet = () => {
       title: "Share & actions",
       theme: "light",
       children: (
-        <View style={{ gap: 8 }}>
-          <Text style={{ color: "#8e8e93", fontSize: 13, textAlign: "center" }}>
+        <Stack gap={8}>
+          <StyledText color="#8e8e93" fontSize={13} textAlign="center">
             Selected colour
-          </Text>
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colour,
-              alignSelf: "center",
-            }}
-          />
-        </View>
+          </StyledText>
+          <Stack width={48} height={48} borderRadius={24} backgroundColor={colour} alignSelf="center" />
+        </Stack>
       ),
       items: [
         {
@@ -199,19 +186,10 @@ const ActionSheet = () => {
     });
 
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <StyledCard
-          backgroundColor={theme.colors.gray[1]}
-          marginHorizontal={1}
-          borderWidth={0.5}
-          borderColor={theme.colors.gray[1]}
-          borderRadius={32}
-          padding={16}
-        >
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+    <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
           
-          <Section title="Theme presets">
+          <Section label="Theme presets">
             <Row>
               <Btn label="Dark" color="#a1a1aa" onPress={demoDark} />
               <Btn label="Light" color="#3b82f6" onPress={demoLight} />
@@ -219,7 +197,7 @@ const ActionSheet = () => {
             </Row>
           </Section>
 
-          <Section title="Color overrides">
+          <Section label="Color overrides">
             <Btn
               label="Light + indigo cancel"
               color="#6366f1"
@@ -240,7 +218,7 @@ const ActionSheet = () => {
             />
           </Section>
 
-          <Section title="Children slot">
+          <Section label="Children slot">
             <Row>
               <Btn
                 label="Colour picker — light"
@@ -261,7 +239,7 @@ const ActionSheet = () => {
             />
           </Section>
 
-          <Section title="Imperative service">
+          <Section label="Imperative service">
             <Btn
               label="actionSheetService.show()"
               color="#f59e0b"
@@ -269,9 +247,8 @@ const ActionSheet = () => {
               full
             />
           </Section>
-        </StyledCard>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 };
 
@@ -288,54 +265,36 @@ const COLOURS = [
 const ColourPicker: React.FC<{ onSelect: (c: string) => void }> = ({
   onSelect,
 }) => (
-  <View style={cp.wrap}>
+  <Stack horizontal gap={8} flexWrap="wrap">
     {COLOURS.map((c) => (
-      <TouchableOpacity
-        key={c}
-        style={[cp.swatch, { backgroundColor: c }]}
-        onPress={() => onSelect(c)}
-        activeOpacity={0.75}
-      />
+      <StyledPressable key={c} onPress={() => onSelect(c)} width={44} height={44} borderRadius={22} backgroundColor={c} />
     ))}
-  </View>
+  </Stack>
 );
-const cp = StyleSheet.create({
-  wrap: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    justifyContent: "center",
-    paddingVertical: 8,
-  },
-  swatch: { width: 44, height: 44, borderRadius: 22 },
-});
-
-const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
+const Section = ({
+  label,
   children,
+}: {
+  label: string;
+  children: React.ReactNode;
 }) => (
-  <Stack paddingVertical={0}>
-      <>
-        <StyledSeperator
-          leftLabel={title}
-          leftLabelProps={{
-            color: theme.colors.gray[800],
-            fontSize: theme.fontSize.normal,
-          }}
-          borderRadius={8}
-          paddingVertical={8}
-          marginVertical={16}
-          borderBottomColor={theme.colors.gray[500]}
-          borderBottomWidth={0.5}
-          backgroundColor={theme.colors.gray[1]}
-        />
-        {children}
-      </>
-    </Stack>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
+    <>
+      {children}
+    </>
+  
+  </Stack>
 );
 
 const Row: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <View style={s.row}>{children}</View>
+  <Stack horizontal gap={8}>
+    <>
+    {children}
+    </>
+    </Stack>
 );
 
 const Btn: React.FC<{
@@ -344,61 +303,18 @@ const Btn: React.FC<{
   onPress: () => void;
   full?: boolean;
 }> = ({ label, color, onPress, full }) => (
-  <TouchableOpacity
-    style={[s.btn, { borderColor: color }, full && s.btnFull]}
+  <StyledPressable
     onPress={onPress}
-    activeOpacity={0.7}
+    paddingVertical={13}
+    paddingHorizontal={16}
+    borderRadius={10}
+    borderWidth={1}
+    borderColor={color}
+    backgroundColor={theme.colors.gray[900]}
+    alignItems="center"
+    flex={full ? undefined : 1}
   >
-    <Text style={[s.btnText, { color }]}>{label}</Text>
-  </TouchableOpacity>
+    <StyledText fontSize={14} fontWeight="600" letterSpacing={0.1} color={color}>{label}</StyledText>
+  </StyledPressable>
 );
-
-const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#09090b" },
-  scroll: { padding: 20, gap: 24, paddingBottom: 60 },
-  screenTitle: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: "#f4f4f5",
-    letterSpacing: -0.5,
-  },
-  screenSub: { fontSize: 14, color: "#71717a", marginTop: 4 },
-
-  preview: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: "#18181b",
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
-  },
-  dot: { width: 28, height: 28, borderRadius: 14 },
-  previewLabel: { fontSize: 13, color: "#a1a1aa", flex: 1 },
-
-  section: { gap: 10 },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#71717a",
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
-    marginBottom: 2,
-  },
-  sectionBody: { gap: 8 },
-  row: { flexDirection: "row", gap: 8 },
-
-  btn: {
-    flex: 1,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    borderWidth: 1,
-    backgroundColor: "#18181b",
-    alignItems: "center",
-  },
-  btnFull: { flex: 0 },
-  btnText: { fontSize: 14, fontWeight: "600", letterSpacing: 0.1 },
-});
-
 export default ActionSheet;

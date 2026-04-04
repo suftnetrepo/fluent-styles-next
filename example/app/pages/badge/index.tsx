@@ -1,12 +1,9 @@
-import React, { Fragment } from "react";
-import { StyleSheet, Text } from "react-native";
+import React from "react";
 
 import {
   theme,
   Stack,
   StyledScrollView,
-  StyledSpacer,
-  StyledSeperator,
   StyledText,
   StyledBadge,
   BadgeWithIcon,
@@ -18,7 +15,7 @@ import {
 // ─── Small emoji helper ──────────────────────────────────────────────────────
 
 const E = ({ e, size = 16 }: { e: string, size?: number }) => (
-  <Text style={{ fontSize: size }}>{e}</Text>
+  <StyledText fontSize={size}>{e}</StyledText>
 );
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────
@@ -30,36 +27,20 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <Stack paddingVertical={0}>
-          <>
-            <StyledSeperator
-              leftLabel={label}
-              leftLabelProps={{
-                color: theme.colors.gray[800],
-                fontSize: theme.fontSize.normal,
-              }}
-              borderRadius={8}
-              paddingVertical={8}
-              marginVertical={16}
-              borderBottomColor={theme.colors.gray[500]}
-              borderBottomWidth={0.5}
-              backgroundColor={theme.colors.gray[1]}
-              
-            />
-            {children}
-          </>
-        </Stack>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
+    {children}
+  </Stack>
 );
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
 export default function BadgeUsage() {
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <Stack padding={16} borderRadius={32}  backgroundColor={theme.colors.gray[1]}>
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
           {/* 1. Basic badge */}
           <Section label="Basic badge">
             <Stack gap={10}>
@@ -463,10 +444,7 @@ export default function BadgeUsage() {
               </Stack>
             </Stack>
           </Section>
-        </Stack>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }
-
-const styles = StyleSheet.create({});

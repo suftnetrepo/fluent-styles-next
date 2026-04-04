@@ -2,19 +2,13 @@
  * SwitchUsage — exhaustive demo of every feature.
  */
 
-import React, { Fragment, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
 
 import {
-  Collapse,
-  CollapseGroup,
-  CollapseItem,
-  StyledSeperator,
+  Stack,
   StyledText,
-  theme,
   StyledScrollView,
-  StyledSpacer,
-  StyledCard,
+  theme,
   palettes,
   Switch,
 } from "fluent-styles";
@@ -34,17 +28,9 @@ export default function SwitchUsage() {
     new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 800));
 
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <StyledCard
-          backgroundColor={theme.colors.gray[1]}
-          marginHorizontal={1}
-          borderWidth={0.5}
-          borderColor={theme.colors.gray[1]}
-          borderRadius={32}
-          padding={16}
-        >
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+
           {/* ── 1. Basic controlled / uncontrolled ───────────────────────── */}
           <Section label="Basic">
             <Row label="Controlled" hint={basic ? "ON" : "OFF"}>
@@ -201,13 +187,13 @@ export default function SwitchUsage() {
 
           {/* ── 8. Dark background demo ──────────────────────────────────── */}
           <Section label="On dark background">
-            <View style={u.darkBg}>
-              <View style={u.darkRow}>
-                <Text style={u.darkLabel}>Default</Text>
+            <Stack backgroundColor="#0f172a" borderRadius={12} padding={16} gap={14}>
+              <Stack horizontal justifyContent="space-between" alignItems="center">
+                <StyledText fontSize={14} color="#94a3b8" flex={1} marginRight={16}>Default</StyledText>
                 <Switch defaultValue />
-              </View>
-              <View style={u.darkRow}>
-                <Text style={u.darkLabel}>Custom (slate)</Text>
+              </Stack>
+              <Stack horizontal justifyContent="space-between" alignItems="center">
+                <StyledText fontSize={14} color="#94a3b8" flex={1} marginRight={16}>Custom (slate)</StyledText>
                 <Switch
                   defaultValue
                   colors={{
@@ -217,9 +203,9 @@ export default function SwitchUsage() {
                     thumb: "#ffffff",
                   }}
                 />
-              </View>
-              <View style={u.darkRow}>
-                <Text style={u.darkLabel}>Labels on dark</Text>
+              </Stack>
+              <Stack horizontal justifyContent="space-between" alignItems="center">
+                <StyledText fontSize={14} color="#94a3b8" flex={1} marginRight={16}>Labels on dark</StyledText>
                 <Switch
                   size="lg"
                   defaultValue
@@ -233,24 +219,23 @@ export default function SwitchUsage() {
                     inactiveLabelText: palettes.blueGray[400],
                   }}
                 />
-              </View>
-            </View>
+              </Stack>
+            </Stack>
           </Section>
 
           {/* ── 9. Row of all sizes aligned ──────────────────────────────── */}
           <Section label="Size comparison (all ON)">
-            <View style={u.sizeRow}>
+            <Stack horizontal alignItems="flex-end" gap={24} paddingVertical={12}>
               {(["sm", "md", "lg"] as const).map((s) => (
-                <View key={s} style={u.sizeItem}>
+                <Stack key={s} alignItems="center" gap={8}>
                   <Switch size={s} defaultValue />
-                  <Text style={u.sizeLabel}>{s}</Text>
-                </View>
+                  <StyledText fontSize={12} color="#8e8e93" fontWeight="600">{s}</StyledText>
+                </Stack>
               ))}
-            </View>
+            </Stack>
           </Section>
-        </StyledCard>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }
 
@@ -263,24 +248,15 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <View style={u.section}>
-     <>
-          <StyledSeperator
-            leftLabel={label}
-            leftLabelProps={{
-              color: theme.colors.gray[800],
-              fontSize: theme.fontSize.normal,
-            }}
-            borderRadius={8}
-            paddingVertical={8}
-            marginVertical={16}
-            borderBottomColor={theme.colors.gray[500]}
-            borderBottomWidth={0.5}
-            backgroundColor={theme.colors.gray[1]}
-          />
-          {children}
-        </>
-  </View>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
+    <>
+       {children}
+    </>
+ 
+  </Stack>
 );
 
 const Row = ({
@@ -292,62 +268,16 @@ const Row = ({
   hint?: string;
   children: React.ReactNode;
 }) => (
-  <View style={u.row}>
-    <View style={u.rowText}>
-      <Text style={u.rowLabel}>{label}</Text>
-      {hint ? <Text style={u.rowHint}>{hint}</Text> : null}
-    </View>
-    {children}
-  </View>
+  <Stack horizontal justifyContent="space-between" alignItems="center" paddingVertical={11} borderBottomWidth={0.5} borderBottomColor={theme.colors.gray[200]}>
+    <Stack flex={1} marginRight={16}>
+      <StyledText fontSize={14} color={theme.colors.gray[900]} fontWeight="500">{label}</StyledText>
+      {hint ? <StyledText fontSize={12} color={theme.colors.gray[500]} marginTop={1}>{hint}</StyledText> : null}
+    </Stack>
+    <>
+       {children}
+    </>
+ 
+  </Stack>
 );
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
-const u = StyleSheet.create({
-  scroll: { padding: 20, gap: 28, paddingBottom: 60 },
-
-  section: { gap: 0 },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#8e8e93",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: 12,
-  },
-  sectionBody: { gap: 0 },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 11,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e5e5ea",
-  },
-  rowText: { flex: 1, marginRight: 16 },
-  rowLabel: { fontSize: 14, color: "#1c1c1e", fontWeight: "500" },
-  rowHint: { fontSize: 12, color: "#8e8e93", marginTop: 1 },
-
-  darkBg: {
-    backgroundColor: "#0f172a",
-    borderRadius: 12,
-    padding: 16,
-    gap: 14,
-  },
-  darkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  darkLabel: { fontSize: 14, color: "#94a3b8", flex: 1, marginRight: 16 },
-
-  sizeRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 24,
-    paddingVertical: 12,
-  },
-  sizeItem: { alignItems: "center", gap: 8 },
-  sizeLabel: { fontSize: 12, color: "#8e8e93", fontWeight: "600" },
-});

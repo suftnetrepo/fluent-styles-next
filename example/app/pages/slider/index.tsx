@@ -15,15 +15,11 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import {
-  StyledSafeAreaView,
   StyledScrollView,
-  StyledPage,
   StyledCard,
   Stack,
   StyledText,
   StyledPressable,
-  StyledSpacer,
-  StyledDivider,
   theme,
   palettes,
   StyledSlider
@@ -31,29 +27,16 @@ import {
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
-const Section: React.FC<{ title: string; subtitle?: string; children: React.ReactNode }> = ({
-  title, subtitle, children,
-}) => (
-  <Stack marginBottom={28}>
-    <Stack marginBottom={14}>
-      <Stack horizontal alignItems="center" gap={8}>
-        <Stack width={4} height={18} borderRadius={2} backgroundColor="#3b82f6" />
-        <StyledText fontSize={16} fontWeight={theme.fontWeight.bold} color={theme.colors.gray[900]}>
-          {title}
-        </StyledText>
-      </Stack>
-      {subtitle && (
-        <StyledText fontSize={12} color={theme.colors.gray[400]} marginTop={3} marginLeft={12}>
-          {subtitle}
-        </StyledText>
-      )}
-    </Stack>
-    <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light">
-        <>
-           {children}
-        </>
-   
-    </StyledCard>
+const Section: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {title}
+    </StyledText>
+    {subtitle && (
+      <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
+        {subtitle}
+      </StyledText>
+    )}
   </Stack>
 );
 
@@ -120,20 +103,14 @@ export default function StyledSliderDemo() {
   const [teal,   setTeal]   = useState(80);
 
   return (
-    <Stack flex={1} backgroundColor="#f5f5f5">
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}>
-          <StyledSpacer height={24} />
-          <StyledText fontSize={22} fontWeight={theme.fontWeight.bold}
-            color={theme.colors.gray[900]} marginBottom={4}>
-            StyledSlider
-          </StyledText>
-          <StyledText fontSize={12} color={theme.colors.gray[400]} marginBottom={28}>
-            Gesture-driven slider · 5 variants · 3 sizes · tooltip · tick marks
-          </StyledText>
+        contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+
 
           {/* ── 1. Variants ── */}
-          <Section title="Variants" subtitle="default · range · stepped · gradient · buffer">
+          <Section title="Variants" subtitle="default · range · stepped · gradient · buffer" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Row label="default" value={`${vol}`}>
               <StyledSlider value={vol} onValueChange={setVol} showMinMax />
             </Row>
@@ -182,10 +159,11 @@ export default function StyledSliderDemo() {
                 colors={{ fill: '#2563eb', buffer: '#bfdbfe' }}
               />
             </Row>
-          </Section>
+            </StyledCard>
 
           {/* ── 2. Sizes ── */}
-          <Section title="Sizes" subtitle="sm · md · lg">
+          <Section title="Sizes" subtitle="sm · md · lg" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Row label="sm" value={`${smVal}`}>
               <StyledSlider value={smVal} size="sm" onValueChange={setSmVal} />
             </Row>
@@ -195,10 +173,11 @@ export default function StyledSliderDemo() {
             <Row label="lg" value={`${lgVal}`}>
               <StyledSlider value={lgVal} size="lg" onValueChange={setLgVal} />
             </Row>
-          </Section>
+            </StyledCard>
 
           {/* ── 3. Colour themes ── */}
-          <Section title="Colour themes">
+          <Section title="Colour themes" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { label: 'Lime / fitness',  val: lime,   set: setLime,   fill: '#8bc34a', track: '#ecfccb' },
               { label: 'Rose / health',   val: rose,   set: setRose,   fill: '#f43f5e', track: '#ffe4e6' },
@@ -215,10 +194,11 @@ export default function StyledSliderDemo() {
                 />
               </Row>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 4. Real-world: Audio controls ── */}
-          <Section title="Real-world: Audio controls">
+          <Section title="Real-world: Audio controls" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Stack horizontal alignItems="center" gap={12} marginBottom={20}>
               <Icon name="volume-x" size={18} color={theme.colors.gray[400]} />
               <Stack flex={1}>
@@ -250,10 +230,11 @@ export default function StyledSliderDemo() {
                 {bright}%
               </StyledText>
             </Stack>
-          </Section>
+            </StyledCard>
 
           {/* ── 5. Real-world: Temperature ── */}
-          <Section title="Real-world: Temperature control">
+          <Section title="Real-world: Temperature control" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Stack alignItems="center" marginBottom={16}>
               <StyledText fontSize={48} fontWeight="900" color="#f43f5e">
                 {temp}°
@@ -278,10 +259,11 @@ export default function StyledSliderDemo() {
                 tooltipBg:   temp < 22 ? '#60a5fa' : '#ef4444',
               }}
             />
-          </Section>
+            </StyledCard>
 
           {/* ── 6. Real-world: Price filter ── */}
-          <Section title="Real-world: Price range filter">
+          <Section title="Real-world: Price range filter" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Stack horizontal alignItems="center" justifyContent="space-between" marginBottom={8}>
               <Stack paddingHorizontal={16} paddingVertical={8} borderRadius={12}
                 backgroundColor={theme.colors.gray[100]}>
@@ -311,10 +293,11 @@ export default function StyledSliderDemo() {
               formatLabel={(v) => `$${v}`}
               colors={{ fill: '#6366f1', thumbBorder: '#6366f1', tooltipBg: '#6366f1' }}
             />
-          </Section>
+            </StyledCard>
 
           {/* ── 7. Real-world: Star rating ── */}
-          <Section title="Real-world: Rating slider">
+          <Section title="Real-world: Rating slider" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Stack alignItems="center" marginBottom={12}>
               <Stack horizontal gap={4}>
                 {[1,2,3,4,5].map((i) => (
@@ -346,14 +329,15 @@ export default function StyledSliderDemo() {
                 tickActive: '#f59e0b',
               }}
             />
-          </Section>
+            </StyledCard>
 
           {/* ── 8. Disabled state ── */}
-          <Section title="Disabled state">
+          <Section title="Disabled state" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Row label="disabled — cannot interact">
               <StyledSlider value={55} disabled showMinMax />
             </Row>
-          </Section>
+            </StyledCard>
 
           {/* ── API reference ── */}
           <StyledCard backgroundColor={theme.colors.gray[900]} borderRadius={18}

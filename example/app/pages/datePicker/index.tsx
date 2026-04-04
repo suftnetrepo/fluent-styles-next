@@ -15,14 +15,11 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import {
-  StyledSafeAreaView,
   StyledScrollView,
-  StyledPage,
   StyledCard,
   Stack,
   StyledText,
   StyledPressable,
-  StyledSpacer,
   StyledDivider,
   theme,
   palettes,
@@ -45,29 +42,16 @@ const nightsBetween = (a: Date | null, b: Date | null) =>
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 
-const Section: React.FC<{ title: string; subtitle?: string; children: React.ReactNode }> = ({
-  title, subtitle, children,
-}) => (
-  <Stack marginBottom={28}>
-    <Stack marginBottom={14}>
-      <Stack horizontal alignItems="center" gap={8}>
-        <Stack width={4} height={18} borderRadius={2} backgroundColor="#3b82f6" />
-        <StyledText fontSize={16} fontWeight={theme.fontWeight.bold} color={theme.colors.gray[900]}>
-          {title}
-        </StyledText>
-      </Stack>
-      {subtitle && (
-        <StyledText fontSize={12} color={theme.colors.gray[400]} marginTop={3} marginLeft={12}>
-          {subtitle}
-        </StyledText>
-      )}
-    </Stack>
-    <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light">
-        <>
-          {children}
-        </>
-    
-    </StyledCard>
+const Section: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {title}
+    </StyledText>
+    {subtitle && (
+      <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
+        {subtitle}
+      </StyledText>
+    )}
   </Stack>
 );
 
@@ -113,21 +97,16 @@ export default function StyledDatePickerDemo() {
   const nights = nightsBetween(checkIn, checkOut);
 
   return (
-    <Stack flex={1} marginTop={16} backgroundColor="#f5f5f5">
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 60 }}
       >
-          <StyledText fontSize={22} fontWeight={theme.fontWeight.bold}
-            color={theme.colors.gray[900]} marginBottom={4}>
-            StyledDatePicker
-          </StyledText>
-          <StyledText fontSize={12} color={theme.colors.gray[400]} marginBottom={28}>
-            Pure-JS picker · 5 modes · 3 variants · no native deps
-          </StyledText>
+
 
           {/* ── 1. Date inline ── */}
-          <Section title="Date — inline" subtitle="mode='date'  variant='inline'">
+          <Section title="Date — inline" subtitle="mode='date'  variant='inline'" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="date"
               variant="inline"
@@ -136,10 +115,11 @@ export default function StyledDatePickerDemo() {
               showTodayButton
             />
             <ValueRow label="Selected" value={fmt(date1)} />
-          </Section>
+            </StyledCard>
 
           {/* ── 2. Date input → sheet ── */}
-          <Section title="Date — input → sheet" subtitle="mode='date'  variant='input'">
+          <Section title="Date — input → sheet" subtitle="mode='date'  variant='input'" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="date"
               variant="input"
@@ -151,10 +131,11 @@ export default function StyledDatePickerDemo() {
               confirmLabel="Confirm date"
             />
             <ValueRow label="Confirmed" value={fmt(date2)} />
-          </Section>
+            </StyledCard>
 
           {/* ── 3. Range inline ── */}
-          <Section title="Date Range — inline" subtitle="mode='range' · tap start then end">
+          <Section title="Date Range — inline" subtitle="mode='range' · tap start then end" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="range"
               variant="inline"
@@ -169,10 +150,11 @@ export default function StyledDatePickerDemo() {
             />
             <ValueRow label="Start" value={fmt(rangeS)} />
             <ValueRow label="End"   value={fmt(rangeE)} />
-          </Section>
+            </StyledCard>
 
           {/* ── 4. Time inline ── */}
-          <Section title="Time — inline" subtitle="mode='time' · scroll drum">
+          <Section title="Time — inline" subtitle="mode='time' · scroll drum" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="time"
               variant="inline"
@@ -181,10 +163,11 @@ export default function StyledDatePickerDemo() {
               showTodayButton={false}
             />
             <ValueRow label="Selected time" value={fmtTime(time1)} />
-          </Section>
+            </StyledCard>
 
           {/* ── 5. DateTime inline ── */}
-          <Section title="Date + Time — inline" subtitle="mode='datetime' · calendar + drum">
+          <Section title="Date + Time — inline" subtitle="mode='datetime' · calendar + drum" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="datetime"
               variant="inline"
@@ -196,10 +179,11 @@ export default function StyledDatePickerDemo() {
               label="Selected"
               value={datetime1 ? `${fmt(datetime1)} at ${fmtTime(datetime1)}` : '—'}
             />
-          </Section>
+            </StyledCard>
 
           {/* ── 6. Month inline ── */}
-          <Section title="Month — inline" subtitle="mode='month' · tap any month">
+          <Section title="Month — inline" subtitle="mode='month' · tap any month" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <StyledDatePicker
               mode="month"
               variant="inline"
@@ -208,10 +192,11 @@ export default function StyledDatePickerDemo() {
               colors={{ selected: '#059669', today: '#059669' }}
             />
             <ValueRow label="Selected month" value={fmtMonth(month1)} />
-          </Section>
+            </StyledCard>
 
           {/* ── 7. Colour themes ── */}
-          <Section title="Colour themes" subtitle="custom colors prop">
+          <Section title="Colour themes" subtitle="custom colors prop" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
 
             <StyledText fontSize={12} color={theme.colors.gray[400]} marginBottom={10}>
               Lime
@@ -254,10 +239,11 @@ export default function StyledDatePickerDemo() {
               value={amber} onChange={setAmber}
               colors={{ selected: '#d97706', today: '#d97706', confirmBg: '#d97706' }}
             />
-          </Section>
+            </StyledCard>
 
           {/* ── 8. Real-world: Hotel booking ── */}
-          <Section title="Hotel booking" subtitle="two date inputs with night count">
+          <Section title="Hotel booking" subtitle="two date inputs with night count" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <Stack gap={12}>
               <StyledDatePicker
                 mode="date"
@@ -303,10 +289,11 @@ export default function StyledDatePickerDemo() {
                 </StyledText>
               </Stack>
             )}
-          </Section>
+            </StyledCard>
 
           {/* ── 9. Real-world: Event scheduler ── */}
-          <Section title="Event scheduler" subtitle="date + time inputs">
+          <Section title="Event scheduler" subtitle="date + time inputs" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <Stack gap={12}>
               <StyledDatePicker
                 mode="date"
@@ -338,10 +325,11 @@ export default function StyledDatePickerDemo() {
                 value={`${fmt(eventDate)} at ${fmtTime(eventTime)}`}
               />
             )}
-          </Section>
+            </StyledCard>
 
           {/* ── 10. Real-world: Report period ── */}
-          <Section title="Report period" subtitle="month mode inputs">
+          <Section title="Report period" subtitle="month mode inputs" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={20} shadow="light" marginBottom={28}>
             <Stack gap={12}>
               <StyledDatePicker
                 mode="month"
@@ -376,7 +364,7 @@ export default function StyledDatePickerDemo() {
                 value={`${fmtMonth(reportFrom)} – ${fmtMonth(reportTo)}`}
               />
             )}
-          </Section>
+            </StyledCard>
 
           {/* ── API Reference ── */}
           <StyledCard backgroundColor={theme.colors.gray[900]} borderRadius={18}

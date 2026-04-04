@@ -8,14 +8,10 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import {
-  StyledSafeAreaView,
   StyledScrollView,
-  StyledPage,
   StyledCard,
   Stack,
   StyledText,
-  StyledSpacer,
-  StyledDivider,
   theme,
   palettes,
   StyledChip
@@ -23,23 +19,17 @@ import {
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
-const Section: React.FC<{
-  title: string;
-  children: React.ReactNode;
-}> = ({ title, children }) => (
-  <>
-    <StyledText
-      fontSize={theme.fontSize.normal}
-      fontWeight={theme.fontWeight.bold}
-      color={theme.colors.gray[900]}
-      marginBottom={12}
-    >
+const Section: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
       {title}
     </StyledText>
-    {children}
-    <StyledSpacer height={28} />
-    <StyledDivider borderBottomColor={theme.colors.gray[100]} marginBottom={28} />
-  </>
+    {subtitle && (
+      <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
+        {subtitle}
+      </StyledText>
+    )}
+  </Stack>
 );
 
 // ─── Demo ─────────────────────────────────────────────────────────────────────
@@ -58,27 +48,15 @@ export default function StyledChipDemo() {
   ) => setter((prev) => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
 
   return (
-    <Stack paddingHorizontal={16} borderRadius={23} marginVertical={16} flex={1} backgroundColor={palettes.white}>
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 60 }}
       >
-    
-          <StyledSpacer height={20} />
-          <StyledText
-            fontSize={22}
-            fontWeight={theme.fontWeight.bold}
-            color={theme.colors.gray[900]}
-            marginBottom={4}
-          >
-            StyledChip
-          </StyledText>
-          <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]} marginBottom={28}>
-            Reusable chip component · all variants
-          </StyledText>
 
           {/* ── 1. Outlined ── */}
-          <Section title="Outlined chips">
+          <Section title="Outlined chips" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               {/* Row 1 */}
               <Stack horizontal gap={8} flexWrap="wrap">
@@ -129,10 +107,11 @@ export default function StyledChipDemo() {
                 ))}
               </Stack>
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 2. Ingredient chips ── */}
-          <Section title="Ingredient chips">
+          <Section title="Ingredient chips" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               {[
                 ['Cheese',       'Vanilla',   'Chocolate', 'Egg'    ],
@@ -153,10 +132,11 @@ export default function StyledChipDemo() {
                 </Stack>
               ))}
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 3. Filled chips ── */}
-          <Section title="Filled chips">
+          <Section title="Filled chips" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               <Stack horizontal gap={8} flexWrap="wrap">
                 <StyledChip label="Hacktoberfest" variant="filled" bgColor="#e8f5e9" color="#388e3c" />
@@ -179,10 +159,11 @@ export default function StyledChipDemo() {
                 <StyledChip label="Limited" variant="filled" bgColor="#fff9c4" color="#f9a825" />
               </Stack>
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 4. Smooth / icon chips ── */}
-          <Section title="Smooth chips (with icons)">
+          <Section title="Smooth chips (with icons)" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               <Stack horizontal gap={8} flexWrap="wrap">
                 <StyledChip
@@ -275,10 +256,11 @@ export default function StyledChipDemo() {
                 />
               </Stack>
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 5. Likeable chips ── */}
-          <Section title="Likeable chips">
+          <Section title="Likeable chips" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               {[
                 ['Cryptocurrency', 'Big Data'         ],
@@ -299,10 +281,11 @@ export default function StyledChipDemo() {
                 </Stack>
               ))}
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 6. Mixed icon/colour chips ── */}
-          <Section title="Icon chips · mixed colours">
+          <Section title="Icon chips · mixed colours" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               <Stack horizontal gap={8} flexWrap="wrap">
                 <StyledChip label="Annotation" variant="icon"
@@ -345,10 +328,11 @@ export default function StyledChipDemo() {
                 />
               </Stack>
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 7. Size variants ── */}
-          <Section title="Size variants">
+          <Section title="Size variants" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack gap={10}>
               <Stack horizontal gap={8} alignItems="center">
                 <StyledChip label="Small"  variant="outlined" size="sm" color="#2196f3" />
@@ -361,17 +345,18 @@ export default function StyledChipDemo() {
                 <StyledChip label="Large"  variant="ingredient" size="lg" defaultSelected />
               </Stack>
             </Stack>
-          </Section>
+          </StyledCard>
 
           {/* ── 8. Disabled ── */}
-          <Section title="Disabled state">
+          <Section title="Disabled state" />
+          <StyledCard backgroundColor={palettes.white} borderRadius={16} shadow="light" marginBottom={24} padding={16}>
             <Stack horizontal gap={8} flexWrap="wrap">
               <StyledChip label="Outlined"   variant="outlined"   color="#2196f3" disabled />
               <StyledChip label="Filled"     variant="filled"     bgColor="#e91e63" color="#fff" disabled />
               <StyledChip label="Ingredient" variant="ingredient" disabled />
               <StyledChip label="Likeable"   variant="likeable"   disabled />
             </Stack>
-          </Section>
+          </StyledCard>
 
   
       </StyledScrollView>

@@ -7,15 +7,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  StyledSafeAreaView,
   StyledScrollView,
-  StyledPage,
   StyledCard,
   Stack,
   StyledText,
   StyledPressable,
-  StyledSpacer,
-  StyledDivider,
   theme,
   palettes,
   StyledProgressBar
@@ -24,29 +20,16 @@ import Icon from 'react-native-vector-icons/Feather';
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
-const Section: React.FC<{ title: string; subtitle?: string; children: React.ReactNode }> = ({
-  title, subtitle, children,
-}) => (
-  <Stack marginBottom={28}>
-    <Stack marginBottom={14}>
-      <Stack horizontal alignItems="center" gap={8}>
-        <Stack width={4} height={18} borderRadius={2} backgroundColor="#3b82f6" />
-        <StyledText fontSize={16} fontWeight={theme.fontWeight.bold} color={theme.colors.gray[900]}>
-          {title}
-        </StyledText>
-      </Stack>
-      {subtitle && (
-        <StyledText fontSize={12} color={theme.colors.gray[400]} marginTop={3} marginLeft={12}>
-          {subtitle}
-        </StyledText>
-      )}
-    </Stack>
-    <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light">
-        <>
-             {children}
-        </>
- 
-    </StyledCard>
+const Section: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {title}
+    </StyledText>
+    {subtitle && (
+      <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
+        {subtitle}
+      </StyledText>
+    )}
   </Stack>
 );
 
@@ -93,22 +76,16 @@ export default function StyledProgressBarDemo() {
   const [controlled, setControlled] = useState(45);
 
   return (
-    <Stack flex={1} marginTop={16} borderRadius={32} backgroundColor={theme.colors.gray[100]} paddingHorizontal={16}>
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}>
+        contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
       
 
-          <StyledSpacer height={24} />
-          <StyledText fontSize={22} fontWeight={theme.fontWeight.bold}
-            color={theme.colors.gray[900]} marginBottom={4}>
-            StyledProgressBar
-          </StyledText>
-          <StyledText fontSize={12} color={theme.colors.gray[400]} marginBottom={28}>
-            Animated progress bar · 5 variants · 5 sizes · label positions · colour themes
-          </StyledText>
+
 
           {/* ── 1. Variants ── */}
-          <Section title="Variants" subtitle="default · striped · gradient · segmented · buffer">
+          <Section title="Variants" subtitle="default · striped · gradient · segmented · buffer" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Row label="default">
               <StyledProgressBar value={65} labelPosition="right" />
             </Row>
@@ -129,20 +106,22 @@ export default function StyledProgressBarDemo() {
                 labelPosition="right"
                 colors={{ fill: '#2563eb', buffer: '#bfdbfe', track: '#e5e7eb' }} />
             </Row>
-          </Section>
+            </StyledCard>
 
           {/* ── 2. Sizes ── */}
-          <Section title="Sizes" subtitle="xs · sm · md · lg · xl">
+          <Section title="Sizes" subtitle="xs · sm · md · lg · xl" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {(['xs','sm','md','lg','xl'] as const).map((s) => (
               <Row key={s} label={s}>
                 <StyledProgressBar value={65} size={s} labelPosition="right"
                   colors={{ fill: '#3b82f6' }} />
               </Row>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 3. Label positions ── */}
-          <Section title="Label positions" subtitle="none · above · below · right · inside">
+          <Section title="Label positions" subtitle="none · above · below · right · inside" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <Row label="none (default)">
               <StyledProgressBar value={60} />
             </Row>
@@ -163,19 +142,21 @@ export default function StyledProgressBarDemo() {
               <StyledProgressBar value={55} size="xl" variant="striped" labelPosition="inside"
                 colors={{ fill: '#8bc34a', labelInside: '#1a1a1a' }} />
             </Row>
-          </Section>
+            </StyledCard>
 
           {/* ── 4. Shapes ── */}
-          <Section title="Shapes" subtitle="rounded · square · pill">
+          <Section title="Shapes" subtitle="rounded · square · pill" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {(['rounded','square','pill'] as const).map((sh) => (
               <Row key={sh} label={sh}>
                 <StyledProgressBar value={65} size="lg" shape={sh} labelPosition="right" />
               </Row>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 5. Colour themes ── */}
-          <Section title="Colour themes">
+          <Section title="Colour themes" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { label: 'Blue (default)',  fill: '#3b82f6', track: '#dbeafe' },
               { label: 'Lime / fitness',  fill: '#8bc34a', track: '#ecfccb' },
@@ -189,10 +170,11 @@ export default function StyledProgressBarDemo() {
                   colors={{ fill, track }} />
               </Row>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 6. Gradient themes ── */}
-          <Section title="Gradient themes">
+          <Section title="Gradient themes" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { label: 'Indigo → Cyan',   from: '#6366f1', to: '#22d3ee' },
               { label: 'Rose → Orange',   from: '#f43f5e', to: '#fb923c' },
@@ -205,14 +187,14 @@ export default function StyledProgressBarDemo() {
                   colors={{ gradFrom: from, gradTo: to }} />
               </Row>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 7. Controlled value ── */}
-          <Section title="Controlled value" subtitle="tap buttons to change progress">
+          <Section title="Controlled value" subtitle="tap buttons to change progress" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <StyledProgressBar value={controlled} variant="gradient" size="lg"
               labelPosition="above" animationDuration={400}
               colors={{ gradFrom: '#6366f1', gradTo: '#22d3ee' }} />
-            <StyledSpacer height={16} />
             <Stack horizontal gap={10} justifyContent="center">
               {[0, 25, 50, 75, 100].map((v) => (
                 <StyledPressable
@@ -229,15 +211,17 @@ export default function StyledProgressBarDemo() {
                 </StyledPressable>
               ))}
             </Stack>
-          </Section>
+            </StyledCard>
 
           {/* ── 8. Animated (live) ── */}
-          <Section title="Live animation" subtitle="animates continuously">
+          <Section title="Live animation" subtitle="animates continuously" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             <LiveCounter />
-          </Section>
+            </StyledCard>
 
           {/* ── 9. Real-world: Workout card ── */}
-          <Section title="Real-world: Workout card">
+          <Section title="Real-world: Workout card" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { title: 'Cardio',  progress: 0.65, label: '4 Of 6', color: '#dc2626', bg: '#fff0f0' },
               { title: 'Muscle',  progress: 0.62, label: '5 Of 8', color: '#9333ea', bg: '#fdf4ff' },
@@ -262,10 +246,11 @@ export default function StyledProgressBarDemo() {
                 />
               </Stack>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 10. Real-world: File upload ── */}
-          <Section title="Real-world: File upload">
+          <Section title="Real-world: File upload" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { name: 'design-assets.zip', size: '24.5 MB', v: 100, done: true },
               { name: 'report-final.pdf',  size: '3.2 MB',  v: 67,  done: false },
@@ -294,10 +279,11 @@ export default function StyledProgressBarDemo() {
                 />
               </Stack>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── 11. Real-world: Skills / profile ── */}
-          <Section title="Real-world: Skills profile">
+          <Section title="Real-world: Skills profile" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={18} padding={18} shadow="light" marginBottom={28}>
             {[
               { skill: 'React Native', pct: 92 },
               { skill: 'TypeScript',   pct: 85 },
@@ -321,7 +307,7 @@ export default function StyledProgressBarDemo() {
                 </Stack>
               </Stack>
             ))}
-          </Section>
+            </StyledCard>
 
           {/* ── API Reference ── */}
           <StyledCard backgroundColor={theme.colors.gray[900]} borderRadius={18}

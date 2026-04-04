@@ -6,13 +6,10 @@
  */
 import React from 'react';
 import {
-  StyledSafeAreaView,
   StyledScrollView,
-  StyledPage,
   StyledCard,
   Stack,
   StyledText,
-  StyledSpacer,
   theme,
   palettes,
   StyledBar
@@ -83,84 +80,46 @@ const caloriesData = [
  */
 const CONTAINER_PAD = 80;
 
-const Section: React.FC<{
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}> = ({ title, subtitle, children }) => (
-  <StyledCard
-    backgroundColor={palettes.white}
-    borderRadius={22}
-    justifyContent='center'
-    alignItems='center'
-    shadow="light"
-    marginBottom={16}
-    paddingVertical={16}
-  >
-    <StyledText
-      fontSize={theme.fontSize.medium}
-      fontWeight={theme.fontWeight.bold}
-      color={theme.colors.gray[900]}
-    >
+const Section: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
       {title}
     </StyledText>
     {subtitle && (
-      <>
-        <StyledSpacer height={3} />
-        <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
-          {subtitle}
-        </StyledText>
-      </>
+      <StyledText fontSize={theme.fontSize.small} color={theme.colors.gray[400]}>
+        {subtitle}
+      </StyledText>
     )}
-    <StyledSpacer height={18} />
-    <>
-        {children}
-    </>
-
-  </StyledCard>
+  </Stack>
 );
 
 // ─── Demo screen ──────────────────────────────────────────────────────────────
 
 export default function StyledBarDemo() {
   return (
-    <Stack flex={1} marginVertical={16} borderRadius={32} backgroundColor="#f4f9ee">
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
       <StyledScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 60 }}
       >
      
-          {/* Header */}
-          <Stack paddingHorizontal={20} paddingTop={20} paddingBottom={16}>
-            <StyledText
-              fontSize={26}
-              fontWeight={theme.fontWeight.bold}
-              color={theme.colors.gray[900]}
-            >
-              StyledBar
-            </StyledText>
-            <StyledText fontSize={theme.fontSize.normal} color={theme.colors.gray[400]}>
-              Reusable bar chart component
-            </StyledText>
-          </Stack>
 
-          <Stack paddingHorizontal={16}>
 
             {/* 1. Workout — default lime */}
-            <Section title="Workout Duration" subtitle="Default lime theme · unit='min'">
+            <Section title="Workout Duration" subtitle="Default lime theme · unit='min'" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={workoutData}
                 unit="min"
                 maxValue={100}
                 containerPaddingHorizontal={CONTAINER_PAD}
               />
-            </Section>
+            </StyledCard>
 
             {/* 2. Weight — green, null placeholders */}
-            <Section
-              title="Weight (kg)"
-              subtitle="Green theme · null values render as placeholders"
-            >
+            <Section title="Weight (kg)"
+              subtitle="Green theme · null values render as placeholders" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={weightData}
                 unit="kg"
@@ -173,13 +132,12 @@ export default function StyledBarDemo() {
                   tooltipText:  palettes.white,
                 }}
               />
-            </Section>
+            </StyledCard>
 
             {/* 3. Temperature — orange, no hatch */}
-            <Section
-              title="Temperature (°C)"
-              subtitle="Orange theme · showHatch=false"
-            >
+            <Section title="Temperature (°C)"
+              subtitle="Orange theme · showHatch=false" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={tempData}
                 unit="°C"
@@ -194,10 +152,11 @@ export default function StyledBarDemo() {
                   tooltipText:  palettes.white,
                 }}
               />
-            </Section>
+            </StyledCard>
 
             {/* 4. Water — blue */}
-            <Section title="Water (mL)" subtitle="Blue theme · large values">
+            <Section title="Water (mL)" subtitle="Blue theme · large values" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={waterData}
                 unit="mL"
@@ -212,10 +171,11 @@ export default function StyledBarDemo() {
                   tooltipText:  palettes.white,
                 }}
               />
-            </Section>
+            </StyledCard>
 
             {/* 5. Calories — rose/pink */}
-            <Section title="Calories Burned" subtitle="Rose theme · custom tooltipLabel">
+            <Section title="Calories Burned" subtitle="Rose theme · custom tooltipLabel" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={caloriesData}
                 unit="kcal"
@@ -232,13 +192,12 @@ export default function StyledBarDemo() {
                   activeLabelColor: theme.colors.rose?.[700] ?? '#be185d',
                 }}
               />
-            </Section>
+            </StyledCard>
 
             {/* 6. Minimal — no animation, narrow bars, purple */}
-            <Section
-              title="Steps (minimal)"
-              subtitle="animated=false · no hatch · narrow bars"
-            >
+            <Section title="Steps (minimal)"
+              subtitle="animated=false · no hatch · narrow bars" />
+            <StyledCard backgroundColor={palettes.white} borderRadius={22} shadow="light" marginBottom={16} padding={20} alignItems="center">
               <StyledBar
                 data={workoutData}
                 unit="k"
@@ -255,13 +214,11 @@ export default function StyledBarDemo() {
                   tooltipText:  palettes.white,
                 }}
               />
-            </Section>
+            </StyledCard>
 
-          </Stack>
 
           {/* API reference */}
-          <Stack paddingHorizontal={20}>
-            <StyledCard
+          <>            <StyledCard
               backgroundColor={theme.colors.gray[900]}
               borderRadius={22}
               padding={20}
@@ -316,10 +273,7 @@ export default function StyledBarDemo() {
                 </Stack>
               ))}
             </StyledCard>
-          </Stack>
-
-          <StyledSpacer height={20} />
-   
+          </>
       </StyledScrollView>
     </Stack>
   );

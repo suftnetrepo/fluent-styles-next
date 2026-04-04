@@ -2,62 +2,41 @@
  * TextInputUsage — exhaustive demo of every StyledTextInput feature.
  */
 
-import React, { Fragment, useRef, useState } from 'react'
-import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native'
-
+import React, { useRef, useState } from 'react'
 import {
     theme,
     StyledScrollView,
-    StyledSpacer,
-    StyledCard,
-    StyledSeperator,
     StyledDivider,
     StyledButton,
-    TabBar,
-    TabItem,
-    palettes,
     Stack,
+    StyledText,
+    StyledPressable,
+    StyledCard,
+    palettes,
     StyledTextInput,
     StyledTextInputHandle,
-    StyledText
 } from "fluent-styles";
 
 // ─── Tiny icon stubs (replace with your icon library) ─────────────────────────
 
 const Icon = ({ e, size = 16, color = theme.colors.gray[400] }: {
     e: string; size?: number; color?: string
-}) => <StyledText style={{ fontSize: size, color }}>{e}</StyledText>
+}) => <StyledText fontSize={size} color={color}>{e}</StyledText>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const Divider = () => <StyledDivider height={1} backgroundColor={theme.colors.gray[200]} />
 
 const Section = ({ label, children }: React.PropsWithChildren<{ label: string }>) => (
-    <Stack paddingVertical={0}>
+    <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+        <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+            {label}
+        </StyledText>
         <>
-          <StyledSeperator
-            leftLabel={label}
-            leftLabelProps={{
-              color: theme.colors.gray[800],
-              fontSize: theme.fontSize.normal,
-            }}
-            borderRadius={8}
-            paddingVertical={8}
-            marginVertical={16}
-            borderBottomColor={theme.colors.gray[500]}
-            borderBottomWidth={0.5}
-            backgroundColor={theme.colors.gray[1]}
-          />
-          {children}
+           {children}
         </>
-      </Stack>
+     
+    </Stack>
 )
 
 const Btn = ({ label, onPress, color = theme.colors.indigo?.[500] ?? '#6366f1' }: {
@@ -99,17 +78,8 @@ export default function TextInputUsage() {
     }
 
     return (
-        <Fragment>
-            <StyledSpacer marginVertical={8} />
-            <StyledScrollView showsVerticalScrollIndicator={false}>
-                <StyledCard
-                    backgroundColor={theme.colors.gray[1]}
-                    marginHorizontal={1}
-                    borderWidth={0.5}
-                    borderColor={theme.colors.gray[1]}
-                    borderRadius={32}
-                    padding={16}
-                >
+        <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+            <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
 
                     {/* ── 1. Variants ───────────────────────────────────────────────── */}
                     <Section label="Variants">
@@ -298,7 +268,7 @@ export default function TextInputUsage() {
                             <StyledTextInput
                                 label="Twitter handle"
                                 placeholder="username"
-                                leftAddon={{ node: <Text style={{ fontSize: 16 }}>𝕏</Text> }}
+                                leftAddon={{ node: <StyledText fontSize={16}>𝕏</StyledText> }}
                                 autoCapitalize="none"
                             />
 
@@ -319,7 +289,7 @@ export default function TextInputUsage() {
                                 label="Phone"
                                 placeholder="Enter number"
                                 leftAddon={{
-                                    node: <Text style={{ fontSize: 18 }}>🇬🇧</Text>,
+                                    node: <StyledText fontSize={18}>🇬🇧</StyledText>,
                                     text: ' +44',
                                     bg: theme.colors.gray[50],
                                 }}
@@ -469,11 +439,11 @@ export default function TextInputUsage() {
                             placeholder="Use the buttons below"
                             defaultValue="Hello, ref!"
                         />
-                        <View style={u.refRow}>
+                        <Stack horizontal gap={10}>
                             <Btn label="Focus" onPress={() => inputRef.current?.focus()} />
                             <Btn label="Blur" onPress={() => inputRef.current?.blur()} />
                             <Btn label="Clear" color={theme.colors.red[500]} onPress={() => inputRef.current?.clear()} />
-                        </View>
+                        </Stack>
                     </Section>
 
                     <Divider />
@@ -503,9 +473,9 @@ export default function TextInputUsage() {
 
                     {/* ── 16. Real-world forms ──────────────────────────────────────── */}
                     <Section label="Sign-in form">
-                        <View style={u.card}>
-                            <Text style={u.cardTitle}>Welcome back</Text>
-                            <Text style={u.cardSub}>Sign in to your account</Text>
+                        <StyledCard backgroundColor="#fff" borderRadius={16} padding={20} borderWidth={1} borderColor="#e5e7eb">
+                            <StyledText fontSize={20} fontWeight="800" color="#111827">Welcome back</StyledText>
+                            <StyledText fontSize={14} color="#6b7280" marginTop={4}>Sign in to your account</StyledText>
                             <Stack vertical gap={14} marginTop={20}>
                                 <StyledTextInput
                                     label="Email"
@@ -523,20 +493,20 @@ export default function TextInputUsage() {
                                     textContentType="password"
                                 />
                             </Stack>
-                            <TouchableOpacity style={u.submitBtn} activeOpacity={0.8}>
-                                <Text style={u.submitText}>Sign in</Text>
-                            </TouchableOpacity>
-                            <Text style={u.forgotText}>Forgot your password?</Text>
-                        </View>
+                            <StyledPressable marginTop={20} backgroundColor={theme.colors.indigo?.[600] ?? '#4f46e5'} borderRadius={12} height={50} alignItems="center" justifyContent="center" onPress={() => {}}>
+                                <StyledText color="#fff" fontSize={16} fontWeight="700">Sign in</StyledText>
+                            </StyledPressable>
+                            <StyledText textAlign="center" marginTop={14} fontSize={13} color={theme.colors.indigo?.[500] ?? '#6366f1'} fontWeight="600">Forgot your password?</StyledText>
+                        </StyledCard>
                     </Section>
 
                     <Section label="Sign-up form">
-                        <View style={u.card}>
-                            <Text style={u.cardTitle}>Create account</Text>
+                        <StyledCard backgroundColor="#fff" borderRadius={16} padding={20} borderWidth={1} borderColor="#e5e7eb">
+                            <StyledText fontSize={20} fontWeight="800" color="#111827">Create account</StyledText>
                             <Stack vertical gap={14} marginTop={16}>
-                                <Stack horizontal gap={12} flex={1} >
-                                    <StyledTextInput  label="First name"  placeholder="Alex" />
-                                    <StyledTextInput  label="Last name"  placeholder="Johnson" />
+                                <Stack horizontal gap={12} flex={1}>
+                                    <StyledTextInput label="First name" placeholder="Alex" />
+                                    <StyledTextInput label="Last name" placeholder="Johnson" />
                                 </Stack>
                                 <StyledTextInput
                                     label="Email"
@@ -567,15 +537,15 @@ export default function TextInputUsage() {
                                     required
                                 />
                             </Stack>
-                            <TouchableOpacity style={u.submitBtn} activeOpacity={0.8}>
-                                <Text style={u.submitText}>Create account</Text>
-                            </TouchableOpacity>
-                        </View>
+                            <StyledPressable marginTop={20} backgroundColor={theme.colors.indigo?.[600] ?? '#4f46e5'} borderRadius={12} height={50} alignItems="center" justifyContent="center" onPress={() => {}}>
+                                <StyledText color="#fff" fontSize={16} fontWeight="700">Create account</StyledText>
+                            </StyledPressable>
+                        </StyledCard>
                     </Section>
 
                     <Section label="Payment form">
-                        <View style={u.card}>
-                            <Text style={u.cardTitle}>Payment details</Text>
+                        <StyledCard backgroundColor="#fff" borderRadius={16} padding={20} borderWidth={1} borderColor="#e5e7eb">
+                            <StyledText fontSize={20} fontWeight="800" color="#111827">Payment details</StyledText>
                             <Stack vertical gap={14} marginTop={16}>
                                 <StyledTextInput
                                     label="Cardholder name"
@@ -602,10 +572,10 @@ export default function TextInputUsage() {
                                     maxLength={5}
                                 />
                             </Stack>
-                            <TouchableOpacity style={[u.submitBtn, { backgroundColor: theme.colors.green[500] }]} activeOpacity={0.8}>
-                                <Text style={u.submitText}>Pay $49.99</Text>
-                            </TouchableOpacity>
-                        </View>
+                            <StyledPressable marginTop={20} backgroundColor={theme.colors.green[500]} borderRadius={12} height={50} alignItems="center" justifyContent="center" onPress={() => {}}>
+                                <StyledText color="#fff" fontSize={16} fontWeight="700">Pay $49.99</StyledText>
+                            </StyledPressable>
+                        </StyledCard>
                     </Section>
 
                     <Section label="Search bar variants">
@@ -629,75 +599,7 @@ export default function TextInputUsage() {
                         </Stack>
                     </Section>
 
-                </StyledCard>
             </StyledScrollView>
-        </Fragment>
+        </Stack>
     )
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const u = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: '#f9fafb' },
-    scroll: { padding: 0, gap: 0, paddingBottom: 60 },
-
-    section: { paddingVertical: 20 },
-    sectionLabel: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: '#8e8e93',
-        letterSpacing: 1,
-        textTransform: 'uppercase',
-
-    },
-
-    divider: {
-        height: 1,
-        backgroundColor: '#f3f4f6',
-    },
-
-    btn: {
-        paddingVertical: 10,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    btnText: { fontSize: 13, fontWeight: '600' },
-
-    refRow: { flexDirection: 'row', gap: 10 },
-
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 12,
-        elevation: 2,
-    },
-    cardTitle: { fontSize: 20, fontWeight: '800', color: '#111827' },
-    cardSub: { fontSize: 14, color: '#6b7280', marginTop: 4 },
-
-    submitBtn: {
-        marginTop: 20,
-        backgroundColor: theme.colors.indigo?.[600] ?? '#4f46e5',
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    submitText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-
-    forgotText: {
-        textAlign: 'center',
-        marginTop: 14,
-        fontSize: 13,
-        color: theme.colors.indigo?.[500] ?? '#6366f1',
-        fontWeight: '600',
-    },
-})

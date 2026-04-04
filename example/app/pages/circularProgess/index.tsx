@@ -2,11 +2,8 @@
  * CircularProgressUsage — exhaustive demo of every feature.
  */
 
-import React, { Fragment, useState } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState } from "react";
+
 
 import {
   theme,
@@ -15,8 +12,6 @@ import {
   StyledCircularProgress,
   StyledCard,
   StyledScrollView,
-  StyledSpacer,
-  StyledSeperator,
 } from "fluent-styles";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -28,22 +23,12 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <>
-    <StyledSeperator
-      leftLabel={label}
-      leftLabelProps={{
-        color: theme.colors.gray[800],
-        fontSize: theme.fontSize.normal,
-      }}
-      borderRadius={8}
-      paddingVertical={8}
-      marginVertical={32}
-      borderBottomColor={theme.colors.gray[500]}
-      borderBottomWidth={0.5}
-      backgroundColor={theme.colors.gray[1]}
-    />
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
     {children}
-  </>
+  </Stack>
 );
 
 
@@ -54,15 +39,8 @@ export default function CircularProgressUsage() {
   const [controlled, setControlled] = useState(35);
 
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <Stack
-          padding={16}
-          borderRadius={16}
-          backgroundColor={theme.colors.gray[1]}
-        >
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
           <StyledCard shadow="light">
             {/* ── 2. Display modes ──────────────────────────────────────── */}
             <Section label="Display modes">
@@ -446,11 +424,15 @@ export default function CircularProgressUsage() {
                 />
                 <Stack marginTop={16} horizontal gap={10}>
                   {[0, 25, 50, 75, 100].map((v) => (
-                    <TouchableOpacity
+                    <StyledPressable
                       key={v}
                       onPress={() => setControlled(v)}
-                      style={[u.pill, controlled === v && u.pillActive]}
-                      activeOpacity={0.7}
+                      paddingVertical={6}
+                      paddingHorizontal={14}
+                      borderRadius={20}
+                      borderWidth={1.5}
+                      borderColor={controlled === v ? (theme.colors.indigo?.[500] ?? "#6366f1") : (theme.colors.indigo?.[400] ?? "#818cf8")}
+                      backgroundColor={controlled === v ? (theme.colors.indigo?.[500] ?? "#6366f1") : undefined}
                     >
                       <StyledText
                         fontSize={13}
@@ -463,7 +445,7 @@ export default function CircularProgressUsage() {
                       >
                         {v}%
                       </StyledText>
-                    </TouchableOpacity>
+                    </StyledPressable>
                   ))}
                 </Stack>
               </Stack>
@@ -532,40 +514,7 @@ export default function CircularProgressUsage() {
               </Stack>
             </Section>
           </StyledCard>
-        </Stack>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const u = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f9fafb" },
-  scroll: { padding: 20, gap: 28, paddingBottom: 60 },
-  btn: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: theme.colors.indigo?.[50] ?? "#eef2ff",
-    alignSelf: "center",
-  },
-  pill: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: theme.colors.indigo?.[400] ?? "#818cf8",
-  },
-  pillActive: {
-    backgroundColor: theme.colors.indigo?.[500] ?? "#6366f1",
-    borderColor: theme.colors.indigo?.[500] ?? "#6366f1",
-  },
-  shadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 2,
-  },
-});

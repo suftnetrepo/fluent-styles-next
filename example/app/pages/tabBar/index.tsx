@@ -2,19 +2,13 @@
  * TabBarUsage — exhaustive demo of every feature.
  */
 
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
+import { ColorValue } from "react-native";
 import {
-  ColorValue,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import {
-  theme,
+  Stack,
+  StyledText,
   StyledScrollView,
-  StyledSpacer,
-  StyledCard,
-  StyledSeperator,
+  theme,
   TabBar,
   TabItem,
   palettes,
@@ -24,13 +18,12 @@ import {
 
 const Emoji = ({
   e,
-  color,
   size = 20,
 }: {
   e: string;
   color?: ColorValue;
   size?: number;
-}) => <Text style={{ fontSize: size }}>{e}</Text>;
+}) => <StyledText fontSize={size}>{e}</StyledText>;
 
 // ─── Static option sets ───────────────────────────────────────────────────────
 
@@ -133,22 +126,14 @@ export default function TabBarUsage() {
   };
 
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <StyledCard
-          backgroundColor={theme.colors.gray[1]}
-          marginHorizontal={1}
-          borderWidth={0.5}
-          borderColor={theme.colors.gray[1]}
-          borderRadius={32}
-          padding={16}
-        >
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+
           {/* ── 1. Bottom navigation with icons ─────────────────────────── */}
           <Section label="Bottom nav — icons + dot badges">
-            <View style={[u.panel, { backgroundColor: PANEL_BG[nav] }]}>
-              <Text style={u.panelText}>Active: {nav}</Text>
-            </View>
+            <Stack height={80} alignItems="center" justifyContent="center" marginBottom={0} borderRadius={12} style={{ backgroundColor: PANEL_BG[nav] }}>
+              <StyledText fontSize={14} fontWeight="600" color="#374151">Active: {nav}</StyledText>
+            </Stack>
             <TabBar
               options={NAV_TABS}
               value={nav}
@@ -194,7 +179,7 @@ export default function TabBarUsage() {
               indicator="line"
               showBorder
             />
-            <Text style={u.hint}>Active: {cat}</Text>
+            <StyledText fontSize={12} color="#9ca3af" marginTop={6}>Active: {cat}</StyledText>
           </Section>
 
           {/* ── 5. Badges ────────────────────────────────────────────────── */}
@@ -235,7 +220,7 @@ export default function TabBarUsage() {
                 indicator: palettes.coolGray[200],
                 text: palettes.gray[500],
               }}
-              style={u.chipBar}
+              style={{ marginHorizontal: 16, borderRadius: 12, overflow: 'hidden' }}
             />
           </Section>
 
@@ -255,13 +240,13 @@ export default function TabBarUsage() {
               }}
               showBorder
             />
-            <View style={u.stepContent}>
-              <Text style={u.stepText}>
+            <Stack height={60} alignItems="center" justifyContent="center" backgroundColor="#f3f4f6" marginHorizontal={16} borderRadius={10}>
+              <StyledText fontSize={15} color="#374151" fontWeight="500">
                 {step === 1 && "① Fill in your details"}
                 {step === 2 && "② Review your order"}
                 {step === 3 && "③ Confirm & pay"}
-              </Text>
-            </View>
+              </StyledText>
+            </Stack>
           </Section>
 
           {/* ── 9. Label bulge ────────────────────────────────────────────── */}
@@ -351,9 +336,8 @@ export default function TabBarUsage() {
               showBorder
             />
           </Section>
-        </StyledCard>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }
 
@@ -366,61 +350,15 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <>
-           <StyledSeperator
-             leftLabel={label}
-             leftLabelProps={{
-               color: theme.colors.gray[800],
-               fontSize: theme.fontSize.normal,
-             }}
-             borderRadius={8}
-             paddingVertical={8}
-             marginVertical={16}
-             borderBottomColor={theme.colors.gray[500]}
-             borderBottomWidth={0.5}
-             backgroundColor={theme.colors.gray[1]}
-           />
-           {children}
-         </>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
+    <>
+        {children}
+    </>
+
+  </Stack>
 );
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
-const u = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f9fafb" },
-  scroll: { paddingTop: 16, paddingBottom: 48, gap: 28 },
-  section: { gap: 0 },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#8e8e93",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: 8,
-    paddingHorizontal: 16,
-  },
-  panel: {
-    height: 80,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 16,
-    marginBottom: 0,
-    borderRadius: 12,
-  },
-  panelText: { fontSize: 14, fontWeight: "600", color: "#374151" },
-  hint: { fontSize: 12, color: "#9ca3af", paddingHorizontal: 16, marginTop: 6 },
-  stepContent: {
-    height: 60,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f3f4f6",
-    marginHorizontal: 16,
-    borderRadius: 10,
-  },
-  stepText: { fontSize: 15, color: "#374151", fontWeight: "500" },
-  chipBar: {
-    marginHorizontal: 16,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-});

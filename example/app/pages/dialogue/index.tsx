@@ -1,12 +1,9 @@
-import React, { Fragment, useState } from "react";
-import { Alert } from "react-native";
+import React, { useState } from "react";
 
 import {
   theme,
   Stack,
   StyledScrollView,
-  StyledSpacer,
-  StyledSeperator,
   StyledText,
   StyledButton,
   StyledCard,
@@ -22,24 +19,15 @@ const Section = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <Stack paddingVertical={0}>
-      <>
-        <StyledSeperator
-          leftLabel={label}
-          leftLabelProps={{
-            color: theme.colors.gray[500],
-            fontSize: theme.fontSize.small,
-          }}
-          borderRadius={8}
-          paddingVertical={8}
-        
-          borderBottomColor={theme.colors.gray[500]}
-          borderBottomWidth={0.5}
-          backgroundColor={theme.colors.gray[1]}
-        />
-        {children}
-      </>
-    </Stack>
+  <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+    <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+      {label}
+    </StyledText>
+    <>
+      {children}
+    </>
+  
+  </Stack>
 );
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
@@ -172,11 +160,8 @@ export default function DialogueUsage() {
   };
 
   return (
-    <Fragment>
-      <StyledSpacer marginVertical={8} />
-
-      <StyledScrollView showsVerticalScrollIndicator={false}>
-        <Stack padding={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+    <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+      <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
 
           <Section label="Alert">
             <StyledButton onPress={handleAlert}>
@@ -277,8 +262,7 @@ export default function DialogueUsage() {
               </StyledButton>
             </Stack>
           </Section>
-        </Stack>
       </StyledScrollView>
-    </Fragment>
+    </Stack>
   );
 }

@@ -2,31 +2,13 @@
  * DrawerUsage — exhaustive demo of every Drawer feature.
  */
 
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
-
-import {
-    ChevronRight,
     Stack,
     StyledText,
-    StyledDivider,
-    theme,
+    StyledPressable,
     StyledScrollView,
-    StyleShape,
-    StyledSpacer,
-    StyledCard,
-    StyledButton,
-    StyledSeperator,
-    TabBar,
-    TabItem,
+    theme,
     palettes,
     Drawer,
     DrawerNavItem,
@@ -43,16 +25,21 @@ const Btn = ({
     color?: string;
     onPress: () => void;
 }) => (
-    <TouchableOpacity
-        style={[u.btn, { borderColor: color }]}
+    <StyledPressable
         onPress={onPress}
-        activeOpacity={0.7}
+        paddingVertical={12}
+        paddingHorizontal={18}
+        borderRadius={10}
+        borderWidth={1.5}
+        borderColor={color}
+        backgroundColor="#fff"
+        alignItems="center"
     >
-        <Text style={[u.btnText, { color }]}>{label}</Text>
-    </TouchableOpacity>
+        <StyledText fontSize={14} fontWeight="600" color={color}>{label}</StyledText>
+    </StyledPressable>
 );
 
-const E = ({ e }: { e: string }) => <Text style={{ fontSize: 18 }}>{e}</Text>;
+const E = ({ e }: { e: string }) => <StyledText fontSize={18}>{e}</StyledText>;
 
 // ─── Nav datasets ─────────────────────────────────────────────────────────────
 
@@ -101,16 +88,16 @@ const SIMPLE_NAV: DrawerNavItem[] = [
 // ─── Footer examples ──────────────────────────────────────────────────────────
 
 const ProfileFooter = ({ close }: { close: () => void }) => (
-    <TouchableOpacity style={u.profile} onPress={close} activeOpacity={0.7}>
-        <View style={u.avatar}>
-            <Text style={{ fontSize: 18 }}>👤</Text>
-        </View>
-        <View style={{ flex: 1 }}>
-            <Text style={u.profileName}>Alex Johnson</Text>
-            <Text style={u.profileEmail}>alex@example.com</Text>
-        </View>
-        <Text style={{ color: palettes.gray[400], fontSize: 18 }}>›</Text>
-    </TouchableOpacity>
+    <StyledPressable flexDirection="row" alignItems="center" gap={12} paddingVertical={14} onPress={close}>
+        <Stack width={44} height={44} borderRadius={22} backgroundColor="#f3f4f6" alignItems="center" justifyContent="center">
+            <StyledText fontSize={18}>👤</StyledText>
+        </Stack>
+        <Stack flex={1}>
+            <StyledText fontSize={15} fontWeight="700" color="#1f2937">Alex Johnson</StyledText>
+            <StyledText fontSize={12} color="#6b7280">alex@example.com</StyledText>
+        </Stack>
+        <StyledText color={palettes.gray[400]} fontSize={18}>›</StyledText>
+    </StyledPressable>
 );
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -122,20 +109,8 @@ export default function DrawerUsage() {
     const is = (k: string) => open === k;
 
     return (
-        <Fragment>
-            <StyledSpacer marginVertical={8} />
-            <StyledScrollView showsVerticalScrollIndicator={false}>
-                <StyledCard
-                    backgroundColor={theme.colors.gray[1]}
-                    marginHorizontal={1}
-                    borderWidth={0.5}
-                    borderColor={theme.colors.gray[1]}
-                    borderRadius={32}
-                >
-                    <ScrollView
-                        contentContainerStyle={u.scroll}
-                        showsVerticalScrollIndicator={false}
-                    >
+        <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+            <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
                         {/* ── 1. Sides ──────────────────────────────────────────────────── */}
                         <Section label="Side">
                             <Btn
@@ -297,9 +272,8 @@ export default function DrawerUsage() {
                                 onPress={() => show("lifecycle")}
                             />
                         </Section>
-                    </ScrollView>
-
-                    {/* ════════════════════ DRAWER INSTANCES ════════════════════ */}
+            </StyledScrollView>
+            {/* ════════════════════ DRAWER INSTANCES ════════════════════ */}
 
                     {/* Basic left */}
                     <Drawer visible={is("left")} onClose={hide} title="Menu" side="left">
@@ -363,31 +337,23 @@ export default function DrawerUsage() {
                         onClose={hide}
                         title="Notifications"
                         headerRight={
-                            <TouchableOpacity onPress={hide}>
-                                <Text
-                                    style={{
-                                        fontSize: 12,
-                                        color: palettes.indigo[500],
-                                        fontWeight: "700",
-                                    }}
-                                >
+                            <StyledPressable onPress={hide}>
+                                <StyledText fontSize={12} color={palettes.indigo[500]} fontWeight="700">
                                     Clear all
-                                </Text>
-                            </TouchableOpacity>
+                                </StyledText>
+                            </StyledPressable>
                         }
                     >
                         <BodyText text="Custom node in the header right slot." />
                     </Drawer>
 
                     <Drawer visible={is("h-none")} onClose={hide} showBack={false}>
-                        <View style={{ padding: 20 }}>
-                            <Text
-                                style={{ fontSize: 18, fontWeight: "700", marginBottom: 8 }}
-                            >
+                        <Stack padding={20}>
+                            <StyledText fontSize={18} fontWeight="700" marginBottom={8}>
                                 No header
-                            </Text>
+                            </StyledText>
                             <BodyText text="No header at all — close via swipe or overlay tap." />
-                        </View>
+                        </Stack>
                     </Drawer>
 
                     {/* Width */}
@@ -599,18 +565,16 @@ export default function DrawerUsage() {
                     >
                         <BodyText text="Check console for lifecycle events." />
                     </Drawer>
-                </StyledCard>
-            </StyledScrollView>
-        </Fragment>
+        </Stack>
     );
 }
 
 // ─── Mini components ──────────────────────────────────────────────────────────
 
 const BodyText = ({ text }: { text: string }) => (
-    <View style={u.body}>
-        <Text style={u.bodyText}>{text}</Text>
-    </View>
+    <Stack padding={20}>
+        <StyledText fontSize={14} color="#4b5563" lineHeight={22}>{text}</StyledText>
+    </Stack>
 );
 
 const Section = ({
@@ -620,62 +584,14 @@ const Section = ({
     label: string;
     children: React.ReactNode;
 }) => (
-    <View style={u.section}>
-        <StyledSeperator
-            leftLabel={label}
-            borderRadius={8}
-            paddingVertical={8}
-            paddingHorizontal={8}
-            marginVertical={8}
-            backgroundColor={theme.colors.gray[100]}
-        />
-        <View style={u.sectionBody}>{children}</View>
-    </View>
+    <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+        <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+            {label}
+        </StyledText>
+        <Stack gap={8}>
+            <>
+              {children}
+            </>
+          </Stack>
+    </Stack>
 );
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const u = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: "#f9fafb" },
-    scroll: { padding: 20, gap: 28, paddingBottom: 60 },
-
-    section: { gap: 10 },
-    sectionLabel: {
-        fontSize: 11,
-        fontWeight: "700",
-        color: "#8e8e93",
-        letterSpacing: 1,
-        textTransform: "uppercase",
-    },
-    sectionBody: { gap: 8 },
-
-    btn: {
-        paddingVertical: 12,
-        paddingHorizontal: 18,
-        borderRadius: 10,
-        borderWidth: 1.5,
-        backgroundColor: "#fff",
-        alignItems: "center",
-    },
-    btnText: { fontSize: 14, fontWeight: "600" },
-
-    body: { padding: 20 },
-    bodyText: { fontSize: 14, color: "#4b5563", lineHeight: 22 },
-
-    profile: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-        paddingVertical: 14,
-    },
-    avatar: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: "#f3f4f6",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    profileName: { fontSize: 15, fontWeight: "700", color: "#1f2937" },
-    profileEmail: { fontSize: 12, color: "#6b7280" },
-});

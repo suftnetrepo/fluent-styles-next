@@ -2,33 +2,15 @@
  * PopupUsage — exhaustive demo of every feature.
  */
 
-import React, { Fragment, useState } from 'react'
+import React, { useState } from 'react'
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native'
-
-import {
-    ChevronRight,
     Stack,
     StyledText,
-    StyledDivider,
-    theme,
+    StyledPressable,
     StyledScrollView,
-    StyleShape,
-    StyledSpacer,
-    StyledCard,
-    StyledButton,
-    StyledSeperator,
-    TabBar,
-    TabItem,
+    theme,
     palettes,
     Popup,
-
 } from "fluent-styles";
 
 // ─── Trigger button ───────────────────────────────────────────────────────────
@@ -42,50 +24,59 @@ const Btn = ({
     color?: string
     onPress: () => void
 }) => (
-    <TouchableOpacity
-        style={[u.btn, { borderColor: color }]}
+    <StyledPressable
         onPress={onPress}
-        activeOpacity={0.7}
+        paddingVertical={12}
+        paddingHorizontal={18}
+        borderRadius={10}
+        borderWidth={1.5}
+        borderColor={color}
+        backgroundColor="#fff"
+        alignItems="center"
     >
-        <Text style={[u.btnText, { color }]}>{label}</Text>
-    </TouchableOpacity>
+        <StyledText fontSize={14} fontWeight="600" color={color}>{label}</StyledText>
+    </StyledPressable>
 )
 
 // ─── Demo content blocks ──────────────────────────────────────────────────────
 
 const ListContent = ({ close }: { close: () => void }) => (
-    <View>
+    <Stack>
         {['Edit profile', 'Share link', 'Download', 'Archive'].map(item => (
-            <TouchableOpacity key={item} style={u.listItem} onPress={close} activeOpacity={0.7}>
-                <Text style={u.listText}>{item}</Text>
-            </TouchableOpacity>
+            <StyledPressable key={item} paddingHorizontal={20} paddingVertical={14} borderBottomWidth={0.5} borderBottomColor="#f3f4f6" onPress={close}>
+                <StyledText fontSize={16} color="#1f2937" fontWeight="500">{item}</StyledText>
+            </StyledPressable>
         ))}
-        <TouchableOpacity style={[u.listItem, u.listDestructive]} onPress={close} activeOpacity={0.7}>
-            <Text style={[u.listText, { color: palettes.red[500] }]}>Delete</Text>
-        </TouchableOpacity>
-    </View>
+        <StyledPressable paddingHorizontal={20} paddingVertical={14} marginTop={4} onPress={close}>
+            <StyledText fontSize={16} fontWeight="500" color={palettes.red[500]}>Delete</StyledText>
+        </StyledPressable>
+    </Stack>
 )
 
 const FormContent = ({ close }: { close: () => void }) => (
-    <View style={u.formWrap}>
-        <Text style={u.formLabel}>Full name</Text>
-        <View style={u.fakeInput}><Text style={u.fakeInputText}>Alex Johnson</Text></View>
-        <Text style={u.formLabel}>Email</Text>
-        <View style={u.fakeInput}><Text style={u.fakeInputText}>alex@example.com</Text></View>
-        <TouchableOpacity style={u.formSubmit} onPress={close} activeOpacity={0.75}>
-            <Text style={u.formSubmitText}>Save changes</Text>
-        </TouchableOpacity>
-    </View>
+    <Stack padding={20} gap={6}>
+        <StyledText fontSize={12} fontWeight="600" color="#6b7280">Full name</StyledText>
+        <Stack height={44} backgroundColor="#f9fafb" borderRadius={8} borderWidth={1} borderColor="#e5e7eb" paddingHorizontal={14} justifyContent="center" marginBottom={10}>
+            <StyledText fontSize={15} color="#1f2937">Alex Johnson</StyledText>
+        </Stack>
+        <StyledText fontSize={12} fontWeight="600" color="#6b7280">Email</StyledText>
+        <Stack height={44} backgroundColor="#f9fafb" borderRadius={8} borderWidth={1} borderColor="#e5e7eb" paddingHorizontal={14} justifyContent="center" marginBottom={10}>
+            <StyledText fontSize={15} color="#1f2937">alex@example.com</StyledText>
+        </Stack>
+        <StyledPressable marginTop={8} backgroundColor={palettes.indigo[600]} borderRadius={10} height={48} alignItems="center" justifyContent="center" onPress={close}>
+            <StyledText color="#fff" fontSize={15} fontWeight="700">Save changes</StyledText>
+        </StyledPressable>
+    </Stack>
 )
 
 const TallContent = () => (
-    <ScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+    <StyledScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator={false}>
         {Array.from({ length: 12 }, (_, i) => (
-            <View key={i} style={u.listItem}>
-                <Text style={u.listText}>Scrollable item {i + 1}</Text>
-            </View>
+            <Stack key={i} paddingHorizontal={20} paddingVertical={14} borderBottomWidth={0.5} borderBottomColor="#f3f4f6">
+                <StyledText fontSize={16} color="#1f2937" fontWeight="500">Scrollable item {i + 1}</StyledText>
+            </Stack>
         ))}
-    </ScrollView>
+    </StyledScrollView>
 )
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -99,18 +90,8 @@ export default function PopupUsage() {
     const is = (key: string) => open === key
 
     return (
-        <Fragment>
-            <StyledSpacer marginVertical={8} />
-            <StyledScrollView showsVerticalScrollIndicator={false}>
-                <StyledCard
-                    backgroundColor={theme.colors.gray[1]}
-                    marginHorizontal={1}
-                    borderWidth={0.5}
-                    borderColor={theme.colors.gray[1]}
-                    borderRadius={32}
-                    
-                >
-                    <ScrollView contentContainerStyle={u.scroll} showsVerticalScrollIndicator={false}>
+        <Stack flex={1} marginTop={16} borderRadius={16} backgroundColor={theme.colors.gray[1]}>
+            <StyledScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
 
                         {/* ── 1. Bottom sheet (default) ─────────────────────────────────── */}
                         <Section label="Bottom sheet (default)">
@@ -172,16 +153,14 @@ export default function PopupUsage() {
                         <Section label="Lifecycle (check console)">
                             <Btn label="onOpen / onOpened / onClose / onClosed" onPress={() => show('lifecycle')} />
                         </Section>
-
-                    </ScrollView>
-
-                    {/* ════════════════ POPUP INSTANCES ════════════════ */}
+            </StyledScrollView>
+            {/* ════════════════ POPUP INSTANCES ════════════════ */}
 
                     {/* Basic bottom */}
                     <Popup visible={is('bottom-plain')} onClose={hide}>
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>Plain bottom sheet — no header, just content.</Text>
-                        </View>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>Plain bottom sheet — no header, just content.</StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* With header */}
@@ -211,18 +190,18 @@ export default function PopupUsage() {
 
                     {/* Safe area */}
                     <Popup visible={is('bottom-safe')} onClose={hide} title="Safe area" showClose safeAreaBottom>
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>
                                 `safeAreaBottom` adds padding equal to the device's home bar inset.
-                            </Text>
-                        </View>
+                            </StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* No overlay */}
                     <Popup visible={is('bottom-nooverlay')} onClose={hide} title="No backdrop" showClose overlay={false}>
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>The background is visible behind this popup.</Text>
-                        </View>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>The background is visible behind this popup.</StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* No close on overlay */}
@@ -233,68 +212,68 @@ export default function PopupUsage() {
                         showClose
                         closeOnPressOverlay={false}
                     >
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>Only the ✕ button closes this sheet.</Text>
-                        </View>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>Only the ✕ button closes this sheet.</StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* Top */}
                     <Popup visible={is('top')} onClose={hide} position="top" title="Notification" showClose>
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>Slides in from the top of the screen.</Text>
-                        </View>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>Slides in from the top of the screen.</StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* Left */}
                     <Popup visible={is('left')} onClose={hide} position="left" title="Side menu" showClose>
-                        <View style={[u.body, { minWidth: 260 }]}>
+                        <Stack style={{ minWidth: 260 }}>
                             {['Home', 'Explore', 'Settings', 'Help'].map(item => (
-                                <TouchableOpacity key={item} style={u.listItem} onPress={hide}>
-                                    <Text style={u.listText}>{item}</Text>
-                                </TouchableOpacity>
+                                <StyledPressable key={item} paddingHorizontal={20} paddingVertical={14} borderBottomWidth={0.5} borderBottomColor="#f3f4f6" onPress={hide}>
+                                    <StyledText fontSize={16} color="#1f2937" fontWeight="500">{item}</StyledText>
+                                </StyledPressable>
                             ))}
-                        </View>
+                        </Stack>
                     </Popup>
 
                     {/* Right */}
                     <Popup visible={is('right')} onClose={hide} position="right" title="Filters" showClose>
-                        <View style={[u.body, { minWidth: 260 }]}>
+                        <Stack style={{ minWidth: 260 }}>
                             {['Price', 'Rating', 'Distance', 'Category'].map(item => (
-                                <TouchableOpacity key={item} style={u.listItem} onPress={hide}>
-                                    <Text style={u.listText}>{item}</Text>
-                                </TouchableOpacity>
+                                <StyledPressable key={item} paddingHorizontal={20} paddingVertical={14} borderBottomWidth={0.5} borderBottomColor="#f3f4f6" onPress={hide}>
+                                    <StyledText fontSize={16} color="#1f2937" fontWeight="500">{item}</StyledText>
+                                </StyledPressable>
                             ))}
-                        </View>
+                        </Stack>
                     </Popup>
 
                     {/* Center */}
                     <Popup visible={is('center')} onClose={hide} position="center" title="Confirm action" showClose round>
-                        <View style={u.body}>
-                            <Text style={u.bodyText}>This dialog slides in from the centre with a scale animation.</Text>
-                            <TouchableOpacity style={u.formSubmit} onPress={hide} activeOpacity={0.75}>
-                                <Text style={u.formSubmitText}>Got it</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color="#374151" lineHeight={22}>This dialog slides in from the centre with a scale animation.</StyledText>
+                            <StyledPressable marginTop={8} backgroundColor={palettes.indigo[600]} borderRadius={10} height={48} alignItems="center" justifyContent="center" onPress={hide}>
+                                <StyledText color="#fff" fontSize={15} fontWeight="700">Got it</StyledText>
+                            </StyledPressable>
+                        </Stack>
                     </Popup>
 
                     {/* Animation: slide */}
                     <Popup visible={is('anim-slide')} onClose={hide} animation="slide" title="Slide" showClose>
-                        <View style={u.body}><Text style={u.bodyText}>Classic slide from the edge.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Classic slide from the edge.</StyledText></Stack>
                     </Popup>
 
                     {/* Animation: fade */}
                     <Popup visible={is('anim-fade')} onClose={hide} animation="fade" title="Fade" showClose>
-                        <View style={u.body}><Text style={u.bodyText}>Fades in and out with opacity only.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Fades in and out with opacity only.</StyledText></Stack>
                     </Popup>
 
                     {/* Animation: scale (center) */}
                     <Popup visible={is('anim-scale')} onClose={hide} position="center" animation="scale" title="Scale" showClose round>
-                        <View style={u.body}><Text style={u.bodyText}>Scales from 0.88 → 1 like a native dialog.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Scales from 0.88 → 1 like a native dialog.</StyledText></Stack>
                     </Popup>
 
                     {/* Animation: none */}
                     <Popup visible={is('anim-none')} onClose={hide} animation="none" title="Instant" showClose>
-                        <View style={u.body}><Text style={u.bodyText}>No animation — appears and disappears instantly.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>No animation — appears and disappears instantly.</StyledText></Stack>
                     </Popup>
 
                     {/* Animation: spring */}
@@ -305,34 +284,34 @@ export default function PopupUsage() {
                         showClose
                         spring={{ damping: 18, stiffness: 280 }}
                     >
-                        <View style={u.body}><Text style={u.bodyText}>Driven by spring rather than a fixed duration curve.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Driven by spring rather than a fixed duration curve.</StyledText></Stack>
                     </Popup>
 
                     {/* Round corners */}
                     <Popup visible={is('round-true')} onClose={hide} title="round=true" showClose round>
-                        <View style={u.body}><Text style={u.bodyText}>Default 20 px top corners.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Default 20 px top corners.</StyledText></Stack>
                     </Popup>
                     <Popup visible={is('round-false')} onClose={hide} title="round=false" showClose round={false}>
-                        <View style={u.body}><Text style={u.bodyText}>Sharp square corners.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Sharp square corners.</StyledText></Stack>
                     </Popup>
                     <Popup visible={is('round-large')} onClose={hide} title="roundRadius=36" showClose round roundRadius={36}>
-                        <View style={u.body}><Text style={u.bodyText}>Larger 36 px top corner radius.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Larger 36 px top corner radius.</StyledText></Stack>
                     </Popup>
 
                     {/* Handle */}
                     <Popup visible={is('handle-yes')} onClose={hide} showHandle title="With handle" showClose>
-                        <View style={u.body}><Text style={u.bodyText}>Pill handle above the header.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Pill handle above the header.</StyledText></Stack>
                     </Popup>
                     <Popup visible={is('handle-no')} onClose={hide} showHandle={false} title="No handle" showClose>
-                        <View style={u.body}><Text style={u.bodyText}>Handle hidden — header flush to top.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Handle hidden — header flush to top.</StyledText></Stack>
                     </Popup>
 
                     {/* Lazy render */}
                     <Popup visible={is('lazy')} onClose={hide} title="Lazy render" showClose lazyRender>
-                        <View style={u.body}><Text style={u.bodyText}>Children mount only after first open (default).</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Children mount only after first open (default).</StyledText></Stack>
                     </Popup>
                     <Popup visible={is('destroy')} onClose={hide} title="Destroy on close" showClose destroyOnClose>
-                        <View style={u.body}><Text style={u.bodyText}>Children are unmounted every time the sheet closes.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Children are unmounted every time the sheet closes.</StyledText></Stack>
                     </Popup>
 
                     {/* Dark */}
@@ -353,11 +332,11 @@ export default function PopupUsage() {
                             closeIconBg: palettes.blueGray[700],
                         }}
                     >
-                        <View style={u.body}>
-                            <Text style={{ color: palettes.blueGray[300], fontSize: 14, lineHeight: 22 }}>
+                        <Stack padding={20} paddingTop={12}>
+                            <StyledText fontSize={14} color={palettes.blueGray[300]} lineHeight={22}>
                                 Every colour token overridden via the `colors` prop.
-                            </Text>
-                        </View>
+                            </StyledText>
+                        </Stack>
                     </Popup>
 
                     {/* Indigo */}
@@ -375,7 +354,7 @@ export default function PopupUsage() {
                             closeIconBg: palettes.indigo[100],
                         }}
                     >
-                        <View style={u.body}><Text style={{ color: palettes.indigo[800], fontSize: 14 }}>Indigo tinted surface.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color={palettes.indigo[800]}>Indigo tinted surface.</StyledText></Stack>
                     </Popup>
 
                     {/* Amber */}
@@ -393,7 +372,7 @@ export default function PopupUsage() {
                             closeIconBg: palettes.amber[100],
                         }}
                     >
-                        <View style={u.body}><Text style={{ color: palettes.amber[800], fontSize: 14 }}>Warm amber surface.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color={palettes.amber[800]}>Warm amber surface.</StyledText></Stack>
                     </Popup>
 
                     {/* Lifecycle */}
@@ -406,67 +385,24 @@ export default function PopupUsage() {
                         onOpened={() => console.log('[Popup] onOpened — animation done')}
                         onClosed={() => console.log('[Popup] onClosed — animation done')}
                     >
-                        <View style={u.body}><Text style={u.bodyText}>Open your console to see lifecycle events fire.</Text></View>
+                        <Stack padding={20} paddingTop={12}><StyledText fontSize={14} color="#374151" lineHeight={22}>Open your console to see lifecycle events fire.</StyledText></Stack>
                     </Popup>
 
-                </StyledCard>
-            </StyledScrollView>
-        </Fragment>
+        </Stack>
     )
 }
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 const Section = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <View style={u.section}>
-        <StyledSeperator
-             leftLabel={label}
-             borderRadius={8}
-             paddingVertical={8}
-             paddingHorizontal={8}
-             marginVertical={8}
-             backgroundColor={theme.colors.gray[100]}
-           />
-        <View style={u.sectionBody}>{children}</View>
-    </View>
+    <Stack gap={2} paddingBottom={8} marginBottom={12} borderBottomWidth={1} borderBottomColor={theme.colors.gray[200]}>
+        <StyledText fontSize={theme.fontSize.normal} fontWeight="700" color={theme.colors.gray[800]} letterSpacing={0.8}>
+            {label}
+        </StyledText>
+        <Stack gap={8}>
+            <>
+            {children}
+            </>
+            </Stack>
+    </Stack>
 )
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const u = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: '#f9fafb' },
-    scroll: { padding: 20, gap: 28, paddingBottom: 60 },
-
-    section: { gap: 10 },
-    sectionLabel: {
-        fontSize: 11, fontWeight: '700', color: '#8e8e93',
-        letterSpacing: 1, textTransform: 'uppercase',
-    },
-    sectionBody: { gap: 8 },
-
-    btn: {
-        paddingVertical: 12, paddingHorizontal: 18,
-        borderRadius: 10, borderWidth: 1.5,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-    },
-    btnText: { fontSize: 14, fontWeight: '600' },
-
-    body: { padding: 20, paddingTop: 12 },
-    bodyText: { fontSize: 14, color: '#374151', lineHeight: 22 },
-
-    listItem: {
-        paddingHorizontal: 20, paddingVertical: 14,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#f3f4f6',
-    },
-    listDestructive: { marginTop: 4 },
-    listText: { fontSize: 16, color: '#1f2937', fontWeight: '500' },
-
-    formWrap: { padding: 20, gap: 6 },
-    formLabel: { fontSize: 12, fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: 0.5 },
-    fakeInput: { height: 44, backgroundColor: '#f9fafb', borderRadius: 8, borderWidth: 1, borderColor: '#e5e7eb', paddingHorizontal: 14, justifyContent: 'center', marginBottom: 10 },
-    fakeInputText: { fontSize: 15, color: '#1f2937' },
-    formSubmit: { marginTop: 8, backgroundColor: palettes.indigo[600], borderRadius: 10, height: 48, alignItems: 'center', justifyContent: 'center' },
-    formSubmitText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-})
