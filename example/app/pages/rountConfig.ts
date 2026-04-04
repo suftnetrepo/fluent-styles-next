@@ -89,6 +89,7 @@ const routeConfig: {
       { title: "Radio", name: "radio" },
       { title: "Progress Bar", name: "progressBar" },
       { title: "Slider", name: "slider" },
+      { title: "Date Picker", name: "datePicker" },
     ],
   },
 ];

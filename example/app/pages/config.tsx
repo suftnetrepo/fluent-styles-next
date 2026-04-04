@@ -7,6 +7,7 @@ import {
   StyledHeader,
   type StyledPageProps,
   theme,
+  StyledDatePicker,
 } from "fluent-styles";
 import { useNavigation } from "@react-navigation/native";
 import Button from "./button";
@@ -32,6 +33,7 @@ import DailyPlanScreen from "./timeLine";
 import StyledRadioDemo from "./radio";
 import StyledProgressBarDemo from "./progressBar";
 import StyledSliderDemo from "./slider";
+import StyledDatePickerDemo from "./datePicker";
 
 const Page = ({
   title,
@@ -89,7 +91,8 @@ export type _path =
   | "timeline"
   | "radio"
   | "progressBar"
-  | "slider";
+  | "slider"
+  | "datePicker";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -289,5 +292,13 @@ export const config: { path: _path; Page: any }[] = [
         <StyledSliderDemo />
       </Page>
      )
+  },
+  {
+      path: "datePicker",
+      Page: () => (
+        <Page title="Date Picker">
+          <StyledDatePickerDemo />
+        </Page>
+       )
   }
 ];
