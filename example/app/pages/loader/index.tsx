@@ -103,7 +103,8 @@ export default function LoaderUsage() {
             borderWidth={1}
             borderColor={theme.colors.gray[100]}
             padding={16}
-            shadow="light"
+        
+            marginBottom={16}
           >
             <StyledText fontSize={18} fontWeight={800}>
               Loader hook usage
@@ -168,7 +169,6 @@ export default function LoaderUsage() {
                 onPress={() =>
                   runFakeTask(
                     {
-                      label: "Signing in...",
                       variant: "spinner",
                       theme: "dark",
                     },

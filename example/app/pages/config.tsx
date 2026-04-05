@@ -7,8 +7,6 @@ import {
   StyledHeader,
   type StyledPageProps,
   theme,
-  StyledDatePicker,
-  StyledBottomSheet,
 } from "fluent-styles";
 import { useNavigation } from "@react-navigation/native";
 import Button from "./button";
@@ -26,7 +24,6 @@ import DialogueUsage from "./dialogue";
 import ToastUsage from "./toast";
 import NotificationUsage from "./notification";
 import LoaderUsage from "./loader";
-import Demo from "./home/quick-pad";
 import CircularProgressUsage from "./circularProgess";
 import StyledBarDemo from "./barChart";
 import StyledChipDemo from "./chips";
@@ -38,7 +35,6 @@ import StyledDatePickerDemo from "./datePicker";
 import { SkeletonDemo } from "./skeleton";
 import { EmptyStateDemo } from "./emptyState";
 import { SearchBarDemo } from "./searchBar";
-import { BottomSheetDemo } from "./bottomSheet";
 
 const Page = ({
   title,
@@ -323,13 +319,6 @@ export const config: { path: _path; Page: any }[] = [
       <SearchBarDemo />
     </Page>
    ) 
-    },
-    {
-      path: "bottomSheet",
-      Page: () => (
-        <Page title="Bottom Sheet">
-          <BottomSheetDemo />
-        </Page>
-       )
     }
+    
 ];

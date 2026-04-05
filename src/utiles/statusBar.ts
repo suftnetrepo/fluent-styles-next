@@ -1,131 +1,410 @@
 import { Dimensions, Platform, StatusBar } from 'react-native'
 
 // ============================================================================
-// CONSTANTS
+// TYPES
 // ============================================================================
 
-const STATUSBAR_DEFAULT_HEIGHT = 20
-const STATUSBAR_X_HEIGHT = 44
-const STATUSBAR_IP12_HEIGHT = 47
-const STATUSBAR_IP12MAX_HEIGHT = 47
+type DeviceSize = {
+  width: number
+  height: number
+}
 
-const X_WIDTH = 375
-const X_HEIGHT = 812
+type StatusBarHeightOptions = {
+  skipAndroid?: boolean
+  skipIos?: boolean
+}
 
-const XSMAX_WIDTH = 414
-const XSMAX_HEIGHT = 896
-
-const IP12_WIDTH = 390
-const IP12_HEIGHT = 844
-
-const IP12MAX_WIDTH = 428
-const IP12MAX_HEIGHT = 926
-
-// ============================================================================
-// STATE
-// ============================================================================
-
-const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get('window')
-
-let statusBarHeight = STATUSBAR_DEFAULT_HEIGHT
-let isIPhoneX_v = false
-let isIPhoneXMax_v = false
-let isIPhone12_v = false
-let isIPhone12Max_v = false
-let isIPhoneWithMonobrow_v = false
-
-// ============================================================================
-// PLATFORM DETECTION
-// ============================================================================
-
-if (Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV) {
-  if (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) {
-    isIPhoneWithMonobrow_v = true
-    isIPhoneX_v = true
-    statusBarHeight = STATUSBAR_X_HEIGHT
-  } else if (W_WIDTH === XSMAX_WIDTH && W_HEIGHT === XSMAX_HEIGHT) {
-    isIPhoneWithMonobrow_v = true
-    isIPhoneXMax_v = true
-    statusBarHeight = STATUSBAR_X_HEIGHT
-  } else if (W_WIDTH === IP12_WIDTH && W_HEIGHT === IP12_HEIGHT) {
-    isIPhoneWithMonobrow_v = true
-    isIPhone12_v = true
-    statusBarHeight = STATUSBAR_IP12_HEIGHT
-  } else if (W_WIDTH === IP12MAX_WIDTH && W_HEIGHT === IP12MAX_HEIGHT) {
-    isIPhoneWithMonobrow_v = true
-    isIPhone12Max_v = true
-    statusBarHeight = STATUSBAR_IP12MAX_HEIGHT
-  }
+type ScreenInfo = {
+  width: number
+  height: number
+  shortSide: number
+  longSide: number
+  isLandscape: boolean
+  isPortrait: boolean
 }
 
 // ============================================================================
-// DEVICE DETECTION EXPORTS
+// STATUS BAR HEIGHT CONSTANTS
+// ============================================================================
+
+const STATUSBAR_DEFAULT_HEIGHT = 20
+const STATUSBAR_ANDROID_FALLBACK_HEIGHT = 24
+const STATUSBAR_NOTCH_HEIGHT = 44
+const STATUSBAR_DYNAMIC_ISLAND_HEIGHT = 47
+
+// ============================================================================
+// APPLE DEVICE DIMENSIONS
+// Normalized sizes: width is always the smaller side, height is the larger side
+// ============================================================================
+
+// iPhone X / XS / 11 Pro
+const IPHONE_X: DeviceSize = { width: 375, height: 812 }
+
+// iPhone XR / XS Max / 11 / 11 Pro Max
+const IPHONE_XR_XS_MAX: DeviceSize = { width: 414, height: 896 }
+
+// iPhone 12 / 12 Pro / 13 / 13 Pro / 14
+const IPHONE_12_13_14: DeviceSize = { width: 390, height: 844 }
+
+// iPhone 12 Pro Max / 13 Pro Max / 14 Plus
+const IPHONE_12_PRO_MAX_13_PRO_MAX_14_PLUS: DeviceSize = { width: 428, height: 926 }
+
+// iPhone 14 Pro
+const IPHONE_14_PRO: DeviceSize = { width: 393, height: 852 }
+
+// iPhone 14 Pro Max
+const IPHONE_14_PRO_MAX: DeviceSize = { width: 430, height: 932 }
+
+// iPhone 15 / 15 Pro
+const IPHONE_15_15_PRO: DeviceSize = { width: 393, height: 852 }
+
+// iPhone 15 Plus
+const IPHONE_15_PLUS: DeviceSize = { width: 430, height: 932 }
+
+// iPhone 15 Pro Max
+const IPHONE_15_PRO_MAX: DeviceSize = { width: 430, height: 932 }
+
+// iPhone 16 / possible same logical size as 15/14 Pro family in RN layouts
+const IPHONE_16_FAMILY_SMALL: DeviceSize = { width: 393, height: 852 }
+const IPHONE_16_FAMILY_LARGE: DeviceSize = { width: 430, height: 932 }
+
+// ============================================================================
+// DEVICE GROUPS
+// ============================================================================
+
+const NOTCH_DEVICES: DeviceSize[] = [
+  IPHONE_X,
+  IPHONE_XR_XS_MAX,
+  IPHONE_12_13_14,
+  IPHONE_12_PRO_MAX_13_PRO_MAX_14_PLUS,
+  IPHONE_14_PRO,
+  IPHONE_14_PRO_MAX,
+  IPHONE_15_15_PRO,
+  IPHONE_15_PLUS,
+  IPHONE_15_PRO_MAX,
+  IPHONE_16_FAMILY_SMALL,
+  IPHONE_16_FAMILY_LARGE,
+]
+
+const DYNAMIC_ISLAND_DEVICES: DeviceSize[] = [
+  IPHONE_14_PRO,
+  IPHONE_14_PRO_MAX,
+  IPHONE_15_15_PRO,
+  IPHONE_15_PLUS,
+  IPHONE_15_PRO_MAX,
+  IPHONE_16_FAMILY_SMALL,
+  IPHONE_16_FAMILY_LARGE,
+]
+
+const IPHONE_X_FAMILY_DEVICES: DeviceSize[] = [
+  IPHONE_X,
+  IPHONE_XR_XS_MAX,
+]
+
+const IPHONE_12_FAMILY_DEVICES: DeviceSize[] = [
+  IPHONE_12_13_14,
+  IPHONE_12_PRO_MAX_13_PRO_MAX_14_PLUS,
+]
+
+// ============================================================================
+// SCREEN HELPERS
 // ============================================================================
 
 /**
- * Check if running on iPhone X
+ * Returns raw screen info from the window dimensions.
  */
-export const isIPhoneX = (): boolean => isIPhoneX_v
+export function getScreenInfo(): ScreenInfo {
+  const { width, height } = Dimensions.get('window')
+
+  return {
+    width,
+    height,
+    shortSide: Math.min(width, height),
+    longSide: Math.max(width, height),
+    isLandscape: width > height,
+    isPortrait: height >= width,
+  }
+}
 
 /**
- * Check if running on iPhone X Max
+ * Returns normalized device size so comparisons work in both portrait and landscape.
  */
-export const isIPhoneXMax = (): boolean => isIPhoneXMax_v
+function getNormalizedDeviceSize(): DeviceSize {
+  const { shortSide, longSide } = getScreenInfo()
+
+  return {
+    width: shortSide,
+    height: longSide,
+  }
+}
 
 /**
- * Check if running on iPhone 12
+ * Checks whether current device matches the provided size.
  */
-export const isIPhone12 = (): boolean => isIPhone12_v
+function matchesDeviceSize(target: DeviceSize): boolean {
+  const current = getNormalizedDeviceSize()
+  return current.width === target.width && current.height === target.height
+}
 
 /**
- * Check if running on iPhone 12 Max
+ * Checks whether current device matches one of the sizes in a group.
  */
-export const isIPhone12Max = (): boolean => isIPhone12Max_v
-
-/**
- * Check if running on iPhone with notch/monobrow
- */
-export const isIPhoneWithMonobrow = (): boolean => isIPhoneWithMonobrow_v
+function matchesAnyDeviceSize(group: DeviceSize[]): boolean {
+  return group.some(matchesDeviceSize)
+}
 
 // ============================================================================
-// ENVIRONMENT DETECTION
+// PLATFORM HELPERS
 // ============================================================================
 
 /**
- * Get Expo root if running in Expo environment
+ * Returns true when running on iOS.
  */
-const getExpoRoot = (): any => (global as any).Expo || (global as any).__expo || (global as any).__exponent
+export function isIos(): boolean {
+  return Platform.OS === 'ios'
+}
 
 /**
- * Check if running in Expo environment
+ * Returns true when running on Android.
  */
-export const isExpo = (): boolean => getExpoRoot() !== undefined
+export function isAndroid(): boolean {
+  return Platform.OS === 'android'
+}
+
+/**
+ * Returns true when running on tvOS / Apple TV.
+ */
+export function isTv(): boolean {
+  return !!Platform.isTV
+}
+
+/**
+ * Returns true when running on an iPad.
+ */
+export function isPad(): boolean {
+  return Platform.OS === 'ios' && !!Platform.isPad
+}
+
+/**
+ * Returns true when running on a tablet.
+ * For iOS it checks iPad.
+ * For Android it uses shortest side heuristic.
+ */
+export function isTablet(): boolean {
+  if (Platform.OS === 'ios') {
+    return !!Platform.isPad
+  }
+
+  if (Platform.OS === 'android') {
+    const { shortSide } = getScreenInfo()
+    return shortSide >= 600
+  }
+
+  return false
+}
+
+/**
+ * Returns true when running on a phone-sized device.
+ */
+export function isPhone(): boolean {
+  return !isTablet() && !isTv()
+}
+
+/**
+ * Returns true when running on a supported iPhone.
+ */
+function isSupportedIPhone(): boolean {
+  return Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV
+}
 
 // ============================================================================
-// STATUS BAR HEIGHT HELPERS
+// SPECIFIC IPHONE MODEL HELPERS
 // ============================================================================
 
 /**
- * Get the status bar height for current platform
- * Handles different iOS models (iPhone X, 12, etc.) and Android
+ * Check if running on iPhone X / XS / 11 Pro size.
+ */
+export function isIPhoneX(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_X)
+}
+
+/**
+ * Check if running on iPhone XR / XS Max / 11 / 11 Pro Max size.
+ */
+export function isIPhoneXMax(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_XR_XS_MAX)
+}
+
+/**
+ * Check if running on iPhone 12 / 12 Pro / 13 / 13 Pro / 14 size.
+ */
+export function isIPhone12(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_12_13_14)
+}
+
+/**
+ * Check if running on iPhone 12 Pro Max / 13 Pro Max / 14 Plus size.
+ */
+export function isIPhone12Max(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_12_PRO_MAX_13_PRO_MAX_14_PLUS)
+}
+
+/**
+ * Check if running on iPhone 14 Pro / 15 / 15 Pro / 16 small family size.
+ */
+export function isIPhone14ProLike(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_14_PRO)
+}
+
+/**
+ * Check if running on iPhone 14 Pro Max / 15 Plus / 15 Pro Max / 16 large family size.
+ */
+export function isIPhone14ProMaxLike(): boolean {
+  return isSupportedIPhone() && matchesDeviceSize(IPHONE_14_PRO_MAX)
+}
+
+// ============================================================================
+// NOTCH / DYNAMIC ISLAND HELPERS
+// ============================================================================
+
+/**
+ * Returns true if device is a known iPhone with notch or Dynamic Island.
+ */
+export function isIPhoneWithMonobrow(): boolean {
+  return isSupportedIPhone() && matchesAnyDeviceSize(NOTCH_DEVICES)
+}
+
+/**
+ * Returns true if device is part of iPhone X notch family.
+ */
+export function isIPhoneXFamily(): boolean {
+  return isSupportedIPhone() && matchesAnyDeviceSize(IPHONE_X_FAMILY_DEVICES)
+}
+
+/**
+ * Returns true if device is part of iPhone 12/13/14 notch family.
+ */
+export function isIPhone12Family(): boolean {
+  return isSupportedIPhone() && matchesAnyDeviceSize(IPHONE_12_FAMILY_DEVICES)
+}
+
+/**
+ * Returns true if device is a known Dynamic Island iPhone.
+ */
+export function hasDynamicIsland(): boolean {
+  return isSupportedIPhone() && matchesAnyDeviceSize(DYNAMIC_ISLAND_DEVICES)
+}
+
+/**
+ * Alias for notch-style iPhones including Dynamic Island.
+ */
+export function hasNotch(): boolean {
+  return isIPhoneWithMonobrow()
+}
+
+// ============================================================================
+// EXPO DETECTION
+// ============================================================================
+
+/**
+ * Get Expo root object if running inside Expo.
+ */
+function getExpoRoot(): unknown {
+  return (global as any).Expo || (global as any).__expo || (global as any).__exponent
+}
+
+/**
+ * Returns true if running inside Expo.
+ */
+export function isExpo(): boolean {
+  return getExpoRoot() !== undefined
+}
+
+// ============================================================================
+// STATUS BAR HELPERS
+// ============================================================================
+
+/**
+ * Returns the iOS status bar height based on known device families.
+ */
+function getIosStatusBarHeight(): number {
+  if (!isSupportedIPhone()) return 0
+
+  if (hasDynamicIsland()) {
+    return STATUSBAR_DYNAMIC_ISLAND_HEIGHT
+  }
+
+  if (hasNotch()) {
+    return STATUSBAR_NOTCH_HEIGHT
+  }
+
+  return STATUSBAR_DEFAULT_HEIGHT
+}
+
+/**
+ * Returns the Android status bar height.
+ */
+function getAndroidStatusBarHeight(): number {
+  return StatusBar.currentHeight ?? STATUSBAR_ANDROID_FALLBACK_HEIGHT
+}
+
+/**
+ * Get the status bar height for the current platform.
  *
- * @param skipAndroid - Skip adding status bar height on Android
- * @param skipIos - Skip adding status bar height on iOS (default: true)
- * @returns Status bar height in pixels
+ * @param options control whether iOS or Android should return 0
  *
  * @example
- * ```tsx
- * const height = getStatusBarHeight(false, false)  // Get height for iOS and Android
- * const iosOnly = getStatusBarHeight(true, false)  // Only iOS height
- * ```
+ * getStatusBarHeight()
+ * getStatusBarHeight({ skipIos: false })
+ * getStatusBarHeight({ skipAndroid: true, skipIos: false })
  */
-export function getStatusBarHeight(
-  skipAndroid: boolean = false,
-  skipIos: boolean = true
-): number {
-  return Platform.select({
-    ios: skipIos ? 0 : statusBarHeight,
-    android: skipAndroid ? 0 : StatusBar.currentHeight || STATUSBAR_DEFAULT_HEIGHT,
-    default: 0,
-  }) || 0
+export function getStatusBarHeight(options: StatusBarHeightOptions = {}): number {
+  const { skipAndroid = false, skipIos = true } = options
+
+  if (Platform.OS === 'ios') {
+    return skipIos ? 0 : getIosStatusBarHeight()
+  }
+
+  if (Platform.OS === 'android') {
+    return skipAndroid ? 0 : getAndroidStatusBarHeight()
+  }
+
+  return 0
+}
+
+/**
+ * Returns a top inset-like value useful for layouts that need extra spacing.
+ */
+export function getTopInset(options: StatusBarHeightOptions = {}): number {
+  return getStatusBarHeight(options)
+}
+
+// ============================================================================
+// DEBUG / INFO HELPERS
+// ============================================================================
+
+/**
+ * Returns a readable summary of the current device environment.
+ */
+export function getDeviceDebugInfo() {
+  const screen = getScreenInfo()
+
+  return {
+    platform: Platform.OS,
+    version: Platform.Version,
+    isPad: isPad(),
+    isTablet: isTablet(),
+    isPhone: isPhone(),
+    isTV: isTv(),
+    isExpo: isExpo(),
+    width: screen.width,
+    height: screen.height,
+    shortSide: screen.shortSide,
+    longSide: screen.longSide,
+    isLandscape: screen.isLandscape,
+    isPortrait: screen.isPortrait,
+    hasNotch: hasNotch(),
+    hasDynamicIsland: hasDynamicIsland(),
+    statusBarHeight: getStatusBarHeight({ skipIos: false, skipAndroid: false }),
+  }
 }

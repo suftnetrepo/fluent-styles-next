@@ -1,7 +1,7 @@
 {
   "name": "fluent-styles",
-  "description": "React Native UI library",
-  "version": "0.1.0",
+  "description": "Develop different styled versions of UI components.",
+ "version": "1.55.0",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "src/index.ts",
@@ -21,13 +21,13 @@
     "fluent-styles"
   ],
   "license": "Apache-2.0",
-  "homepage": "https://github.com/aaghorighor/fluent-styles",
+  "homepage": "https://github.com/suftnetrepo/fluent-styles#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aaghorighor/fluent-styles.git"
+       "url": "https://github.com/suftnetrepo/fluent-styles.git"
   },
   "bugs": {
-    "url": "https://github.com/aaghorighor/fluent-styles/issues"
+  "url": "https://github.com/suftnetrepo/fluent-styles/issues"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
