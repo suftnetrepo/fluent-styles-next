@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/safeAreaView/index.tsx"],"names":[],"mappings":";AAAA,OAAO,EAEH,iBAAiB,EACpB,MAAM,gCAAgC,CAAC;AAExC,OAAO,EAAE,cAAc,EAAa,MAAM,0BAA0B,CAAC;AAErE,KAAK,uBAAuB,GAAG,iBAAiB,GAAG,cAAc,CAAC;AAElE,QAAA,MAAM,kBAAkB,mKAItB,CAAC;AAEH,OAAO,EAAE,kBAAkB,EAAE,CAAC;AAC9B,YAAY,EAAE,uBAAuB,EAAE,CAAC"}

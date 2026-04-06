@@ -1,7 +1,7 @@
 
 import { Pressable, PressableProps } from 'react-native';
 import { styled } from '../utiles/styled';
-import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
+import { ViewStyle } from '../utiles/viewStyleProps';
 import { viewStyleStringVariants } from '../utiles/viewStyleVariants';
 
 type StyledPressableProps = PressableProps & ViewStyle;

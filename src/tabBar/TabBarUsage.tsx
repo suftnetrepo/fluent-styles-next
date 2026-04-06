@@ -13,7 +13,7 @@ import {
 
 import { TabBar } from './TabBar'
 import type { TabItem } from './interface'
-import { palettes } from '../theme'
+import { palettes } from '../utiles/theme'
 
 // ─── Icon stubs (replace with your icon library) ──────────────────────────────
 
@@ -29,10 +29,10 @@ type Seg  = 'day' | 'week' | 'month' | 'year'
 type Num  = 1 | 2 | 3
 
 const NAV_TABS: TabItem<Nav>[] = [
-  { value: 'home',     label: 'Home',     iconRender: (c) => <Emoji e="🏠" color={c} /> },
-  { value: 'explore',  label: 'Explore',  iconRender: (c) => <Emoji e="🔍" color={c} />, badge: 3 },
-  { value: 'activity', label: 'Activity', iconRender: (c) => <Emoji e="⚡" color={c} />, badge: '' },
-  { value: 'profile',  label: 'Profile',  iconRender: (c) => <Emoji e="👤" color={c} /> },
+  { value: 'home',     label: 'Home',     iconRender: (c) => <Emoji e="🏠" color={c as string} /> },
+  { value: 'explore',  label: 'Explore',  iconRender: (c) => <Emoji e="🔍" color={c as string} />, badge: 3 },
+  { value: 'activity', label: 'Activity', iconRender: (c) => <Emoji e="⚡" color={c as string} />, badge: '' },
+  { value: 'profile',  label: 'Profile',  iconRender: (c) => <Emoji e="👤" color={c as string} /> },
 ]
 
 const SIMPLE_TABS: TabItem<Seg>[] = [
@@ -107,7 +107,7 @@ export default function TabBarUsage() {
           <TabBar
             options={NAV_TABS}
             value={nav}
-            onChange={setNav}
+            onChange={(v) => setNav(v as Nav)}
             indicator="dot"
             showBorder
           />
@@ -118,7 +118,7 @@ export default function TabBarUsage() {
           <TabBar
             options={SIMPLE_TABS}
             value={seg}
-            onChange={setSeg}
+            onChange={(v) => setSeg(v as Seg)}
             indicator="line"
             showBorder
           />
@@ -144,7 +144,7 @@ export default function TabBarUsage() {
           <TabBar
             options={MANY_TABS}
             value={cat}
-            onChange={setCat}
+            onChange={(v) => setCat(v as Cat)}
             tabAlign="scroll"
             indicator="line"
             showBorder
@@ -157,7 +157,7 @@ export default function TabBarUsage() {
           <TabBar
             options={BADGE_TABS}
             value={mail}
-            onChange={setMail}
+            onChange={(v) => setMail(v as string)}
             indicator="line"
             tabAlign="scroll"
             colors={{ badge: palettes.rose[500] }}
@@ -170,7 +170,7 @@ export default function TabBarUsage() {
           <TabBar
             options={DISABLED_TABS}
             value={dis}
-            onChange={setDis}
+            onChange={(v) => setDis(v as string)}
             indicator="line"
             showBorder
           />
@@ -199,7 +199,7 @@ export default function TabBarUsage() {
           <TabBar
             options={NUMBERED_TABS}
             value={step}
-            onChange={setStep}
+            onChange={(v) => setStep(v as Num)}
             indicator="line"
             indicatorHeight={2}
             fontSize={13}

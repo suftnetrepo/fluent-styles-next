@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  useWindowDimensions,
   View,
   ViewProps,
   ViewStyle,
@@ -12,10 +11,13 @@ import { Stack } from "../stack";
 import StatusBar, { StatusBarProps } from "./statusBar";
 import { StyleShape, ShapeProps } from "../shape";
 import { StyledText, StyledTextProps } from "../text";
-import { BackArrow, ChevronLeft } from "../icons";
+import { ChevronLeft } from "../icons";
 import { theme } from "../utiles/theme";
+import { StyledPressable } from "../pressable";
+import { viewStyleStringVariants, viewStyleVariants } from "../utiles/viewStyleVariants";
 
-// Types
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 export interface BackArrowProps {
   size?: number;
   color?: string;
@@ -37,73 +39,46 @@ export interface HeaderProps extends ViewProps, ViewStyle {
   statusBarProps?: StatusBarProps;
   skipStatusBarOnAndroid?: boolean;
   skipStatusBarOnIOS?: boolean;
-}
-
-export interface FullHeaderProps extends ViewProps, ViewStyle {
   children?: React.ReactNode;
-  statusBarProps?: StatusBarProps;
-  skipStatusBarOnAndroid?: boolean;
-  skipStatusBarOnIOS?: boolean;
 }
 
-// Styled Components
+// ─── Container ────────────────────────────────────────────────────────────────
+
 const StyledHeaderContainer = styled<ViewProps & ViewStyle>(View, {
   base: {
     position: "relative",
     flexDirection: "row",
     alignItems: "center",
-   justifyContent: "space-between",
-    height: Platform.select({
-      ios: 44,
-      android: 56,
-      default: 56,
-    }),
+    justifyContent: "space-between",
+    height: Platform.select({ ios: 44, android: 56, default: 56 }),
+    paddingHorizontal: 4,
+  },
+  variants: {
+    // ── Forward all generic style props ─────────────────────────────────────
+    ...viewStyleVariants,
+    ...viewStyleStringVariants,
   },
 });
 
-// Full Header Component
-const FullHeader = React.forwardRef<
-  React.ComponentPropsWithRef<typeof StyledHeaderContainer>,
-  FullHeaderProps
->(
-  (
-    {
-      children,
-      statusBarProps,
-      skipStatusBarOnAndroid = true,
-      skipStatusBarOnIOS = true,
-      ...rest
-    },
-    ref,
-  ) => {
-    const { width } = useWindowDimensions();
+// ─── Full — pure children pass-through ───────────────────────────────────────
+// No layout of its own. StyledHeader (the outer wrapper) owns all spacing,
+// status bar, and container sizing. Full just renders whatever is inside it.
 
-    return (
-      <Stack vertical>
-        <StatusBar {...statusBarProps} />
-        <StyledHeaderContainer
-          ref={ref}
-          width={width}
-          marginTop={getStatusBarHeight(
-            skipStatusBarOnAndroid,
-            skipStatusBarOnIOS,
-          )}
-          {...rest}
-        >
-          {children}
-        </StyledHeaderContainer>
-      </Stack>
-    );
-  },
+const Full: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+  <>{children}</>
 );
 
-// Main Header Component
+Full.displayName = "StyledHeader.Full";
+
+// ─── StyledHeader ─────────────────────────────────────────────────────────────
+
 const HeaderComponent = React.forwardRef<
   React.ComponentPropsWithRef<typeof StyledHeaderContainer>,
   HeaderProps
 >(
   (
     {
+      // built-in title/icon layout props
       showBackArrow,
       backArrowProps,
       showStatusBar = true,
@@ -117,101 +92,110 @@ const HeaderComponent = React.forwardRef<
       statusBarProps,
       skipStatusBarOnAndroid = true,
       skipStatusBarOnIOS = true,
+      // children covers StyledHeader.Full usage
+      children,
       ...rest
     },
     ref,
   ) => {
-    const renderLeftSection = () => {
-      if (titleAlignment !== "left") return null;
-      return (
-        <Stack
-          flex={titleAlignment === "left" ? 2 : 1}
-          alignItems={"center" }
-          justifyContent={showBackArrow ? "flex-start" : "flex-start"}
-          horizontal
-        >
-          {showBackArrow && (
-            <StyleShape cycle {...shapeProps}>
+    // ── Left slot ─────────────────────────────────────────────────────────
+    const renderLeft = () => (
+      <Stack flex={1} horizontal alignItems="center" justifyContent="flex-start">
+        {showBackArrow && (
+          <StyledPressable onPress={onBackPress ?? backArrowProps?.onPress}>
+            <StyleShape
+              cycle
+
+              {...shapeProps}
+            >
               <ChevronLeft
-                size={32}
-                color={theme.colors.gray[1]}
-                onPress={onBackPress}
-                {...backArrowProps}
+                size={backArrowProps?.size ?? 24}
+                color={backArrowProps?.color ?? theme.colors.gray[700]}
+                strokeWidth={backArrowProps?.strokeWidth}
               />
             </StyleShape>
-          )}
+          </StyledPressable>
 
-          {leftIcon}
+        )}
+        {leftIcon}
+        {titleAlignment === "left" && title && (
+          <StyledText
+            marginLeft={showBackArrow || leftIcon ? 8 : 0}
+            {...titleProps}
+          >
+            {title}
+          </StyledText>
+        )}
+      </Stack>
+    );
 
-          {titleAlignment === "left" && title && (
-            <StyledText marginLeft={showBackArrow ? 24 : 0} {...titleProps}>
-              {title}
-            </StyledText>
-          )}
-        </Stack>
-      );
-    };
-
-    const renderCenterSection = () => {
+    // ── Center slot ───────────────────────────────────────────────────────
+    const renderCenter = () => {
       if (titleAlignment !== "center" || !title) return null;
       return (
-        <Stack
-          flex={titleAlignment === "center" ? 8 : 1}
-          flexWrap="nowrap"
-          alignItems="center"
-        >
-          {titleAlignment === "center" && title && (
-            <StyledText {...titleProps}>{title}</StyledText>
-          )}
+        <Stack flex={2} alignItems="center" justifyContent="center">
+          <StyledText numberOfLines={1} {...titleProps}>
+            {title}
+          </StyledText>
         </Stack>
       );
     };
 
-    const renderRightSection = () => {
-      if (!rightIcon) return null;
+    // ── Right slot ────────────────────────────────────────────────────────
+    const renderRight = () => (
+      <Stack flex={1} horizontal alignItems="center" justifyContent="flex-end">
+        {titleAlignment === "right" && title && (
+          <StyledText marginRight={rightIcon ? 8 : 0} {...titleProps}>
+            {title}
+          </StyledText>
+        )}
+        {rightIcon}
+      </Stack>
+    );
+
+    // ── When children is present (e.g. StyledHeader.Full usage), render
+    //    them directly inside the container — skip the built-in layout slots.
+    const renderContent = () => {
+      if (children) return <>{children}</>;
       return (
-        <Stack
-          flex={1}
-          backgroundColor={theme.colors.gray[1]}
-          alignItems="flex-end"
-        >
-          {rightIcon}
-        </Stack>
+        <>
+          {renderLeft()}
+          {renderCenter()}
+          {renderRight()}
+        </>
       );
     };
 
     return (
       <Stack vertical>
-        <StatusBar {...statusBarProps} />
+        {showStatusBar && <StatusBar {...statusBarProps} />}
         <StyledHeaderContainer
           ref={ref}
-          marginTop={getStatusBarHeight(
-            skipStatusBarOnAndroid,
-            skipStatusBarOnIOS,
-          )}
+          marginTop={getStatusBarHeight({
+            skipAndroid: skipStatusBarOnAndroid,
+            skipIos: skipStatusBarOnIOS,
+          })}
           {...rest}
         >
-          {renderLeftSection()}
-          {renderCenterSection()}
-          {renderRightSection()}
+          {renderContent()}
         </StyledHeaderContainer>
       </Stack>
     );
   },
 );
 
-// Component Composition
+// ─── Composition ──────────────────────────────────────────────────────────────
+
 interface HeaderComponent
   extends React.ForwardRefExoticComponent<
     HeaderProps & React.RefAttributes<View>
   > {
-  Full: typeof FullHeader;
+  Full: typeof Full;
 }
 
 const StyledHeader = HeaderComponent as HeaderComponent;
 
-StyledHeader.Full = FullHeader;
-StyledHeader.Full.displayName = "StyledHeader.Full";
+StyledHeader.Full = Full;
 StyledHeader.displayName = "StyledHeader";
 
 export { StyledHeader };

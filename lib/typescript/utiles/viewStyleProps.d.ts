@@ -1,0 +1,4 @@
+import { ViewStyle } from 'react-native';
+type ViewStyleProps = Pick<ViewStyle, 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingHorizontal' | 'paddingVertical' | 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight' | 'marginHorizontal' | 'marginVertical' | 'backgroundColor' | 'borderRadius' | 'borderWidth' | 'borderColor' | 'width' | 'height' | 'minHeight' | 'maxHeight' | 'minWidth' | 'maxWidth' | 'flex' | 'flexDirection' | 'justifyContent' | 'alignItems' | 'alignSelf' | 'position' | 'top' | 'bottom' | 'left' | 'right'>;
+export type { ViewStyleProps, ViewStyle };
+//# sourceMappingURL=viewStyleProps.d.ts.map

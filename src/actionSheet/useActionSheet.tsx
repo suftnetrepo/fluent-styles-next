@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import React from 'react'
 import { usePortal } from '../portal/PortalContext'
-import { ActionSheet, ActionSheetProps, ActionSheetItem } from './actionSheet'
+import { ActionSheet, ActionSheetProps } from './actionSheet'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

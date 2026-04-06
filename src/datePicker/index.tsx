@@ -23,7 +23,6 @@ import {
   Stack,
   StyledText,
   StyledPressable,
-  StyledCard,
   StyledDivider,
   StyledSpacer,
   theme,

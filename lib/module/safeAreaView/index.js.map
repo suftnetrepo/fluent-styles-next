@@ -1,0 +1,1 @@
+{"version":3,"names":["SafeAreaView","styled","StyledSafeAreaView","base","flex"],"sourceRoot":"../../../src","sources":["safeAreaView/index.tsx"],"mappings":";;AAAA,SACIA,YAAY,QAET,gCAAgC;AACvC,SAASC,MAAM,QAAQ,qBAAkB;AAKzC,MAAMC,kBAAkB,GAAGD,MAAM,CAA0BD,YAAY,EAAE;EACrEG,IAAI,EAAE;IACFC,IAAI,EAAE;EACV;AACJ,CAAC,CAAC;AAEF,SAASF,kBAAkB","ignoreList":[]}

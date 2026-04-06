@@ -1,0 +1,1 @@
+{"version":3,"names":["SafeAreaProvider","styled","StyledSafeAreaProvider","base"],"sourceRoot":"../../../src","sources":["safeAreaProvider/index.ts"],"mappings":";;AACA,SACIA,gBAAgB,QAEb,gCAAgC;AACvC,SAASC,MAAM,QAAQ,qBAAkB;AAIzC,MAAMC,sBAAsB,GAAGD,MAAM,CAA8BD,gBAAgB,EAAE;EACjFG,IAAI,EAAE,CACN;AACJ,CAAC,CAAC;AAEF,SAASD,sBAAsB","ignoreList":[]}

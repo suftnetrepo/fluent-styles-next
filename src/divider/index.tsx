@@ -1,7 +1,7 @@
 
 import { View, ViewProps } from 'react-native';
 import { styled } from '../utiles/styled';
-import { ViewStyleProps, ViewStyle } from '../utiles/viewStyleProps';
+import { ViewStyle } from '../utiles/viewStyleProps';
 import { theme } from '../utiles/theme';
 import { viewStyleStringVariants, viewStyleVariants } from '../utiles/viewStyleVariants';
 

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import type { CollapseColors, CollapseSize } from './interface'
+import type { CollapseSize } from './interface'
 
 // ─── Spacing scale ────────────────────────────────────────────────────────────
 

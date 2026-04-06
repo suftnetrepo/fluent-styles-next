@@ -1,0 +1,1 @@
+{"version":3,"file":"PortalRenderer.d.ts","sourceRoot":"","sources":["../../../src/portal/PortalRenderer.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAA;AAIzB,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,SAAS,CAAA;AAEzC,KAAK,KAAK,GAAG;IACX,OAAO,EAAE,UAAU,EAAE,CAAA;CACtB,CAAA;AAED;;;;;;;;;;;;;;;;;;GAkBG;AACH,eAAO,MAAM,cAAc,EAAE,KAAK,CAAC,EAAE,CAAC,KAAK,CAyC1C,CAAA"}

@@ -1,0 +1,1 @@
+{"version":3,"names":["Spinner","Circular","Loader","useLoader"],"sourceRoot":"../../../src","sources":["loading/index.tsx"],"mappings":";;AAAA,SAASA,OAAO,QAAQ,cAAW;AACnC,SAASC,QAAQ,QAAQ,eAAY;AAGrC,SAASC,MAAM,QAA8C,aAAU;AACvE,SAASC,SAAS,QAAQ,gBAAa","ignoreList":[]}

@@ -1,0 +1,1 @@
+{"version":3,"names":["View","styled","StyledSpacer","base","marginHorizontal"],"sourceRoot":"../../../src","sources":["spacer/index.ts"],"mappings":";;AACA,SAASA,IAAI,QAAmB,cAAc;AAC9C,SAASC,MAAM,QAAQ,qBAAkB;AAmBzC,MAAMC,YAAY,GAAGD,MAAM,CAAcD,IAAI,EAAE;EAC3CG,IAAI,EAAE;IACFC,gBAAgB,EAAE;EACtB;AACJ,CAAC,CAAC;AAEF,SAAUF,YAAY","ignoreList":[]}

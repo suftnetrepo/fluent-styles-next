@@ -41,7 +41,7 @@ const styled = <P extends object>(
             });
         }
 
-        return <Component {...props} style={styles} ref={ref} />;
+        return <Component {...(props as any)} style={styles} ref={ref} />;
     });
 };
 

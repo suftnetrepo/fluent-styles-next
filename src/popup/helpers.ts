@@ -1,7 +1,7 @@
 import { Dimensions } from 'react-native'
 import type { ViewStyle } from 'react-native'
 
-import type { PopupAnimation, PopupColors, PopupPosition } from './interface'
+import type { PopupAnimation, PopupPosition } from './interface'
 
 // ─── Resolve default animation per position ───────────────────────────────────
 

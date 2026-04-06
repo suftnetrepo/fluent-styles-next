@@ -1,0 +1,1 @@
+{"version":3,"names":["styled","ScrollView","StyledScrollView","base","flex"],"sourceRoot":"../../../src","sources":["scrollView/index.ts"],"mappings":";;AACA,SAASA,MAAM,QAAQ,qBAAkB;AACzC,SAASC,UAAU,QAAyB,cAAc;AAK1D,MAAMC,gBAAgB,GAAGF,MAAM,CAAwBC,UAAU,EAAE;EAC/DE,IAAI,EAAE;IACFC,IAAI,EAAE;EACV;AACJ,CAAC,CAAC;AAEF,SAASF,gBAAgB","ignoreList":[]}

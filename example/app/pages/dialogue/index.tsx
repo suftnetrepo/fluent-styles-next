@@ -6,8 +6,7 @@ import {
   StyledScrollView,
   StyledText,
   StyledButton,
-  StyledCard,
-  useDialogue
+  useDialogue,
 } from "fluent-styles";
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────

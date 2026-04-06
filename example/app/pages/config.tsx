@@ -35,6 +35,8 @@ import StyledDatePickerDemo from "./datePicker";
 import { SkeletonDemo } from "./skeleton";
 import { EmptyStateDemo } from "./emptyState";
 import { SearchBarDemo } from "./searchBar";
+import { StyledFormDemo } from "./form";
+import { StyledHeaderDemo } from "./header";
 
 const Page = ({
   title,
@@ -49,14 +51,18 @@ const Page = ({
       <StyledHeader
         borderRadius={32}
         marginHorizontal={16}
-        paddingHorizontal={32}
+        paddingHorizontal={16}
         title={title}
         titleAlignment="left"
+        titleProps={{
+          paddingLeft : 8,
+          fontSize : theme.fontSize.normal
+        }}
         showBackArrow={true}
+        onBackPress={() => navigation.goBack()}
         backArrowProps={{
           color: theme.colors.gray[500],
           size: 32,
-          onPress: () => navigation.goBack(),
         }}
         backgroundColor={theme.colors.gray[1]}
       />
@@ -80,7 +86,7 @@ export type _path =
   | "dropdown"
   | "image"
   | "badge"
-  | "checkBox" 
+  | "checkBox"
   | "dialogue"
   | "toast"
   | "notification"
@@ -95,8 +101,10 @@ export type _path =
   | "datePicker"
   | "skeleton"
   | "emptyState"
-  | 'searchBar'
-  | "bottomSheet";
+  | "searchBar"
+  | "bottomSheet"
+  | "form"
+  | "header";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -186,29 +194,30 @@ export const config: { path: _path; Page: any }[] = [
       </Page>
     ),
   },
-  { 
+  {
     path: "badge",
     Page: () => (
       <Page title="Badge">
         <BadgeUsage />
       </Page>
-    ),  
+    ),
   },
-  { 
+  {
     path: "checkBox",
     Page: () => (
       <Page title="CheckBox">
         <CheckBoxUsage />
       </Page>
-    ),  
+    ),
   },
   {
     path: "dialogue",
     Page: () => (
       <Page title="Dialogue">
         <DialogueUsage />
-      </Page>   
-    )},
+      </Page>
+    ),
+  },
   {
     path: "toast",
     Page: () => (
@@ -239,7 +248,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Circular Progress">
         <CircularProgressUsage />
       </Page>
-    )
+    ),
   },
   {
     path: "barChart",
@@ -247,7 +256,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Bar Chart">
         <StyledBarDemo />
       </Page>
-    )
+    ),
   },
   {
     path: "chips",
@@ -255,7 +264,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Chips">
         <StyledChipDemo />
       </Page>
-    )
+    ),
   },
   {
     path: "timeline",
@@ -263,7 +272,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Timeline">
         <DailyPlanScreen />
       </Page>
-    )
+    ),
   },
   {
     path: "radio",
@@ -271,7 +280,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Radio">
         <StyledRadioDemo />
       </Page>
-    )
+    ),
   },
   {
     path: "progressBar",
@@ -279,7 +288,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Progress Bar">
         <StyledProgressBarDemo />
       </Page>
-    )
+    ),
   },
   {
     path: "slider",
@@ -287,15 +296,15 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Slider">
         <StyledSliderDemo />
       </Page>
-     )
+    ),
   },
   {
-      path: "datePicker",
-      Page: () => (
-        <Page title="Date Picker">
-          <StyledDatePickerDemo />
-        </Page>
-       )
+    path: "datePicker",
+    Page: () => (
+      <Page title="Date Picker">
+        <StyledDatePickerDemo />
+      </Page>
+    ),
   },
   {
     path: "skeleton",
@@ -303,7 +312,7 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Skeleton">
         <SkeletonDemo />
       </Page>
-     )
+    ),
   },
   {
     path: "emptyState",
@@ -311,14 +320,30 @@ export const config: { path: _path; Page: any }[] = [
       <Page title="Empty State">
         <EmptyStateDemo />
       </Page>
-     )  
+    ),
   },
-  {path: "searchBar",
-   Page: () => (
-    <Page title="Search Bar">
-      <SearchBarDemo />
-    </Page>
-   ) 
-    }
-    
+  {
+    path: "searchBar",
+    Page: () => (
+      <Page title="Search Bar">
+        <SearchBarDemo />
+      </Page>
+    ),
+  },
+  {
+    path: "form",
+    Page: () => (
+      <Page title="Form">
+        <StyledFormDemo />
+      </Page>
+    ),
+  },
+  {
+    path: "header",
+    Page: () => (
+      <Page title="Header">
+        <StyledHeaderDemo />
+      </Page>
+    ),
+  }
 ];

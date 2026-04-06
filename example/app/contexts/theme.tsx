@@ -18,7 +18,7 @@ export const useTheme = () => useContext(ThemeContext)
 export const ThemeProvider: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
-  // TODO 缓存数据
+
   const [theme, setTheme] = useState<LocalTheme>('system')
   const value = useMemo(
     () => ({

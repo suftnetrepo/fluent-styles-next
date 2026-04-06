@@ -24,7 +24,7 @@ import type {
 
 import { styled }               from '../utiles/styled'
 import { theme }                from '../utiles/theme'
-import { viewStyleVariants, viewStyleStringVariants }    from '../utiles/viewStyleVariants'
+import { viewStyleVariants } from '../utiles/viewStyleVariants'
 import { StyledText }           from '../text'
 import type { StyledTextProps } from '../text'
 
@@ -621,6 +621,7 @@ export const StyledTextInput = forwardRef<React.ComponentRef<typeof TextInputBas
 )
 
 StyledTextInput.displayName = 'StyledTextInput'
+export { StyledTextInput as StyledInput }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 

@@ -4,13 +4,11 @@ import React, {
   useMemo,
   useRef,
   useState,
-  memo,
 } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 import {
   Animated,
   Easing,
-  StyleSheet,
   Text,
   TouchableOpacity,
   useColorScheme,
@@ -24,7 +22,6 @@ import {
   type CollapseColors,
   type CollapseProps,
   type CollapseVariant,
-  type CollapseSize,
 } from './interface'
 import {
   S,

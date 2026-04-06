@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { portal }                           from '../portal/PortalInstance'
-import { Toast, ToastVariant, ToastProps }  from '../toast'
+import { Toast, ToastProps }  from '../toast'
 import { Notification, NotificationProps }  from '../notification'
 import { Loader, LoaderProps }              from '../loading/loader'
 import { Dialogue, DialogueAction, DialogueProps } from '../dialog/dialogue'

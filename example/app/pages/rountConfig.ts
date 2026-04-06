@@ -89,6 +89,8 @@ const routeConfig: {
         { title: "Skeleton", name: "skeleton" },
         { title: "Empty State", name: "emptyState" },
         { title: "Search Bar", name: "searchBar" },
+        { title: "Form", name: "form" },
+        { title: "Header", name: "header" },
       ],
     },
   ];

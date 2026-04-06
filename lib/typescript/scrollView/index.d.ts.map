@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/scrollView/index.ts"],"names":[],"mappings":";AAEA,OAAO,EAAc,eAAe,EAAE,MAAM,cAAc,CAAA;AAC1D,OAAO,EAAE,cAAc,EAAa,MAAM,0BAA0B,CAAC;AAErE,KAAK,qBAAqB,GAAG,eAAe,GAAG,cAAc,CAAC;AAE9D,QAAA,MAAM,gBAAgB,kHAIpB,CAAC;AAEH,OAAO,EAAE,gBAAgB,EAAE,CAAC;AAC5B,YAAY,EAAE,qBAAqB,EAAE,CAAC"}

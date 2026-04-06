@@ -107,10 +107,9 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
     justifyContent:   'center',
     flexDirection:    'row',
     gap:              6,
-    borderRadius:     999,      // pill by default
+    borderRadius:     32,      // pill by default
     paddingHorizontal: 20,
     paddingVertical:   10,
-    flex:             1,
     borderWidth:     0,
   } as ViewStyle,
 
@@ -218,7 +217,6 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
       true: {
         paddingHorizontal: 10,
         paddingVertical:   4,
-        borderWidth: 0,
       } as ViewStyle,
     },
 
@@ -226,7 +224,6 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
       true: {
         paddingHorizontal: 14,
         paddingVertical:   6,
-        borderWidth: 0,
       } as ViewStyle,
     },
 
@@ -241,7 +238,6 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
       true: {
         paddingHorizontal: 28,
         paddingVertical:   14,
-        borderWidth: 0,
       } as ViewStyle,
     },
 
@@ -249,7 +245,6 @@ const ButtonBase = styled<ButtonProps>(TouchableOpacity, {
       true: {
         paddingHorizontal: 36,
         paddingVertical:   18,
-        borderWidth: 0,
       } as ViewStyle,
     },
 

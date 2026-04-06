@@ -7,7 +7,8 @@ import {
   StyledText,
   StyledButton,
   StyledCard,
-  useToast
+  useToast,
+  StyledSpacer
 } from "fluent-styles";
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────
@@ -79,6 +80,8 @@ export default function ToastUsage() {
               Status: {status}
             </StyledText>
           </StyledCard>
+
+          <StyledSpacer marginVertical={8} />
 
           <Section label="Shortcut methods">
             <Stack vertical gap={12}>

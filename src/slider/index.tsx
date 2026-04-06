@@ -20,15 +20,13 @@
 import React, { useCallback, useRef, useState, useEffect } from "react";
 import {
   View,
-  Text,
   PanResponder,
   Animated,
   Easing,
-  Dimensions,
   PanResponderGestureState,
 } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Rect, Path } from "react-native-svg";
-import { Stack, StyledText, theme, palettes } from "fluent-styles";
+import { Stack, StyledText, theme } from "fluent-styles";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
