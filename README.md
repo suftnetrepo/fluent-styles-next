@@ -45,6 +45,7 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledProgressBar](#styledprogressbar)
   - [StyledSlider](#styledslider)
   - [StyledDatePicker](#styleddatepicker)
+  - [StyledTable](#styledtable)
 - [Hooks](#hooks)
   - [useToast](#usetoast)
   - [useNotification](#usenotification)
@@ -2980,6 +2981,220 @@ const errors = {
 ```
 
 > **Note:** `StyledForm.Select` wraps `StyledDropdown` and therefore uses the `data` prop (not `options`). `StyledForm.Radio` wraps `StyledRadioGroup` and uses the `options` prop.
+
+---
+
+### StyledTable
+
+A responsive data table with client-side and server-side pagination, sortable columns, row selection, striped / dark variants, and an automatic card layout on narrow screens.
+
+```tsx
+import { StyledTable, type TableColumn, usePaginatedQuery } from 'fluent-styles'
+```
+
+#### `TableColumn<T>` definition
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `string` | Must match a key of the row data object |
+| `title` | `string` | Column header label |
+| `width` | `number` | Fixed column width in px. Omit to stretch (flex: 1) |
+| `align` | `left \| center \| right` | Text alignment (default `left`) |
+| `sortable` | `boolean` | Allow tapping the header to sort |
+| `render` | `(value, row, index) => ReactNode` | Custom cell renderer |
+
+#### `StyledTable` props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `columns` | `TableColumn<T>[]` | — | Column definitions |
+| `data` | `T[]` | — | Row data (each row must have a unique `id` field) |
+| `selectable` | `boolean` | `false` | Show checkboxes for row selection |
+| `selectedIds` | `(string \| number)[]` | — | Controlled selection |
+| `onSelectionChange` | `(ids) => void` | — | Selection change callback |
+| `sortKey` | `string \| null` | — | Controlled sort column |
+| `sortDirection` | `asc \| desc \| null` | — | Controlled sort direction |
+| `onSort` | `(key, direction) => void` | — | Sort change callback |
+| `pagination` | `boolean` | `false` | Enable internal (client-side) pagination |
+| `pageSize` | `number` | `10` | Rows per page (internal pagination) |
+| `externalPagination` | `boolean` | `false` | Render `data` as-is — parent manages pages |
+| `currentPage` | `number` | — | 0-based current page (controlled) |
+| `totalPages` | `number` | — | Total pages from the datasource |
+| `totalCount` | `number` | — | Total record count |
+| `onPageChange` | `(page: number) => void` | — | Page change callback |
+| `loading` | `boolean` | `false` | Show loading skeleton over rows |
+| `virtualized` | `boolean` | auto | Use `FlatList` renderer (auto-enabled for >50 rows) |
+| `striped` | `boolean` | `false` | Alternating row background |
+| `showDivider` | `boolean` | `false` | Horizontal divider between rows |
+| `scrollable` | `boolean` | `false` | Horizontal scroll when content overflows |
+| `emptyText` | `string` | — | Text shown when `data` is empty |
+| `emptyNode` | `ReactNode` | — | Custom empty state node |
+| `colors` | `Partial<TableColors>` | — | Color token overrides |
+| `borderRadius` | `number` | `16` | Outer container border radius |
+| `bordered` | `boolean` | `true` | Show outer card border |
+| `cardBreakpoint` | `number` | `768` | Width threshold below which rows switch to card layout |
+| `forceTable` | `boolean` | `false` | Always render table rows regardless of screen width |
+| `forceCards` | `boolean` | `false` | Always render card layout regardless of screen width |
+| `cardRender` | `(row, index, selected, onToggle?) => ReactNode` | — | Custom card renderer for narrow screens |
+| `onRowPress` | `(row, index) => void` | — | Row tap callback |
+
+#### Usage
+
+```tsx
+import { StyledTable, type TableColumn, theme, palettes } from 'fluent-styles'
+
+// ── 1. Minimal — static data, no pagination ────────────────────────────────
+interface UserRow { id: number; name: string; email: string; role: string }
+
+const USER_COLS: TableColumn<UserRow>[] = [
+  { key: 'name',  title: 'Name',  render: (v) => <StyledText fontWeight="700">{v}</StyledText> },
+  { key: 'email', title: 'Email', render: (v) => <StyledText color={theme.colors.gray[500]}>{v}</StyledText> },
+  { key: 'role',  title: 'Role',  width: 90, align: 'center' },
+]
+
+<StyledTable columns={USER_COLS} data={users} showDivider />
+
+// ── 2. Sortable + selectable ───────────────────────────────────────────────
+const [sel, setSel] = useState<(string | number)[]>([])
+
+const PRODUCT_COLS: TableColumn<ProductRow>[] = [
+  { key: 'name',  title: 'Product' },
+  { key: 'price', title: 'Price',  width: 80, align: 'right', sortable: true,
+    render: (v) => <StyledText fontWeight="700">${v}</StyledText> },
+  { key: 'stock', title: 'Stock',  width: 80, align: 'center', sortable: true },
+  { key: 'status', title: 'Status', width: 110, align: 'center',
+    render: (v) => <StatusBadge label={v} /> },
+]
+
+<StyledTable
+  columns={PRODUCT_COLS}
+  data={products}
+  selectable
+  selectedIds={sel}
+  onSelectionChange={setSel}
+  showDivider
+  pagination
+  pageSize={8}
+/>
+
+// ── 3. Client-side pagination ──────────────────────────────────────────────
+<StyledTable
+  columns={ORDER_COLS}
+  data={orders}          // pass the full dataset
+  pagination             // StyledTable slices it internally
+  pageSize={10}
+  showDivider
+  bordered
+/>
+
+// ── 4. External pagination (REST API) ─────────────────────────────────────
+// Use the `usePaginatedQuery` hook to manage page state, sorting, search,
+// and loading — then spread `table.tableProps` onto StyledTable.
+const table = usePaginatedQuery<Order>({
+  pageSize: 10,
+  fetcher: async ({ page, pageSize, sortKey, sortDir, search, filters }) => {
+    const res = await api.get('/orders', { params: { page, pageSize, sortKey, sortDir, search, ...filters } })
+    return { data: res.data.items, totalCount: res.data.total }
+  },
+  initialSortKey: 'date',
+  initialSortDir: 'desc',
+})
+
+<StyledTable
+  columns={ORDER_COLS}
+  {...table.tableProps}   // wires data, loading, pagination state, sort, onSort, onPageChange
+  showDivider
+  bordered
+/>
+
+// ── 5. Realm / SQLite (synchronous) ───────────────────────────────────────
+const table = usePaginatedQuery<Employee>({
+  pageSize: 15,
+  realmQuery: ({ page, pageSize, sortKey, sortDir, search }) => {
+    const results = realm.objects('Employee').sorted(sortKey ?? 'name', sortDir === 'desc')
+    return { data: Array.from(results).slice(page * pageSize, (page + 1) * pageSize), totalCount: results.length }
+  },
+})
+
+<StyledTable columns={EMP_COLS} {...table.tableProps} showDivider bordered />
+
+// ── 6. Custom card layout (narrow screens) ────────────────────────────────
+// `forceCards` renders the custom card renderer regardless of screen width.
+// `forceTable` always renders the table.
+// Default: auto-switches at the `cardBreakpoint` (768 px).
+<StyledTable
+  columns={PRODUCT_COLS}
+  data={products}
+  pagination
+  pageSize={6}
+  forceCards
+  bordered={false}
+  cardRender={(row, index, isSelected, onToggle) => (
+    <ProductCard row={row} isSelected={isSelected} onToggle={onToggle} />
+  )}
+/>
+
+// ── 7. Striped + dark theme ────────────────────────────────────────────────
+// Striped
+<StyledTable columns={USER_COLS} data={users} striped showDivider={false} />
+
+// Dark theme via color overrides
+<StyledTable
+  columns={USER_COLS}
+  data={users}
+  showDivider
+  colors={{
+    background:     theme.colors.gray[900],
+    headerBg:       theme.colors.gray[800],
+    headerText:     theme.colors.gray[400],
+    rowBg:          theme.colors.gray[900],
+    border:         theme.colors.gray[700],
+    divider:        theme.colors.gray[700],
+    text:           theme.colors.gray[100],
+    sortActive:     theme.colors.gray[100],
+    sortInactive:   theme.colors.gray[600],
+    selectedBg:     palettes.indigo[900],
+    selectedBorder: palettes.indigo[500],
+  }}
+/>
+
+// ── 8. Custom empty state ─────────────────────────────────────────────────
+<StyledTable
+  columns={USER_COLS}
+  data={[]}
+  emptyNode={
+    <Stack alignItems="center" gap={8}>
+      <StyledText fontSize={32}>🗂️</StyledText>
+      <StyledText fontSize={15} fontWeight="700">No users yet</StyledText>
+      <StyledText fontSize={13} color={theme.colors.gray[400]}>Invite someone to get started.</StyledText>
+    </Stack>
+  }
+/>
+```
+
+#### `usePaginatedQuery` hook
+
+Manages page, sort, search, filters, loading, and error for external data sources. Returns `table.tableProps` which can be spread directly onto `StyledTable`.
+
+```tsx
+const table = usePaginatedQuery<T>(options)
+
+// Spread onto StyledTable:
+<StyledTable columns={COLS} {...table.tableProps} />
+```
+
+| Option | Type | Description |
+|---|---|---|
+| `pageSize` | `number` | Rows per page |
+| `fetcher` | `async (params) => { data, totalCount }` | Async REST / GraphQL fetcher |
+| `realmQuery` | `(params) => { data, totalCount }` | Synchronous Realm / SQLite query |
+| `initialSortKey` | `string` | Initial sort column |
+| `initialSortDir` | `asc \| desc \| null` | Initial sort direction |
+| `initialSearch` | `string` | Initial search string |
+| `initialFilters` | `Record<string, any>` | Initial filter values |
+| `searchDebounce` | `number` | Search debounce ms (default 300) |
+
+`table` return value exposes: `data`, `loading`, `error`, `totalCount`, `totalPages`, `page`, `setPage`, `sortKey`, `sortDir`, `setSort`, `search`, `setSearch`, `filters`, `setFilters`, `refresh`, and `tableProps` (ready to spread).
 
 ---
 
