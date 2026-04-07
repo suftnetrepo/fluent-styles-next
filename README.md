@@ -20,7 +20,8 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledCard](#styledcard)
   - [StyledBadge / BadgeWithIcon](#styledbadge--badgewithicon)
   - [StyledImage / StyledImageBackground](#styledimage--styledimagebackground)
-  - [StyledHeader / FullHeader](#styledheader--fullheader)
+  - [StyledHeader](#styledheader)
+  - [StyledForm](#styledform)
   - [StyledDropdown / StyledMultiSelectDropdown](#styleddropdown--styledmultiselectdropdown)
   - [Popup](#popup)
   - [Drawer](#drawer)
@@ -586,43 +587,129 @@ import { StyledImage, StyledImageBackground } from 'fluent-styles'
 
 ---
 
-### StyledHeader / FullHeader
+### StyledHeader
 
-A pre-built navigation header with optional status bar management.
+A composable navigation header with status bar management, slot-based layout, and a `StyledHeader.Full` escape hatch for fully custom content.
 
 ```tsx
-import { StyledHeader, FullHeader } from 'fluent-styles'
+import { StyledHeader } from 'fluent-styles'
 
+// ── Basic title alignments ───────────────────────────────────────────────────
+<StyledHeader title="Left aligned"   titleAlignment="left"   showStatusBar={false} />
+<StyledHeader title="Center aligned" titleAlignment="center" showStatusBar={false} />
+<StyledHeader title="Right aligned"  titleAlignment="right"  showStatusBar={false} />
+
+// ── Back arrow ───────────────────────────────────────────────────────────────
 <StyledHeader
-  title="Settings"
+  title="Go back"
+  showBackArrow
+  onBackPress={() => navigation.goBack()}
+/>
+
+// Custom back arrow colour + size
+<StyledHeader
+  title="Profile"
+  titleAlignment="center"
+  showBackArrow
+  backArrowProps={{ size: 20, color: '#6366f1' }}
+  onBackPress={() => navigation.goBack()}
+/>
+
+// ── Right / left icons ───────────────────────────────────────────────────────
+<StyledHeader
+  title="Notifications"
   titleAlignment="center"
   showBackArrow
   onBackPress={() => navigation.goBack()}
   rightIcon={<SettingsIcon />}
 />
 
-// Custom back button styling
+// Multiple right icons
 <StyledHeader
-  title="Profile"
+  title="Photos"
+  titleAlignment="center"
   showBackArrow
-  backArrowProps={{ size: 20, color: '#6366f1', onPress: () => navigation.goBack() }}
+  onBackPress={() => navigation.goBack()}
+  rightIcon={
+    <Stack horizontal gap={8}>
+      <SearchIconBtn />
+      <MoreIconBtn />
+    </Stack>
+  }
 />
 
-// Full header — manages status bar spacer automatically
-<FullHeader statusBarProps={{ barStyle: 'dark-content' }}>
-  <MyCustomHeaderContent />
-</FullHeader>
+// Logo + action on the right (no back arrow)
+<StyledHeader
+  titleAlignment="left"
+  leftIcon={
+    <Stack horizontal gap={6} alignItems="center">
+      <BrandLogo />
+      <StyledText fontSize={16} fontWeight="800">fluent</StyledText>
+    </Stack>
+  }
+  rightIcon={<CartIconBtn />}
+/>
+
+// ── Themed background ────────────────────────────────────────────────────────
+<StyledHeader
+  title="Dark header"
+  titleAlignment="center"
+  showBackArrow
+  onBackPress={() => navigation.goBack()}
+  backgroundColor={theme.colors.gray[900]}
+  titleProps={{ color: '#fff', fontWeight: '700' }}
+  backArrowProps={{ color: '#fff' }}
+/>
+
+// ── StyledHeader.Full — fully custom children ────────────────────────────────
+// Renders children directly inside the container; skips the built-in layout slots.
+// Useful for search bars, tab strips, chat headers, etc.
+<StyledHeader showStatusBar={false} backgroundColor={palettes.white}>
+  <StyledHeader.Full>
+    <Stack flex={1} horizontal alignItems="center" paddingHorizontal={12} gap={10}>
+      <BackBtn />
+      <SearchBar />
+      <CancelBtn />
+    </Stack>
+  </StyledHeader.Full>
+</StyledHeader>
+
+// Chat-style header with avatar + call buttons
+<StyledHeader showStatusBar={false} backgroundColor={palettes.white}>
+  <StyledHeader.Full>
+    <Stack flex={1} horizontal alignItems="center" paddingHorizontal={12} gap={10}>
+      <BackBtn />
+      <Avatar uri={avatarUri} size={36} />
+      <Stack flex={1} gap={1}>
+        <StyledText fontSize={14} fontWeight="700">Priya Kapoor</StyledText>
+        <StyledText fontSize={11} color={palettes.teal[500]}>Active now</StyledText>
+      </Stack>
+      <CallBtn />
+      <VideoBtn />
+    </Stack>
+  </StyledHeader.Full>
+</StyledHeader>
 ```
 
-| Prop | Type | Description |
-|---|---|---|
-| `title` | `string` | Header title |
-| `titleAlignment` | `left \| center \| right` | Title alignment |
-| `showBackArrow` | `boolean` | Renders a back arrow |
-| `onBackPress` | `() => void` | Back arrow handler |
-| `leftIcon / rightIcon` | `ReactNode` | Custom icon slots |
-| `backArrowProps` | `BackArrowProps` | Size, colour, custom press handler |
-| `showStatusBar` | `boolean` | Include status bar spacer |
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | — | Header title |
+| `titleAlignment` | `left \| center \| right` | `left` | Title position |
+| `titleProps` | `StyledTextProps` | — | Font/colour overrides for the title |
+| `showBackArrow` | `boolean` | `false` | Renders a chevron back arrow |
+| `onBackPress` | `() => void` | — | Tapped when the back arrow is pressed |
+| `backArrowProps` | `BackArrowProps` | — | `size`, `color`, `strokeWidth` overrides |
+| `leftIcon` | `ReactNode` | — | Custom left-slot content (replaces back arrow) |
+| `rightIcon` | `ReactNode` | — | Custom right-slot content |
+| `showStatusBar` | `boolean` | `true` | Include status bar spacer above the header |
+| `statusBarProps` | `StatusBarProps` | — | Forwarded to the internal `StatusBar` component |
+| `skipStatusBarOnAndroid` | `boolean` | `true` | Skip spacer on Android |
+| `skipStatusBarOnIOS` | `boolean` | `true` | Skip spacer on iOS |
+| `children` | `ReactNode` | — | When present (via `StyledHeader.Full`), replaces built-in slot layout |
+
+All flat `ViewStyle` props (`backgroundColor`, `paddingHorizontal`, `borderRadius`, …) are forwarded to the container.
 
 ---
 
@@ -2674,6 +2761,225 @@ const DURATION = 243
 // ── 9. Disabled state ─────────────────────────────────────────────────────────
 <StyledSlider value={55} disabled showMinMax />
 ```
+
+---
+
+### StyledForm
+
+A composable form wrapper that propagates `disabled` / `loading` state to all sub-components via React context, with optional keyboard avoidance and scroll wrapping.
+
+```tsx
+import { StyledForm } from 'fluent-styles'
+```
+
+#### Sub-components
+
+| Component | Wraps | Description |
+|---|---|---|
+| `StyledForm.Row` | `Stack horizontal` | Side-by-side inputs |
+| `StyledForm.Section` | — | Grouped block with title, subtitle, and optional divider |
+| `StyledForm.Actions` | `Stack` | Slot for submit/cancel buttons |
+| `StyledForm.Input` | `StyledTextInput` | Text input that inherits form `disabled` / `loading` |
+| `StyledForm.Checkbox` | `StyledCheckBox` | Checkbox that inherits form `disabled` |
+| `StyledForm.Switch` | `Switch` | Toggle that inherits form `disabled` / `loading` |
+| `StyledForm.Select` | `StyledDropdown` | Dropdown picker that inherits form `disabled` |
+| `StyledForm.Radio` | `StyledRadioGroup` | Radio group |
+| `StyledForm.DatePicker` | `StyledDatePicker` | Date/time picker that inherits form `disabled` |
+| `StyledForm.Slider` | `StyledSlider` | Slider that inherits form `disabled` |
+
+#### `StyledForm` root props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `disabled` | `boolean` | `false` | Disables all sub-components via context |
+| `loading` | `boolean` | `false` | Sets loading state on compatible sub-components |
+| `gap` | `number` | `16` | Vertical gap between form fields |
+| `avoidKeyboard` | `boolean` | `true` | Wraps content in `KeyboardAvoidingView` |
+| `scrollable` | `boolean` | `false` | Wraps content in a `ScrollView` |
+| `scrollPadding` | `number` | `40` | Bottom padding inside the scroll view |
+
+#### Usage
+
+```tsx
+import { StyledForm, StyledButton, StyledText, StyledDivider, Stack, theme, palettes } from 'fluent-styles'
+
+// ── 1. Sign-up form — inputs, checkbox, inline validation ────────────────────
+const [email, setEmail]       = useState('')
+const [password, setPassword] = useState('')
+const [agreed, setAgreed]     = useState(false)
+const [loading, setLoading]   = useState(false)
+
+const errors = {
+  email:    email.length > 0 && !email.includes('@') ? 'Enter a valid email' : undefined,
+  password: password.length > 0 && password.length < 8 ? 'At least 8 characters' : undefined,
+}
+
+<StyledForm gap={16} avoidKeyboard={false} disabled={loading}>
+  <StyledForm.Input
+    label="Email address"
+    required
+    variant="outline"
+    placeholder="you@example.com"
+    keyboardType="email-address"
+    autoCapitalize="none"
+    value={email}
+    onChangeText={setEmail}
+    error={!!errors.email}
+    errorMessage={errors.email}
+  />
+
+  <StyledForm.Input
+    label="Password"
+    required
+    variant="outline"
+    placeholder="8+ characters"
+    secureTextEntry
+    value={password}
+    onChangeText={setPassword}
+    error={!!errors.password}
+    errorMessage={errors.password}
+  />
+
+  <StyledDivider borderBottomColor={theme.colors.gray[100]} />
+
+  <Stack horizontal alignItems="center" gap={12}>
+    <StyledForm.Checkbox checked={agreed} onCheck={setAgreed} />
+    <StyledText fontSize={13}>I agree to the Terms of Service</StyledText>
+  </Stack>
+
+  <StyledForm.Actions>
+    <StyledButton block loading={loading} onPress={handleSubmit}
+      backgroundColor={palettes.indigo[600]}>
+      <StyledText color="#fff" fontSize={15} fontWeight="700">
+        {loading ? 'Creating account…' : 'Create account'}
+      </StyledText>
+    </StyledButton>
+  </StyledForm.Actions>
+</StyledForm>
+
+// ── 2. Profile form — Row, Section, Select, DatePicker, Switch ───────────────
+<StyledForm gap={20} avoidKeyboard={false}>
+  <StyledForm.Section title="Personal details" subtitle="How you appear to others">
+    <StyledForm.Row>
+      <StyledForm.Input label="First name" flex={1} variant="outline"
+        value={firstName} onChangeText={setFirstName} />
+      <StyledForm.Input label="Last name"  flex={1} variant="outline"
+        value={lastName}  onChangeText={setLastName}  />
+    </StyledForm.Row>
+
+    <StyledForm.Input
+      label="Bio" variant="outline" multiline showCounter maxLength={160}
+      value={bio} onChangeText={setBio} helperText="Shown on your public profile"
+    />
+
+    {/* StyledForm.Select uses the `data` prop (same as StyledDropdown) */}
+    <StyledForm.Select
+      label="Country"
+      variant="outline"
+      data={COUNTRY_OPTIONS}
+      value={country}
+      onChange={(item) => setCountry(item.value)}
+      placeholder="Select country"
+    />
+
+    <StyledForm.DatePicker
+      label="Date of birth" mode="date" variant="input"
+      value={dob} onChange={setDob} onConfirm={setDob}
+    />
+  </StyledForm.Section>
+
+  <StyledForm.Section title="Notifications">
+    <Stack horizontal alignItems="center" justifyContent="space-between">
+      <StyledText fontSize={14} fontWeight="600">Newsletter</StyledText>
+      <StyledForm.Switch value={newsletter} onChange={setNewsletter}
+        activeColor={palettes.indigo[600]} />
+    </Stack>
+  </StyledForm.Section>
+
+  <StyledForm.Actions horizontal gap={10}>
+    <StyledButton outline compact flex={1} onPress={discard}>
+      <StyledText fontSize={14} fontWeight="600">Discard</StyledText>
+    </StyledButton>
+    <StyledButton primary compact flex={1}
+      backgroundColor={palettes.indigo[600]} onPress={save}>
+      <StyledText fontSize={14} fontWeight="700" color="#fff">Save</StyledText>
+    </StyledButton>
+  </StyledForm.Actions>
+</StyledForm>
+
+// ── 3. Subscription form — Radio, Slider, form-level disabled context ─────────
+// Setting `disabled` on <StyledForm> propagates down to every sub-component.
+<StyledForm gap={20} avoidKeyboard={false} disabled={locked}>
+  <StyledForm.Section title="Choose a plan">
+    <StyledForm.Radio
+      options={PLAN_OPTIONS}
+      value={plan}
+      onChange={setPlan}
+      variant="list"
+      colors={{ active: palettes.indigo[600] }}
+    />
+  </StyledForm.Section>
+
+  <StyledForm.Section title="Team size">
+    <StyledForm.Slider
+      value={seats}
+      min={2} max={50} step={1}
+      onValueChange={setSeats}
+      formatLabel={(v) => `${v} seats`}
+      colors={{ fill: palettes.indigo[600] }}
+    />
+  </StyledForm.Section>
+
+  <StyledForm.Actions>
+    <StyledButton primary block onPress={() => setLocked((v) => !v)}
+      backgroundColor={locked ? theme.colors.gray[300] : palettes.indigo[600]}>
+      <StyledText fontSize={15} fontWeight="700" color="#fff">
+        {locked ? '🔒 Disabled (tap to re-enable)' : 'Subscribe'}
+      </StyledText>
+    </StyledButton>
+  </StyledForm.Actions>
+</StyledForm>
+
+// ── 4. Filter panel — compact, no sections ───────────────────────────────────
+<StyledForm gap={14} avoidKeyboard={false}>
+  <StyledForm.Input
+    variant="filled" placeholder="Search products…"
+    value={query} onChangeText={setQuery} clearable
+  />
+
+  <StyledForm.Select
+    label="Region" variant="outline" size="sm"
+    data={COUNTRY_OPTIONS} value={country}
+    onChange={(item) => setCountry(item.value)}
+    placeholder="All regions"
+  />
+
+  <StyledForm.Slider
+    variant="range"
+    value={minPrice} valueHigh={maxPrice}
+    min={0} max={1000} step={10}
+    onRangeChange={(lo, hi) => { setMinPrice(lo); setMaxPrice(hi) }}
+    formatLabel={(v) => `$${v}`}
+  />
+
+  <Stack horizontal alignItems="center" justifyContent="space-between">
+    <StyledText fontSize={14} fontWeight="600">In stock only</StyledText>
+    <StyledForm.Switch value={inStock} onChange={setInStock} size="sm" />
+  </Stack>
+
+  <StyledForm.Actions horizontal gap={10}>
+    <StyledButton outline compact flex={1} onPress={resetFilters}>
+      <StyledText fontSize={13} fontWeight="600">Reset</StyledText>
+    </StyledButton>
+    <StyledButton primary compact flex={2}
+      backgroundColor={theme.colors.gray[900]}>
+      <StyledText fontSize={13} fontWeight="700" color="#fff">Apply filters</StyledText>
+    </StyledButton>
+  </StyledForm.Actions>
+</StyledForm>
+```
+
+> **Note:** `StyledForm.Select` wraps `StyledDropdown` and therefore uses the `data` prop (not `options`). `StyledForm.Radio` wraps `StyledRadioGroup` and uses the `options` prop.
 
 ---
 

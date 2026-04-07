@@ -392,7 +392,7 @@ export const StyledHeaderDemo: React.FC = () => {
                     <StyledPressable>
                       <StyledText
                         fontSize={14}
-                        fontWeight="600"
+                        fontWeight={theme.fontWeight.semiBold }
                         color={palettes.indigo[600]}
                       >
                         Cancel

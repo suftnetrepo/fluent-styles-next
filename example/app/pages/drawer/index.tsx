@@ -336,6 +336,7 @@ export default function DrawerUsage() {
                         visible={is("h-right")}
                         onClose={hide}
                         title="Notifications"
+                        
                         headerRight={
                             <StyledPressable onPress={hide}>
                                 <StyledText fontSize={12} color={palettes.indigo[500]} fontWeight="700">
