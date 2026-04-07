@@ -58,4 +58,6 @@ export * from './spinner';
 export * from './input';
 export * from './form';
 export * from './shape/cycle';
+export * from './table';
+export * from './table/usepaginatedquery';
 //# sourceMappingURL=index.d.ts.map

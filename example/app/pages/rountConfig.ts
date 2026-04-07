@@ -91,6 +91,7 @@ const routeConfig: {
         { title: "Search Bar", name: "searchBar" },
         { title: "Form", name: "form" },
         { title: "Header", name: "header" },
+        { title: "Table", name: "table" },
       ],
     },
   ];

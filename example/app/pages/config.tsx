@@ -37,6 +37,7 @@ import { EmptyStateDemo } from "./emptyState";
 import { SearchBarDemo } from "./searchBar";
 import { StyledFormDemo } from "./form";
 import { StyledHeaderDemo } from "./header";
+import StyledTableDemo from "./table";
 
 const Page = ({
   title,
@@ -104,7 +105,8 @@ export type _path =
   | "searchBar"
   | "bottomSheet"
   | "form"
-  | "header";
+  | "header"
+  | "table";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -345,5 +347,13 @@ export const config: { path: _path; Page: any }[] = [
         <StyledHeaderDemo />
       </Page>
     ),
+  },
+  {
+    path: "table",
+    Page: () => (
+      <Page title="Table">
+         <StyledTableDemo />
+      </Page>
+    ),  
   }
 ];
