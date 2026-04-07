@@ -34,7 +34,7 @@ A comprehensive, TypeScript-first React Native UI library providing production-r
   - [StyledPressable](#styledpressable)
   - [StyledPage / StyledScrollView](#styledpage--styledscrollview)
   - [StyledSafeAreaView](#styledsafeareaview)
-  - [Spacer](#spacer)
+  - [Spacer / StyledSpacer](#spacer--styledspacer)
   - [StyledShape](#styledshape)
   - [Loader](#loader)
   - [StyledCircularProgress](#styledcircularprogress)
@@ -1215,17 +1215,41 @@ import { StyledPressable } from 'fluent-styles'
 
 ### StyledPage / StyledScrollView
 
-Base layout containers.
+`StyledPage` is the recommended **top-level layout wrapper for every screen**. It wraps `StyledSafeAreaView` so safe area insets are handled automatically, and accepts all `ViewStyle` props for quick background colour, padding, and flex tweaks. Pair it with `StyledScrollView` for scrollable screens or nest a `StyledHeader` + content directly inside for fixed-layout screens.
 
 ```tsx
-import { StyledPage, StyledScrollView } from 'fluent-styles'
+import { StyledPage, StyledScrollView, StyledHeader } from 'fluent-styles'
 
-<StyledPage flex={1} backgroundColor="#f8f8f8">
-  <StyledScrollView contentContainerStyle={{ padding: 16 }}>
-    <MyContent />
-  </StyledScrollView>
+// ── Scrollable screen (most screens) ────────────────────────────────────────
+export default function SettingsScreen() {
+  return (
+    <StyledPage flex={1} backgroundColor="#f8f8f8">
+      <StyledHeader title="Settings" titleAlignment="left" showStatusBar={false} />
+      <StyledScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+        {/* screen content */}
+      </StyledScrollView>
+    </StyledPage>
+  )
+}
+
+// ── Fixed layout screen (e.g. chat, camera) ──────────────────────────────────
+export default function ChatScreen() {
+  return (
+    <StyledPage flex={1} backgroundColor="#fff">
+      <StyledHeader title="Priya Kapoor" showBackArrow onBackPress={() => navigation.goBack()} />
+      <MessageList style={{ flex: 1 }} />
+      <MessageComposer />
+    </StyledPage>
+  )
+}
+
+// ── Custom background / padding ──────────────────────────────────────────────
+<StyledPage flex={1} backgroundColor={theme.colors.gray[50]} paddingHorizontal={16}>
+  {/* content */}
 </StyledPage>
 ```
+
+Accepts all `SafeAreaViewProps` and flat `ViewStyle` props.
 
 ---
 
@@ -1243,16 +1267,30 @@ import { StyledSafeAreaView } from 'fluent-styles'
 
 ---
 
-### Spacer
+### Spacer / StyledSpacer
 
-Inserts fixed or flexible whitespace.
+Inserts fixed or flexible whitespace between elements.
 
 ```tsx
-import { Spacer } from 'fluent-styles'
+import { StyledSpacer } from 'fluent-styles'
 
-<Spacer height={16} />
-<Spacer flex={1} />  {/* fills remaining space */}
+// Fixed height gap
+<StyledSpacer height={16} />
+
+// Flexible — fills remaining space (like a CSS flex spacer)
+<StyledSpacer flex={1} />
+
+// Horizontal gap inside a row
+<Stack horizontal alignItems="center">
+  <Icon />
+  <StyledSpacer width={8} />
+  <StyledText>Label</StyledText>
+  <StyledSpacer flex={1} />
+  <ChevronIcon />
+</Stack>
 ```
+
+**Props:** `height`, `width`, `flex`, `margin`, `marginTop`, `marginBottom`, `marginHorizontal`, `marginVertical`, `backgroundColor`
 
 ---
 
