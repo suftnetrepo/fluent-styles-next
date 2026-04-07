@@ -75,5 +75,5 @@ export * from './input'
 export * from './form'
 export * from './shape/cycle'
 export * from './table'
-export * from './table/Usepaginatedquery'
+export * from './table/usepaginatedquery'
 
