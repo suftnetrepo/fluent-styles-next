@@ -32,7 +32,7 @@ type IconProps = {
 };
 type IconRenderer = (props: IconProps, svgProps: any) => React.ReactElement;
 export declare function createIcon(renderer: IconRenderer): {
-    ({ size, color, strokeWidth, ...props }: IconProps): React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+    ({ size, color, strokeWidth, ...props }: IconProps): React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
     displayName: string;
 };
 export {};

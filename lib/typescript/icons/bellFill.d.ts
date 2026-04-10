@@ -5,7 +5,7 @@ declare const BellFill: {
         size?: number | undefined;
         color?: string | undefined;
         strokeWidth?: number | undefined;
-    }): React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+    }): React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
     displayName: string;
 };
 export { BellFill };

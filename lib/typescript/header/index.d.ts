@@ -28,9 +28,7 @@ export interface HeaderProps extends ViewProps, ViewStyle {
 declare const Full: React.FC<{
     children?: React.ReactNode;
 }>;
-declare const HeaderComponent: React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<Omit<ViewProps & ViewStyle & React.RefAttributes<any>, "ref"> & {
-    ref?: ((instance: any) => void) | React.RefObject<any> | null | undefined;
-}>>;
+declare const HeaderComponent: React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<ViewProps & ViewStyle & React.RefAttributes<any>>>;
 interface HeaderComponent extends React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<View>> {
     Full: typeof Full;
 }

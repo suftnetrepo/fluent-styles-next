@@ -500,4 +500,4 @@ const S = StyleSheet.create({
 
 export const TabBar = memo(TabBarInner) as <T extends TabValue>(
   p: TabBarProps<T>,
-) => JSX.Element
+) => React.JSX.Element
