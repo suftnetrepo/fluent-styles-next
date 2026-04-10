@@ -28,12 +28,14 @@ yarn add fluent-styles
 ## Quick Start
 
 ```tsx
-import { GlobalPortalProvider } from 'fluent-styles';
+import { GlobalPortalProvider, PortalManager } from 'fluent-styles';
 
 export default function App() {
   return (
     <GlobalPortalProvider>
-      {/* your app */}
+      <PortalManager>
+        <YourNavigator />
+      </PortalManager>
     </GlobalPortalProvider>
   );
 }
