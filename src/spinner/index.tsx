@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   ActivityIndicatorProps,
@@ -94,22 +94,21 @@ const StyledActivityIndicator = styled<any>(ActivityIndicator, {
  * - Theme integration
  * - Accessibility support
  */
-const StyledSpinner = forwardRef<any, SpinnerProps>(
-  (
-    {
-      size = 'medium',
-      variant = 'primary',
-      color,
-      overlay = false,
-      overlayColor = 'rgba(0, 0, 0, 0.3)',
-      label,
-      labelColor,
-      labelSize = 14,
-      accessibilityLabel = 'Loading',
-      ...rest
-    },
-    ref
-  ) => {
+const StyledSpinner = (
+  {
+    size = 'medium',
+    variant = 'primary',
+    color,
+    overlay = false,
+    overlayColor = 'rgba(0, 0, 0, 0.3)',
+    label,
+    labelColor,
+    labelSize = 14,
+    accessibilityLabel = 'Loading',
+    ref,
+    ...rest
+  }: SpinnerProps & { ref?: React.Ref<any> }
+) => {
     // Determine size
     const finalSize = typeof size === 'number' ? size : sizeConfig[size];
 
@@ -178,8 +177,7 @@ const StyledSpinner = forwardRef<any, SpinnerProps>(
         </YStack>
       </YStack>
     );
-  }
-);
+};
 
 StyledSpinner.displayName = 'StyledSpinner';
 
@@ -198,22 +196,21 @@ interface SpinnerContainerProps extends Omit<SpinnerProps, 'ref' | 'overlay'> {
  *
  * Use for: Page loading, data fetching, async operations
  */
-const SpinnerContainer = forwardRef<any, SpinnerContainerProps>(
-  (
-    {
-      isVisible = true,
-      size = 'large',
-      variant = 'primary',
-      color,
-      backdropColor = 'rgba(0, 0, 0, 0.5)',
-      message,
-      labelColor,
-      labelSize = 14,
-      onBackdropPress,
-      ...rest
-    },
-    ref
-  ) => {
+const SpinnerContainer = (
+  {
+    isVisible = true,
+    size = 'large',
+    variant = 'primary',
+    color,
+    backdropColor = 'rgba(0, 0, 0, 0.5)',
+    message,
+    labelColor,
+    labelSize = 14,
+    onBackdropPress,
+    ref,
+    ...rest
+  }: SpinnerContainerProps & { ref?: React.Ref<any> }
+) => {
     if (!isVisible) return null;
 
     // Determine size
@@ -283,8 +280,7 @@ const SpinnerContainer = forwardRef<any, SpinnerContainerProps>(
         {spinnerContent}
       </StyledButton>
     );
-  }
-);
+};
 
 SpinnerContainer.displayName = 'SpinnerContainer';
 
@@ -302,22 +298,21 @@ interface InlineSpinnerProps extends Omit<SpinnerProps, 'overlay'> {
  *
  * Use for: Button loading states, inline operations, compact loading indicators
  */
-const InlineSpinner = forwardRef<any, InlineSpinnerProps>(
-  (
-    {
-      size = 'small',
-      variant = 'primary',
-      color,
-      text,
-      labelColor,
-      labelSize = 12,
-      direction = 'row',
-      gap = 8,
-      accessibilityLabel = 'Loading',
-      ...rest
-    },
-    ref
-  ) => {
+const InlineSpinner = (
+  {
+    size = 'small',
+    variant = 'primary',
+    color,
+    text,
+    labelColor,
+    labelSize = 12,
+    direction = 'row',
+    gap = 8,
+    accessibilityLabel = 'Loading',
+    ref,
+    ...rest
+  }: InlineSpinnerProps & { ref?: React.Ref<any> }
+) => {
     // Determine size
     const finalSize = typeof size === 'number' ? size : sizeConfig[size];
 
@@ -348,8 +343,7 @@ const InlineSpinner = forwardRef<any, InlineSpinnerProps>(
         )}
       </StackComponent>
     );
-  }
-);
+};
 
 InlineSpinner.displayName = 'InlineSpinner';
 

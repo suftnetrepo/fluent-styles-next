@@ -4,7 +4,6 @@ import Collapsible from "./collapsible";
 import {
   Stack,
   StyledPage,
-  StyledHeader,
   type StyledPageProps,
   theme,
 } from "fluent-styles";
@@ -38,6 +37,7 @@ import { SearchBarDemo } from "./searchBar";
 import { StyledFormDemo } from "./form";
 import { StyledHeaderDemo } from "./header";
 import StyledTableDemo from "./table";
+import PageDemo from "./page";
 
 const Page = ({
   title,
@@ -48,8 +48,8 @@ const Page = ({
 }) => {
   const navigation = useNavigation();
   return (
-    <StyledPage>
-      <StyledHeader
+    <StyledPage backgroundColor={theme.colors.gray[100]} statusBarStyle="dark-content" hideStatusBarOnIOS={false} showStatusBar={true} translucentStatusBar={false}>
+      <StyledPage.Header
         borderRadius={32}
         marginHorizontal={16}
         paddingHorizontal={16}
@@ -66,6 +66,7 @@ const Page = ({
           size: 32,
         }}
         backgroundColor={theme.colors.gray[1]}
+        marginBottom={8}
       />
       <Stack flex={1} vertical marginHorizontal={16}>
         {children}
@@ -106,7 +107,8 @@ export type _path =
   | "bottomSheet"
   | "form"
   | "header"
-  | "table";
+  | "table"
+  | "page";
 export const config: { path: _path; Page: any }[] = [
   {
     path: "cards",
@@ -355,5 +357,13 @@ export const config: { path: _path; Page: any }[] = [
          <StyledTableDemo />
       </Page>
     ),  
+  },
+  {
+    path: "page",
+    Page: () => (
+      <Page title="Page">
+         <PageDemo />
+      </Page>
+    ),
   }
 ];

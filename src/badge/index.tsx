@@ -1,7 +1,7 @@
 import { Text, TextProps, TextStyle } from "react-native";
 import { styled } from "../utiles/styled";
 import { theme } from "../utiles/theme";
-import { forwardRef, ReactNode, ElementRef } from "react";
+import React, { ReactNode } from "react";
 import { Stack } from "../stack";
 
 type TextVariants = {
@@ -68,10 +68,7 @@ interface BadgeWithIconProps extends StyledBadgeProps {
   iconRight?: ReactNode;
 }
 
-const BadgeWithIcon = forwardRef<
-  ElementRef<typeof StyledBadge>,
-  BadgeWithIconProps
->(({ title, iconLeft, iconRight, ...rest }, ref) => {
+const BadgeWithIcon = ({ title, iconLeft, iconRight, ref, ...rest }: BadgeWithIconProps & { ref?: React.Ref<any> }) => {
   const {
     color,
     fontSize,
@@ -112,7 +109,7 @@ const BadgeWithIcon = forwardRef<
       {iconRight && <>{iconRight}</>}
     </Stack>
   );
-});
+};
 
 interface BadgeIconProps extends StyledBadgeProps {
   char?: string;
@@ -124,12 +121,7 @@ interface BadgeIconProps extends StyledBadgeProps {
   size?: number;
 }
 
-const BadgeIcon = forwardRef<
-  ElementRef<typeof StyledBadge>,
-  BadgeIconProps
->(
-  (
-    {
+const BadgeIcon = ({
       icon,
       char,
       top = -6,
@@ -140,9 +132,8 @@ const BadgeIcon = forwardRef<
       bottom,
       left,
       size = 16,
-    },
-    ref
-  ) => {
+      ref,
+    }: BadgeIconProps & { ref?: React.Ref<any> }) => {
     return (
       <Stack
         flex={1}
@@ -172,8 +163,7 @@ const BadgeIcon = forwardRef<
         </Stack>
       </Stack>
     );
-  }
-);
+  };
 
 export { BadgeIcon };
 export type { BadgeIconProps };

@@ -92,6 +92,7 @@ const routeConfig: {
         { title: "Form", name: "form" },
         { title: "Header", name: "header" },
         { title: "Table", name: "table" },
+        { title: "Page", name: "page" },
       ],
     },
   ];

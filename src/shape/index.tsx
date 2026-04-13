@@ -1,6 +1,7 @@
 
 import { View, ViewProps, ViewStyle } from 'react-native';
 import { styled } from '../utiles/styled';
+import { viewStyleStringVariants, viewStyleVariants } from '../utiles/viewStyleVariants';
 
 type ShapeVariants = {
     cycle?: boolean | [boolean, ViewStyle];
@@ -9,7 +10,7 @@ type ShapeVariants = {
 
 type ShapeProps = ShapeVariants & ViewProps & ViewStyle;
 
-const StyleShape = styled<ShapeProps>(View, {
+const StyledShape = styled<ShapeProps>(View, {
     base: {
         position: 'relative',
     } as ViewStyle,
@@ -31,8 +32,11 @@ const StyleShape = styled<ShapeProps>(View, {
             }
             return { height: Number(selected), width: Number(selected) };
         },
-    } as any
+        ...viewStyleVariants,
+        ...viewStyleStringVariants,
+    } as any,
 });
 
-export { StyleShape };
+
+export { StyledShape, StyledShape as StyleShape };
 export type { ShapeProps };

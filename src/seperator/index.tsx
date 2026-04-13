@@ -10,14 +10,9 @@ interface SeperatorProps extends StackProps {
     rightLabelProps?: React.ComponentProps<typeof StyledText>;
 }
 
-const StyledSeperator = React.forwardRef<
-    React.ComponentRef<typeof Stack>,
-    SeperatorProps
->(
-    (
-        { leftLabel, leftLabelProps, rightLabel, rightLabelProps, ...rest },
-        ref,
-    ) => {
+const StyledSeperator = (
+    { leftLabel, leftLabelProps, rightLabel, rightLabelProps, ref, ...rest }: SeperatorProps & { ref?: React.Ref<React.ComponentRef<typeof Stack>> },
+) => {
         return (
             <Stack
                 horizontal
@@ -50,8 +45,7 @@ const StyledSeperator = React.forwardRef<
                 }
             </Stack>
         );
-    },
-);
+};
 
 StyledSeperator.displayName = "StyledSeperator";
 

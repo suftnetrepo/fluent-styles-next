@@ -114,18 +114,16 @@ interface StyledCycleProps extends CycleComponentProps {
  *   </LinearGradient>
  * </StyledCycle>
  */
-const StyledCycle = React.forwardRef<View, StyledCycleProps>(
-  (
-    {
-      children,
-      ...rest
-    },
-    ref
-  ) => (
-    <CycleBase ref={ref} {...rest}>
-      {children}
-    </CycleBase>
-  )
+const StyledCycle = (
+  {
+    children,
+    ref,
+    ...rest
+  }: StyledCycleProps & { ref?: React.Ref<View> }
+) => (
+  <CycleBase ref={ref} {...rest}>
+    {children}
+  </CycleBase>
 );
 
 StyledCycle.displayName = 'StyledCycle';

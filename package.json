@@ -1,7 +1,7 @@
 {
   "name": "fluent-styles",
   "description": "Develop different styled versions of UI components.",
-  "version": "1.62.1",
+  "version": "1.62.4",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "src/index.ts",

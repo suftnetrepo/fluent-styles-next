@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
     TouchableOpacity,
     TouchableOpacityProps,
@@ -82,25 +82,21 @@ const CheckBoxBase = styled<CheckBoxProps>(TouchableOpacity, {
     } as any,
 });
 
-const StyledCheckBox = forwardRef<
-    React.ComponentRef<typeof CheckBoxBase>,
-    StyledCheckBoxProps
->(
-    (
-        {
-            checked = false,
-            onCheck,
-            checkedColor,
-            uncheckedColor,
-            checkMarkColor = theme.colors.gray[400],
-            size = 24,
-            disabled = false,
-            iconProps,
-            iconSize = size * 0.6,
-            ...rest
-        },
+const StyledCheckBox = (
+    {
+        checked = false,
+        onCheck,
+        checkedColor,
+        uncheckedColor,
+        checkMarkColor = theme.colors.gray[400],
+        size = 24,
+        disabled = false,
+        iconProps,
+        iconSize = size * 0.6,
         ref,
-    ) => {
+        ...rest
+    }: StyledCheckBoxProps & { ref?: React.Ref<React.ComponentRef<typeof CheckBoxBase>> },
+) => {
         const [internalChecked, setInternalChecked] = useState(checked);
 
         useEffect(() => {
@@ -130,8 +126,7 @@ const StyledCheckBox = forwardRef<
                 )}
             </CheckBoxBase>
         );
-    },
-);
+};
 
 StyledCheckBox.displayName = "StyledCheckBox";
 export { StyledCheckBox, type StyledCheckBoxProps };

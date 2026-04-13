@@ -91,11 +91,9 @@ export interface StyledButtonProps extends ButtonProps {
   rightIcon?:  React.ReactNode
 }
 
-interface RefExoticComponent
-  extends React.ForwardRefExoticComponent<
-    StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>
-  > {
-  Text: typeof StyledText
+interface RefExoticComponent {
+  (props: StyledButtonProps & { ref?: React.Ref<React.ComponentRef<typeof ButtonBase>> }): React.ReactNode;
+  Text: typeof StyledText;
 }
 
 // ─── Base styled component ────────────────────────────────────────────────────
@@ -287,10 +285,7 @@ function spinnerColor(props: StyledButtonProps): string {
 
 // ─── Button ──────────────────────────────────────────────────────────────────
 
-const Button = React.forwardRef<
-  React.ComponentPropsWithRef<typeof ButtonBase>,
-  StyledButtonProps
->(({ children, loading, leftIcon, rightIcon, disabled, ...rest }, ref) => {
+const Button = ({ children, loading, leftIcon, rightIcon, disabled, ref, ...rest }: StyledButtonProps & { ref?: React.Ref<React.ComponentRef<typeof ButtonBase>> }) => {
   const isDisabled = disabled || loading
 
   return (
@@ -319,8 +314,8 @@ const Button = React.forwardRef<
       {/* Right icon slot */}
       {!loading && rightIcon ? rightIcon : null}
     </ButtonBase>
-  )
-})
+  );
+};
 
 Button.displayName = 'StyledButton'
 

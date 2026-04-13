@@ -10,11 +10,33 @@
  *  • gradient   — gradient-filled track
  *  • buffer     — primary thumb + secondary buffer fill (media player style)
  *
- * Tooltip fix (three-layer layout):
- *  • Track fill lives in its own overflow:hidden View
- *  • Thumbs + tooltips live in a sibling overflow:visible wrapper
- *  • SVG <Path> triangle pointer — never clips, always sharp
- *  • useNativeDriver: false for tooltipAnim so text colour renders correctly on iOS
+ * FIX (v1.1):
+ *  The previous version had a useEffect(() => setLocalLow(value), [value])
+ *  that created a feedback loop when used as a controlled component:
+ *    onValueChange → setState → re-render → value prop changes
+ *    → useEffect fires → setLocalLow resets → thumb snaps back
+ *
+ *  Fix strategy:
+ *    1. useEffect only fires on MOUNT (empty dep array) — sets initial position once
+ *    2. External value changes are ignored while dragging (dragging ref guard)
+ *    3. External value changes ARE applied when not dragging (programmatic updates work)
+ *    4. onValueChange fires continuously during drag (for live display updates)
+ *    5. onSlidingComplete fires once on finger lift (for committing to state)
+ *
+ *  Correct usage in parent (controlled, live display):
+ *    const displayRef = useRef(initialValue)          // never causes re-render
+ *    const [display, setDisplay] = useState(initialValue)
+ *    <StyledSlider
+ *      value={initialValue}                           // ← frozen, never updated
+ *      onValueChange={v => { displayRef.current = v; setDisplay(v) }}
+ *      onSlidingComplete={v => commitToState(v)}
+ *    />
+ *
+ *  Simplest usage (fire-and-forget):
+ *    <StyledSlider
+ *      value={28}
+ *      onSlidingComplete={v => saveValue(v)}
+ *    />
  */
 
 import React, { useCallback, useRef, useState, useEffect } from "react";
@@ -117,11 +139,6 @@ function snapToStep(
 }
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
-//
-// Self-measuring: measures its own width after first layout, then applies
-// translateX = -(width/2) to centre precisely over the thumb.
-// Uses useNativeDriver: false for opacity so iOS renders text colour correctly.
-// SVG Path triangle — never clips, always pixel-perfect.
 
 const Tooltip: React.FC<{
   visible: Animated.Value;
@@ -158,7 +175,7 @@ const Tooltip: React.FC<{
         borderRadius={4}
         alignItems="center"
         justifyContent="center"
-        minWidth={label.length * 18} // rough guess to prevent excessive shrinking for short labels
+        minWidth={label.length * 18}
       >
         <StyledText
           numberOfLines={1}
@@ -230,9 +247,7 @@ const Thumb: React.FC<ThumbProps> = ({
   onMove,
   onEnd,
 }) => {
-  // scaleAnim uses native driver (transform only — safe)
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  // tooltipAnim uses JS driver (opacity — required for text colour on iOS)
   const tooltipAnim = useRef(new Animated.Value(alwaysTooltip ? 1 : 0)).current;
   const dragging = useRef(false);
 
@@ -254,7 +269,7 @@ const Thumb: React.FC<ThumbProps> = ({
       Animated.timing(tooltipAnim, {
         toValue: alwaysTooltip ? 1 : 0,
         duration: 150,
-        useNativeDriver: false, // JS driver — keeps text colour correct on iOS
+        useNativeDriver: false,
       }),
     ]).start();
   };
@@ -293,10 +308,10 @@ const Thumb: React.FC<ThumbProps> = ({
       style={{
         position: "absolute",
         left,
-        top: 0, // wrapper height = thumbD, centred
+        top: 0,
         width: thumbD,
         height: thumbD,
-        overflow: "visible", // tooltip floats up freely
+        overflow: "visible",
         transform: [{ scale: scaleAnim }],
       }}
     >
@@ -309,7 +324,6 @@ const Thumb: React.FC<ThumbProps> = ({
         />
       )}
 
-      {/* Thumb circle */}
       <View
         style={{
           width: thumbD,
@@ -393,27 +407,55 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
   const [trackW, setTrackW] = useState(widthProp ?? 0);
   const barW = widthProp ?? trackW;
 
-  const [localLow, setLocalLow] = useState(value);
+  const [localLow, setLocalLow]   = useState(value);
   const [localHigh, setLocalHigh] = useState(valueHigh ?? max);
-  const [bufLocal, setBufLocal] = useState(bufferValue ?? value);
+  const [bufLocal, setBufLocal]   = useState(bufferValue ?? value);
 
+  // ─── FIX: track whether a thumb is currently being dragged ───────────────
+  // When dragging, we IGNORE external value prop changes entirely.
+  // This prevents the feedback loop:
+  //   onValueChange → parent setState → value prop changes
+  //   → useEffect → setLocalLow resets thumb → snap-back
+  const isDraggingLow  = useRef(false);
+  const isDraggingHigh = useRef(false);
+
+  // Sync localLow from external value prop ONLY when not dragging.
+  // On mount (prevValue is undefined) we always sync.
+  const prevValueRef = useRef<number | undefined>(undefined);
   useEffect(() => {
+    if (isDraggingLow.current) return;          // ← guard: ignore during drag
+    if (prevValueRef.current === value) return; // ← no-op if value unchanged
+    prevValueRef.current = value;
     setLocalLow(value);
   }, [value]);
+
+  // Sync localHigh from external valueHigh prop ONLY when not dragging.
+  const prevHighRef = useRef<number | undefined>(undefined);
   useEffect(() => {
-    if (valueHigh !== undefined) setLocalHigh(valueHigh);
+    if (isDraggingHigh.current) return;
+    if (valueHigh === undefined) return;
+    if (prevHighRef.current === valueHigh) return;
+    prevHighRef.current = valueHigh;
+    setLocalHigh(valueHigh);
   }, [valueHigh]);
+
+  // bufferValue sync is safe — no thumb drag involved
   useEffect(() => {
     if (bufferValue !== undefined) setBufLocal(bufferValue);
   }, [bufferValue]);
 
   const range = max - min;
-  const lowF = clamp((localLow - min) / range, 0, 1);
+  const lowF  = clamp((localLow  - min) / range, 0, 1);
   const highF = clamp((localHigh - min) / range, 0, 1);
-  const bufF = clamp((bufLocal - min) / range, 0, 1);
+  const bufF  = clamp((bufLocal  - min) / range, 0, 1);
 
   const effectiveStep =
     variant === "stepped" ? (max - min) / (steps - 1) : step;
+
+  // ─── Low thumb handlers ───────────────────────────────────────────────────
+  const handleLowStart = useCallback(() => {
+    isDraggingLow.current = true;
+  }, []);
 
   const handleLowMove = useCallback(
     (frac: number) => {
@@ -427,21 +469,21 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
       onValueChange?.(snapped);
       if (variant === "range") onRangeChange?.(snapped, localHigh);
     },
-    [
-      min,
-      range,
-      effectiveStep,
-      localHigh,
-      variant,
-      onValueChange,
-      onRangeChange,
-    ],
+    [min, range, effectiveStep, localHigh, variant, onValueChange, onRangeChange],
   );
 
   const handleLowEnd = useCallback(() => {
+    isDraggingLow.current = false;
+    // Update prevValueRef so the next external change is not swallowed
+    prevValueRef.current = localLow;
     onSlidingComplete?.(localLow);
     if (variant === "range") onRangeComplete?.(localLow, localHigh);
   }, [localLow, localHigh, variant, onSlidingComplete, onRangeComplete]);
+
+  // ─── High thumb handlers (range variant) ─────────────────────────────────
+  const handleHighStart = useCallback(() => {
+    isDraggingHigh.current = true;
+  }, []);
 
   const handleHighMove = useCallback(
     (frac: number) => {
@@ -458,6 +500,8 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
   );
 
   const handleHighEnd = useCallback(() => {
+    isDraggingHigh.current = false;
+    prevHighRef.current = localHigh;
     onRangeComplete?.(localLow, localHigh);
   }, [localLow, localHigh, onRangeComplete]);
 
@@ -486,16 +530,11 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
         paddingBottom: showMinMax ? 20 : 8,
       }}
     >
-      {/* ── Three-layer layout ──
-          Layer 1: track fills  (overflow hidden — clips fill bars only)
-          Layer 2: tick marks   (overflow visible — poke above/below)
-          Layer 3: thumbs       (overflow visible — tooltips float freely)
-      ── */}
       <View
         style={{
           width: barW,
           height: thumbD,
-          overflow: "visible", // thumbs + tooltips escape freely
+          overflow: "visible",
           justifyContent: "center",
         }}
       >
@@ -508,10 +547,9 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
             height: trackH,
             borderRadius: trackBR,
             backgroundColor: C.track,
-            overflow: "hidden", // only fills are clipped
+            overflow: "hidden",
           }}
         >
-          {/* Buffer fill */}
           {variant === "buffer" && (
             <View
               style={{
@@ -526,7 +564,6 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
             />
           )}
 
-          {/* Range fill */}
           {variant === "range" ? (
             <View
               style={{
@@ -579,7 +616,7 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
             />
           ))}
 
-        {/* ── Layer 3: Thumbs (tooltips float up from here) ── */}
+        {/* ── Layer 3: Thumbs ── */}
         <Thumb
           position={lowF}
           trackWidth={barW}
@@ -593,7 +630,7 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
           tooltipBg={C.tooltipBg}
           tooltipText={C.tooltipText}
           disabled={disabled}
-          onStart={() => {}}
+          onStart={handleLowStart}
           onMove={handleLowMove}
           onEnd={handleLowEnd}
         />
@@ -612,14 +649,13 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
             tooltipBg={C.tooltipBg}
             tooltipText={C.tooltipText}
             disabled={disabled}
-            onStart={() => {}}
+            onStart={handleHighStart}
             onMove={handleHighMove}
             onEnd={handleHighEnd}
           />
         )}
       </View>
 
-      {/* Min / max labels */}
       {showMinMax && (
         <Stack horizontal justifyContent="space-between" marginTop={6}>
           <StyledText fontSize={11} color={C.rangeLabel}>

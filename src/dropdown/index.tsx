@@ -1,5 +1,4 @@
 import React, {
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
@@ -787,35 +786,34 @@ const MetaRow: React.FC<{
 // ─── StyledDropdown (single-select) ──────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const StyledDropdown = forwardRef<any, StyledDropdownProps>(
-  (
-    {
-      data,
-      onChange,
-      placeholder,
-      placeholderTextColor = theme.colors.gray[400],
-      value,
-      defaultValue,
-      disabled = false,
-      maxHeight = 260,
-      size = "md",
-      variant = "outline",
-      leftIcon,
-      label,
-      helperText,
-      errorMessage,
-      error = false,
-      searchable = false,
-      searchPlaceholder,
-      clearable = false,
-      loading = false,
-      emptyText = "No options found",
-      focusColor = theme.colors.indigo?.[500] ?? "#6366f1",
-      groupBy,
-      ...rest
-    },
+export const StyledDropdown = (
+  {
+    data,
+    onChange,
+    placeholder,
+    placeholderTextColor = theme.colors.gray[400],
+    value,
+    defaultValue,
+    disabled = false,
+    maxHeight = 260,
+    size = "md",
+    variant = "outline",
+    leftIcon,
+    label,
+    helperText,
+    errorMessage,
+    error = false,
+    searchable = false,
+    searchPlaceholder,
+    clearable = false,
+    loading = false,
+    emptyText = "No options found",
+    focusColor = theme.colors.indigo?.[500] ?? "#6366f1",
+    groupBy,
     ref,
-  ) => {
+    ...rest
+  }: StyledDropdownProps & { ref?: React.Ref<any> },
+) => {
     const [open, setOpen] = useState(false);
     const [internalValue, setInternalValue] = useState(defaultValue ?? "");
     const { triggerRef, pos, measure, updatePanelHeight } =
@@ -910,8 +908,7 @@ export const StyledDropdown = forwardRef<any, StyledDropdownProps>(
         )}
       </Stack>
     );
-  },
-);
+};
 
 StyledDropdown.displayName = "StyledDropdown";
 
@@ -919,41 +916,37 @@ StyledDropdown.displayName = "StyledDropdown";
 // ─── StyledMultiSelectDropdown ────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const StyledMultiSelectDropdown = forwardRef<
-  any,
-  StyledMultiSelectDropdownProps
->(
-  (
-    {
-      data,
-      onChange,
-      placeholder,
-      placeholderTextColor = theme.colors.gray[400],
-      value,
-      defaultValue,
-      disabled = false,
-      maxHeight = 300,
-      size = "md",
-      variant = "outline",
-      leftIcon,
-      label,
-      helperText,
-      errorMessage,
-      error = false,
-      searchable = false,
-      searchPlaceholder,
-      clearable = false,
-      loading = false,
-      emptyText = "No options found",
-      focusColor = theme.colors.indigo?.[500] ?? "#6366f1",
-      groupBy,
-      separator = ", ",
-      maxDisplay = 3,
-      selectAll = false,
-      ...rest
-    },
+export const StyledMultiSelectDropdown = (
+  {
+    data,
+    onChange,
+    placeholder,
+    placeholderTextColor = theme.colors.gray[400],
+    value,
+    defaultValue,
+    disabled = false,
+    maxHeight = 300,
+    size = "md",
+    variant = "outline",
+    leftIcon,
+    label,
+    helperText,
+    errorMessage,
+    error = false,
+    searchable = false,
+    searchPlaceholder,
+    clearable = false,
+    loading = false,
+    emptyText = "No options found",
+    focusColor = theme.colors.indigo?.[500] ?? "#6366f1",
+    groupBy,
+    separator = ", ",
+    maxDisplay = 3,
+    selectAll = false,
     ref,
-  ) => {
+    ...rest
+  }: StyledMultiSelectDropdownProps & { ref?: React.Ref<any> },
+) => {
     const [open, setOpen] = useState(false);
     const [internalKeys, setInternalKeys] = useState<string[]>(
       defaultValue ?? [],
@@ -1075,7 +1068,6 @@ export const StyledMultiSelectDropdown = forwardRef<
         )}
       </Stack>
     );
-  },
-);
+};
 
 StyledMultiSelectDropdown.displayName = "StyledMultiSelectDropdown";

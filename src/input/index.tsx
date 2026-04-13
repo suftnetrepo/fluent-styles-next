@@ -1,5 +1,4 @@
 import React, {
-  forwardRef,
   useCallback,
   useImperativeHandle,
   useRef,
@@ -337,63 +336,62 @@ const ad = StyleSheet.create({
 
 // ─── StyledTextInput ──────────────────────────────────────────────────────────
 
-export const StyledTextInput = forwardRef<React.ComponentRef<typeof TextInputBase>, StyledTextInputProps>(
-  (
-    {
-      // Label / meta
-      label,
-      labelProps,
-      required          = false,
-      helperText,
-      helperProps,
-      errorMessage,
-      errorProps,
-      error             = false,
+export const StyledTextInput = (
+  {
+    // Label / meta
+    label,
+    labelProps,
+    required          = false,
+    helperText,
+    helperProps,
+    errorMessage,
+    errorProps,
+    error             = false,
 
-      // Counter
-      showCounter       = false,
+    // Counter
+    showCounter       = false,
 
-      // Icons
-      leftIcon,
-      rightIcon,
-      leftAddon,
-      rightAddon,
+    // Icons
+    leftIcon,
+    rightIcon,
+    leftAddon,
+    rightAddon,
 
-      // Clear + loading
-      clearable         = false,
-      loading           = false,
+    // Clear + loading
+    clearable         = false,
+    loading           = false,
 
-      // Appearance
-      variant           = 'outline',
-      size              = 'md',
-      borderColor:      borderColorProp,
-      focusColor        = theme.colors.indigo?.[500] ?? '#6366f1',
-      floatLabel        = false,
+    // Appearance
+    variant           = 'outline',
+    size              = 'md',
+    borderColor:      borderColorProp,
+    focusColor        = theme.colors.indigo?.[500] ?? '#6366f1',
+    floatLabel        = false,
 
-      // Styles
-      containerStyle,
-      inputWrapStyle,
-      inputStyle,
+    // Styles
+    containerStyle,
+    inputWrapStyle,
+    inputStyle,
 
-      // Pass-through style props
-      fontSize: fontSizeProp,
-      fontWeight: fontWeightProp,
+    // Pass-through style props
+    fontSize: fontSizeProp,
+    fontWeight: fontWeightProp,
 
-      // TextInput props
-      value,
-      defaultValue,
-      onChangeText,
-      placeholder,
-      editable          = true,
-      multiline         = false,
-      numberOfLines,
-      maxLength,
-      onFocus: onFocusProp,
-      onBlur:  onBlurProp,
-      ...rest
-    },
+    // TextInput props
+    value,
+    defaultValue,
+    onChangeText,
+    placeholder,
+    editable          = true,
+    multiline         = false,
+    numberOfLines,
+    maxLength,
+    onFocus: onFocusProp,
+    onBlur:  onBlurProp,
     ref,
-  ) => {
+    ...rest
+  }: StyledTextInputProps & { ref?: React.Ref<React.ComponentRef<typeof TextInputBase>> },
+) => {
     const [focused,     setFocused]     = useState(false)
     const [localValue,  setLocalValue]  = useState(defaultValue ?? '')
     const inputRef = useRef<TextInput>(null)
@@ -617,8 +615,7 @@ export const StyledTextInput = forwardRef<React.ComponentRef<typeof TextInputBas
 
       </View>
     )
-  },
-)
+};
 
 StyledTextInput.displayName = 'StyledTextInput'
 export { StyledTextInput as StyledInput }

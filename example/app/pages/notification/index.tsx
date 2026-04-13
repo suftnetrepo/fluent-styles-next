@@ -7,7 +7,8 @@ import {
   StyledText,
   StyledButton,
   StyledCard,
-  useNotification
+  useNotification,
+  StyledSpacer
 } from "fluent-styles";
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────
@@ -65,6 +66,8 @@ export default function NotificationUsage() {
               Status: {status}
             </StyledText>
           </StyledCard>
+
+          <StyledSpacer marginVertical={8} />
 
           <Section label="Basic notification">
             <StyledButton

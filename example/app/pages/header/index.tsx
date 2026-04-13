@@ -98,8 +98,8 @@ export const StyledHeaderDemo: React.FC = () => {
     <Stack flex={1} marginTop={16} paddingHorizontal={20} backgroundColor={theme.colors.gray[50]} borderRadius={32}>
       <StyledSpacer marginVertical={8} />
       <StyledScrollView
-      showsVerticalScrollIndicator={false}
-        contentContainerStyle={{  paddingBottom: 60, gap: 28 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 60, gap: 28 }}
       >
         {/* ── 1. Title alignment ─────────────────────────────────────────── */}
         <DemoSection title="Title alignment">
@@ -108,7 +108,7 @@ export const StyledHeaderDemo: React.FC = () => {
               <StyledHeader
                 title="Left aligned"
                 titleAlignment="left"
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
               />
             </HeaderFrame>
@@ -117,7 +117,7 @@ export const StyledHeaderDemo: React.FC = () => {
               <StyledHeader
                 title="Center aligned"
                 titleAlignment="center"
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
               />
             </HeaderFrame>
@@ -126,7 +126,7 @@ export const StyledHeaderDemo: React.FC = () => {
               <StyledHeader
                 title="Right aligned"
                 titleAlignment="right"
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
               />
             </HeaderFrame>
@@ -142,7 +142,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Go back"
                 titleAlignment="left"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
               />
             </HeaderFrame>
@@ -153,7 +153,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Detail"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
               />
             </HeaderFrame>
@@ -164,7 +164,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Custom arrow"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={palettes.indigo[600]}
                 titleProps={{ color: palettes.white, fontWeight: "700" }}
                 backArrowProps={{ color: palettes.white, size: 20 }}
@@ -181,7 +181,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Settings"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
                 rightIcon={<IconBtn label="⚙️" />}
               />
@@ -192,7 +192,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Notifications"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
                 rightIcon={<IconBtn label="🔔" />}
               />
@@ -204,7 +204,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Photos"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
                 rightIcon={
                   <Stack horizontal gap={8}>
@@ -225,7 +225,7 @@ export const StyledHeaderDemo: React.FC = () => {
               <StyledHeader
                 titleAlignment="center"
                 title="Messages"
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
                 leftIcon={
                   <Stack
@@ -247,7 +247,7 @@ export const StyledHeaderDemo: React.FC = () => {
             <HeaderFrame>
               <StyledHeader
                 titleAlignment="left"
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[50]}
                 leftIcon={
                   <Stack horizontal gap={6} alignItems="center">
@@ -296,7 +296,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Dark header"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={theme.colors.gray[900]}
                 titleProps={{ color: palettes.white, fontWeight: "700" }}
                 backArrowProps={{ color: palettes.white }}
@@ -310,7 +310,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Rose"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={palettes.rose[500]}
                 titleProps={{ color: palettes.white, fontWeight: "700" }}
                 backArrowProps={{ color: palettes.white }}
@@ -328,7 +328,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Teal"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={palettes.teal[500]}
                 titleProps={{ color: palettes.white, fontWeight: "700" }}
                 backArrowProps={{ color: palettes.white }}
@@ -342,7 +342,7 @@ export const StyledHeaderDemo: React.FC = () => {
                 title="Amber"
                 titleAlignment="center"
                 showBackArrow
-                showStatusBar={false}
+
                 backgroundColor={palettes.amber[400]}
                 titleProps={{
                   color: theme.colors.gray[900],
@@ -360,7 +360,6 @@ export const StyledHeaderDemo: React.FC = () => {
             {/* Search bar header */}
             <HeaderFrame>
               <StyledHeader
-                showStatusBar={false}
                 backgroundColor={palettes.white}
               >
                 <StyledHeader.Full>
@@ -392,7 +391,7 @@ export const StyledHeaderDemo: React.FC = () => {
                     <StyledPressable>
                       <StyledText
                         fontSize={14}
-                        fontWeight={theme.fontWeight.semiBold }
+                        fontWeight={theme.fontWeight.semiBold}
                         color={palettes.indigo[600]}
                       >
                         Cancel
@@ -406,7 +405,7 @@ export const StyledHeaderDemo: React.FC = () => {
             {/* Tab-style header */}
             <HeaderFrame>
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.white}
               >
                 <StyledHeader.Full>
@@ -452,7 +451,7 @@ export const StyledHeaderDemo: React.FC = () => {
             {/* User profile header */}
             <HeaderFrame bg={palettes.indigo[600]}>
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.indigo[600]}
               >
                 <StyledHeader.Full>
@@ -520,7 +519,7 @@ export const StyledHeaderDemo: React.FC = () => {
             {/* E-commerce header */}
             <HeaderFrame>
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.white}
               >
                 <StyledHeader.Full>
@@ -601,7 +600,7 @@ export const StyledHeaderDemo: React.FC = () => {
               overflow="hidden"
             >
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.white}
                 borderBottomWidth={1}
                 borderBottomColor={theme.colors.gray[100]}
@@ -671,7 +670,7 @@ export const StyledHeaderDemo: React.FC = () => {
               overflow="hidden"
             >
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.white}
                 borderBottomWidth={1}
                 borderBottomColor={theme.colors.gray[100]}
@@ -708,7 +707,7 @@ export const StyledHeaderDemo: React.FC = () => {
               overflow="hidden"
             >
               <StyledHeader
-                showStatusBar={false}
+
                 backgroundColor={palettes.white}
                 title="Settings"
                 titleAlignment="left"

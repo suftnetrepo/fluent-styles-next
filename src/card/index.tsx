@@ -117,16 +117,15 @@ const CardBase = styled<CardComponentProps>(View, {
  * Flexible layout container with shadow variants
  * Can be wrapped in Pressable for interactive behavior
  */
-const CardComponent = React.forwardRef<React.ComponentRef<typeof CardBase>, StyledCardProps>(
-  (
-    {
-      children,
-      pressable = false,
-      pressableProps,
-      ...rest
-    },
-    ref
-  ) => {
+const CardComponent = (
+  {
+    children,
+    pressable = false,
+    pressableProps,
+    ref,
+    ...rest
+  }: StyledCardProps & { ref?: React.Ref<React.ComponentRef<typeof CardBase>> }
+) => {
     const cardContent = (
       <CardBase ref={ref} {...rest}>
         {children}
@@ -138,20 +137,19 @@ const CardComponent = React.forwardRef<React.ComponentRef<typeof CardBase>, Styl
     }
 
     return cardContent;
-  }
-);
+};
 
 interface HeaderProps extends StackProps {
   children: React.ReactNode;
 }
 
-const StyledHeader = React.forwardRef<React.ComponentRef<typeof Stack>, HeaderProps>(({ children, ...rest }, ref) => {
+const StyledHeader = ({ children, ref, ...rest }: HeaderProps & { ref?: React.Ref<React.ComponentRef<typeof Stack>> }) => {
   return (
     <Stack borderBottomWidth={1} borderBottomColor={theme.colors.gray[100]} ref={ref} {...rest}>
       {children}
     </Stack>
   );
-});
+};
 
 StyledHeader.displayName = 'StyledHeader';
 
@@ -159,13 +157,13 @@ interface ImageProps extends StyledImageBackgroundProps {
   children?: React.ReactNode;
 }
 
-const StyledImage = React.forwardRef<React.ComponentRef<typeof StyledImageBackground>, ImageProps>(({ children, ...rest }, ref) => {
+const StyledImage = ({ children, ref, ...rest }: ImageProps & { ref?: React.Ref<React.ComponentRef<typeof StyledImageBackground>> }) => {
   return (
     <StyledImageBackground ref={ref} {...rest}>
       {children}
     </StyledImageBackground>
   );
-});
+};
 
 StyledImage.displayName = 'StyledImage';
 
@@ -173,13 +171,13 @@ interface ContentProps extends StackProps {
   children: React.ReactNode;
 }
 
-const StyledContent= React.forwardRef<React.ComponentRef<typeof Stack>, ContentProps>(({ children, ...rest }, ref) => {
+const StyledContent = ({ children, ref, ...rest }: ContentProps & { ref?: React.Ref<React.ComponentRef<typeof Stack>> }) => {
   return (
     <Stack ref={ref} {...rest}>
       {children}
     </Stack>
   );
-});
+};
 
 StyledContent.displayName = 'StyledContent';
 
@@ -187,20 +185,19 @@ interface FooterProps extends StackProps {
   children: React.ReactNode;
 }
 
-const StyledFooter = React.forwardRef<React.ComponentRef<typeof Stack>, FooterProps>(({ children, ...rest }, ref) => {
+const StyledFooter = ({ children, ref, ...rest }: FooterProps & { ref?: React.Ref<React.ComponentRef<typeof Stack>> }) => {
   return (
     <Stack borderTopWidth={1} borderTopColor={theme.colors.gray[100]} ref={ref} {...rest}>
       {children}
     </Stack>
   );
-});
+};
 
 
 StyledFooter.displayName = 'StyledFooter';
 
-interface Card extends React.ForwardRefExoticComponent<
-  StyledCardProps & React.RefAttributes<React.ComponentRef<typeof CardBase>>
-> {
+interface Card {
+  (props: StyledCardProps & { ref?: React.Ref<React.ComponentRef<typeof CardBase>> }): React.ReactNode;
   Header: typeof StyledHeader;
   Footer: typeof StyledFooter;
   Image: typeof StyledImage;
