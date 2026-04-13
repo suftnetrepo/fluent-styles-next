@@ -202,6 +202,7 @@ interface Card {
   Footer: typeof StyledFooter;
   Image: typeof StyledImage;
   Content: typeof StyledContent;
+  displayName?: string;
 }
 
 const StyledCard = CardComponent as Card;

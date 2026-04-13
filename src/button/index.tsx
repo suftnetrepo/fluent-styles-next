@@ -319,7 +319,7 @@ const Button = ({ children, loading, leftIcon, rightIcon, disabled, ref, ...rest
 
 Button.displayName = 'StyledButton'
 
-const StyledButton = Button as RefExoticComponent
+const StyledButton = Button as unknown as RefExoticComponent
 StyledButton.Text = StyledText
 
 export { StyledButton }
