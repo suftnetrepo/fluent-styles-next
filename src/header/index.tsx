@@ -155,7 +155,7 @@ const HeaderComponent = ({
       )}
       {
         rightIcon && (
-          <> {rightIcon}</>
+          <>{rightIcon}</>
         )
       }
 
