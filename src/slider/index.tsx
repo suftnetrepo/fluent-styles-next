@@ -247,71 +247,119 @@ const Thumb: React.FC<ThumbProps> = ({
   onMove,
   onEnd,
 }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const tooltipAnim = useRef(new Animated.Value(alwaysTooltip ? 1 : 0)).current;
-  const dragging = useRef(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current
+  const tooltipAnim = useRef(new Animated.Value(alwaysTooltip ? 1 : 0)).current
+  const dragging = useRef(false)
+
+  const latestTrackWidth = useRef(trackWidth)
+  const latestOnMove = useRef(onMove)
+  const latestOnEnd = useRef(onEnd)
+  const latestOnStart = useRef(onStart)
+
+  const startFractionRef = useRef(position)
+
+  useEffect(() => {
+    latestTrackWidth.current = trackWidth
+  }, [trackWidth])
+
+  useEffect(() => {
+    latestOnMove.current = onMove
+  }, [onMove])
+
+  useEffect(() => {
+    latestOnEnd.current = onEnd
+  }, [onEnd])
+
+  useEffect(() => {
+    latestOnStart.current = onStart
+  }, [onStart])
+
+  useEffect(() => {
+    if (!dragging.current) {
+      startFractionRef.current = position
+    }
+  }, [position])
 
   const animateIn = () => {
     Animated.parallel([
-      Animated.spring(scaleAnim, { toValue: 1.2, useNativeDriver: true }),
+      Animated.spring(scaleAnim, {
+        toValue: 1.2,
+        useNativeDriver: true,
+      }),
       Animated.timing(tooltipAnim, {
         toValue: 1,
         duration: 150,
         easing: Easing.out(Easing.ease),
         useNativeDriver: false,
       }),
-    ]).start();
-  };
+    ]).start()
+  }
 
   const animateOut = () => {
     Animated.parallel([
-      Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
       Animated.timing(tooltipAnim, {
         toValue: alwaysTooltip ? 1 : 0,
         duration: 150,
         useNativeDriver: false,
       }),
-    ]).start();
-  };
+    ]).start()
+  }
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => !disabled,
       onMoveShouldSetPanResponder: () => !disabled,
-      onPanResponderGrant: () => {
-        dragging.current = true;
-        onStart();
-        if (showTooltip) animateIn();
-      },
-      onPanResponderMove: (_, gs: PanResponderGestureState) => {
-        if (!dragging.current || trackWidth <= 0) return;
-        const newFraction = clamp(position + gs.dx / trackWidth, 0, 1);
-        onMove(newFraction);
-      },
-      onPanResponderRelease: () => {
-        dragging.current = false;
-        onEnd();
-        animateOut();
-      },
-      onPanResponderTerminate: () => {
-        dragging.current = false;
-        animateOut();
-      },
-    }),
-  ).current;
 
-  const left = position * trackWidth - thumbD / 2;
+      onPanResponderGrant: () => {
+        dragging.current = true
+        startFractionRef.current = position
+        latestOnStart.current?.()
+        if (showTooltip) animateIn()
+      },
+
+      onPanResponderMove: (_, gs: PanResponderGestureState) => {
+        const width = latestTrackWidth.current
+        if (!dragging.current || width <= 0) return
+
+        const newFraction = clamp(
+          startFractionRef.current + gs.dx / width,
+          0,
+          1
+        )
+
+        latestOnMove.current?.(newFraction)
+      },
+
+      onPanResponderRelease: () => {
+        dragging.current = false
+        latestOnEnd.current?.()
+        animateOut()
+      },
+
+      onPanResponderTerminate: () => {
+        dragging.current = false
+        latestOnEnd.current?.()
+        animateOut()
+      },
+    })
+  ).current
+
+  const left = position * trackWidth - thumbD / 2
 
   return (
     <Animated.View
       {...panResponder.panHandlers}
       style={{
-        position: "absolute",
+        position: 'absolute',
         left,
         top: 0,
         width: thumbD,
         height: thumbD,
-        overflow: "visible",
+        overflow: 'visible',
         transform: [{ scale: scaleAnim }],
       }}
     >
@@ -331,7 +379,7 @@ const Thumb: React.FC<ThumbProps> = ({
           borderRadius: thumbD / 2,
           backgroundColor: color,
           borderWidth: 2,
-          borderColor: borderColor,
+          borderColor,
           shadowColor: borderColor,
           shadowOpacity: 0.25,
           shadowRadius: 6,
@@ -340,8 +388,8 @@ const Thumb: React.FC<ThumbProps> = ({
         }}
       />
     </Animated.View>
-  );
-};
+  )
+}
 
 // ─── Gradient fill ────────────────────────────────────────────────────────────
 
@@ -444,7 +492,7 @@ export const StyledSlider: React.FC<StyledSliderProps> = ({
     if (bufferValue !== undefined) setBufLocal(bufferValue);
   }, [bufferValue]);
 
-  const range = max - min;
+const range = Math.max(max - min, 1);
   const lowF  = clamp((localLow  - min) / range, 0, 1);
   const highF = clamp((localHigh - min) / range, 0, 1);
   const bufF  = clamp((bufLocal  - min) / range, 0, 1);
