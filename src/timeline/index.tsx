@@ -61,6 +61,16 @@ export interface StyledTimelineColors {
   endTimeText?: string;
 }
 
+export interface StyledTimeFont{
+  /** Time text font size. Default: theme.fontSize.normal */
+  startFontSize?: number;
+  /** Secondary time (endTime) font size. Default: theme.fontSize.small */
+  endFontSize?: number;
+  startFontWeight?: number | string;
+  endFontWeight?: number | string;
+
+}
+
 export interface StyledTimelineProps {
   /**
    * Array of timeline entries.
@@ -106,6 +116,7 @@ export interface StyledTimelineProps {
 
   /** Called when an item is pressed (only fires if item has no custom onPress) */
   onItemPress?: (item: TimelineItem) => void;
+  fonts?: StyledTimeFont;
 }
 
 // ─── Size tokens ──────────────────────────────────────────────────────────────
@@ -254,6 +265,7 @@ export const StyledTimeline: React.FC<StyledTimelineProps> = ({
   animated          = true,
   colors: colorsProp,
   onItemPress,
+  fonts: fontsProp,
 }) => {
   const C = {
     line:        colorsProp?.line        ?? theme.colors.gray[200],
@@ -261,6 +273,13 @@ export const StyledTimeline: React.FC<StyledTimelineProps> = ({
     dotBorder:   colorsProp?.dotBorder   ?? palettes.white,
     timeText:    colorsProp?.timeText    ?? theme.colors.gray[900],
     endTimeText: colorsProp?.endTimeText ?? theme.colors.gray[400],
+  };
+
+  const F = {
+    startFontSize: fontsProp?.startFontSize ?? theme.fontSize.normal,
+    endFontSize:   fontsProp?.endFontSize   ?? theme.fontSize.small,
+    startFontWeight: fontsProp?.startFontWeight ?? theme.fontWeight.normal,
+    endFontWeight:   fontsProp?.endFontWeight   ?? theme.fontWeight.normal,
   };
 
   const gap         = VARIANT_GAP[variant];
@@ -296,14 +315,14 @@ export const StyledTimeline: React.FC<StyledTimelineProps> = ({
           <Stack key={item.id} horizontal alignItems="stretch">
 
             {/* ── Left: time + connector ── */}
-            <Stack width={timeColumnWidth} alignItems="flex-end" paddingRight={12}>
+            <Stack width={timeColumnWidth} alignItems="flex-end" paddingRight={8}>
 
               {/* Time labels */}
               <Stack alignItems="flex-end" gap={2} paddingTop={2}>
                 {hasTime && (
                   <StyledText
-                    fontSize={theme.fontSize.normal}
-                    fontWeight={theme.fontWeight.semiBold}
+                    fontSize={F.startFontSize}
+                    fontWeight={F.startFontWeight as any}
                     color={C.timeText}
                     numberOfLines={1}
                   >
@@ -312,7 +331,8 @@ export const StyledTimeline: React.FC<StyledTimelineProps> = ({
                 )}
                 {item.endTime && (
                   <StyledText
-                    fontSize={theme.fontSize.small}
+                    fontSize={F.endFontSize}
+                    fontWeight={F.endFontWeight as any}
                     color={C.endTimeText}
                     numberOfLines={1}
                   >
