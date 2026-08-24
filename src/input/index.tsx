@@ -23,7 +23,7 @@ import type {
 
 import { styled }               from '../utiles/styled'
 import { theme }                from '../utiles/theme'
-import { viewStyleVariants } from '../utiles/viewStyleVariants'
+import { viewStyleVariants, viewStyleStringVariants } from '../utiles/viewStyleVariants'
 import { StyledText }           from '../text'
 import type { StyledTextProps } from '../text'
 
@@ -145,7 +145,8 @@ const TextInputBase = styled<CardComponentProps>(TextInput, {
     },
     variants: {
         ...viewStyleVariants,
-     
+        ...viewStyleStringVariants,
+
         fontSize: (selected: string) => {
             const size = selected || theme.fontSize.normal;
             if (isNaN(Number(size))) {
@@ -373,6 +374,11 @@ export const StyledTextInput = (
     inputWrapStyle,
     inputStyle,
 
+    // Outer-container layout — opt-in only. Not defaulted, so the field
+    // sizes to its content unless the consumer explicitly asks it to grow
+    // (e.g. `flex={1}` inside a StyledForm.Row).
+    flex,
+
     // Pass-through style props
     fontSize: fontSizeProp,
     fontWeight: fontWeightProp,
@@ -462,7 +468,7 @@ export const StyledTextInput = (
 
     // ── Render ────────────────────────────────────────────────────────────
     return (
-      <View style={[S.container, containerStyle]}>
+      <View style={[S.container, flex !== undefined && { flex }, containerStyle]}>
 
         {/* Label row */}
         {label && !floatLabel ? (
@@ -497,16 +503,16 @@ export const StyledTextInput = (
               S.input_wrap,
               wrapStyle,
               {
-                borderRadius: hasLeftAddon && hasRightAddon ? 0
-                  : hasLeftAddon  ? `0,0,${baseRadius},${baseRadius}` as any  // handled below
-                  : hasRightAddon ? `${baseRadius},${baseRadius},0,0` as any
-                  : baseRadius,
                 flex: 1,
+                // Corners flush against an addon are squared off (0); the
+                // free corners keep the variant's baseRadius. Explicit
+                // per-corner numbers only — no shorthand string, which
+                // React Native's borderRadius does not accept.
+                borderTopLeftRadius:     hasLeftAddon  ? 0 : baseRadius,
+                borderBottomLeftRadius:  hasLeftAddon  ? 0 : baseRadius,
+                borderTopRightRadius:    hasRightAddon ? 0 : baseRadius,
+                borderBottomRightRadius: hasRightAddon ? 0 : baseRadius,
               },
-              // Explicit radius for addons
-              hasLeftAddon  && !hasRightAddon && { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 },
-              !hasLeftAddon && hasRightAddon  && { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
-              hasLeftAddon  && hasRightAddon  && { borderRadius: 0 },
               inputWrapStyle,
             ]}
           >
@@ -541,7 +547,6 @@ export const StyledTextInput = (
               editable={editable && !loading}
               multiline={multiline}
               numberOfLines={numberOfLines}
-              flex={1}
               maxLength={maxLength}
               style={[
                 S.input,
@@ -624,8 +629,10 @@ export { StyledTextInput as StyledInput }
 
 const S = StyleSheet.create({
   container: {
-  flex: 1,
-
+    // No default flex — the field sizes to its content. Pass `flex={1}`
+    // (e.g. inside a StyledForm.Row) to opt into filling available space;
+    // forcing it unconditionally previously caused the field to collapse
+    // to zero height under non-flexed parents.
   },
   label_row: {
     flexDirection: 'row',

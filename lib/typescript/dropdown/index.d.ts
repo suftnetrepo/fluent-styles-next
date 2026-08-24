@@ -48,7 +48,17 @@ export interface StyledMultiSelectDropdownProps<TItem extends DropdownOptionItem
     maxDisplay?: number;
     selectAll?: boolean;
 }
-export declare const StyledDropdown: React.ForwardRefExoticComponent<StyledDropdownProps<DropdownOptionItem<unknown>> & React.RefAttributes<any>>;
-export declare const StyledMultiSelectDropdown: React.ForwardRefExoticComponent<StyledMultiSelectDropdownProps<DropdownOptionItem<unknown>> & React.RefAttributes<any>>;
+export declare const StyledDropdown: {
+    ({ data, onChange, placeholder, placeholderTextColor, value, defaultValue, disabled, maxHeight, size, variant, leftIcon, label, helperText, errorMessage, error, searchable, searchPlaceholder, clearable, loading, emptyText, focusColor, groupBy, ref, ...rest }: StyledDropdownProps<DropdownOptionItem<unknown>> & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
+export declare const StyledMultiSelectDropdown: {
+    ({ data, onChange, placeholder, placeholderTextColor, value, defaultValue, disabled, maxHeight, size, variant, leftIcon, label, helperText, errorMessage, error, searchable, searchPlaceholder, clearable, loading, emptyText, focusColor, groupBy, separator, maxDisplay, selectAll, ref, ...rest }: StyledMultiSelectDropdownProps<DropdownOptionItem<unknown>> & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export {};
 //# sourceMappingURL=index.d.ts.map

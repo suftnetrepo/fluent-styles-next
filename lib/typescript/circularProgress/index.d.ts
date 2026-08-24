@@ -24,12 +24,11 @@ export interface StyledCircularProgressProps {
     duration?: number;
     colors?: Partial<CircularProgressColors>;
     /**
-     * Controls how built-in text is arranged.
-     * - 'stacked': display text first, then label / sublabel underneath
-     * - 'center': display text, label, and sublabel are centered inside the ring
-     * @default 'stacked'
+     * 'inside'  — percentage / label rendered centred inside the ring (default)
+     * 'stacked' — text sits below the ring
+     * 'center'  — alias for 'inside' (backwards-compat)
      */
-    contentPosition?: 'center' | 'stacked';
+    contentPosition?: 'inside' | 'center' | 'stacked';
     children?: React.ReactNode;
 }
 export declare const StyledCircularProgress: React.FC<StyledCircularProgressProps>;

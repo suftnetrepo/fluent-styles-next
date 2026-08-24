@@ -16,9 +16,24 @@ type StackProps = StackVariants & ViewProps & ViewStyle;
  * Default: neutral layout (no flex direction preset)
  * Use horizontal or vertical variants to set flex direction
  */
-declare const Stack: import("react").ForwardRefExoticComponent<StackVariants & ViewProps & ViewStyle & import("react").RefAttributes<any>>;
-declare const XStack: import("react").ForwardRefExoticComponent<Omit<StackProps, "horizontal" | "vertical"> & import("react").RefAttributes<any>>;
-declare const YStack: import("react").ForwardRefExoticComponent<Omit<StackProps, "horizontal" | "vertical"> & import("react").RefAttributes<any>>;
+declare const Stack: {
+    (props: StackVariants & ViewProps & ViewStyle & {
+        ref?: import("react").Ref<any> | undefined;
+    }): import("react").JSX.Element;
+    displayName: string;
+};
+declare const XStack: {
+    (props: Omit<StackProps, "horizontal" | "vertical"> & {
+        ref?: import("react").Ref<any> | undefined;
+    }): import("react").JSX.Element;
+    displayName: string;
+};
+declare const YStack: {
+    (props: Omit<StackProps, "horizontal" | "vertical"> & {
+        ref?: import("react").Ref<any> | undefined;
+    }): import("react").JSX.Element;
+    displayName: string;
+};
 export { Stack, XStack, YStack };
 export type { StackProps };
 //# sourceMappingURL=index.d.ts.map

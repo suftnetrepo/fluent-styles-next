@@ -10,7 +10,12 @@ type TextVariants = {
     link?: boolean;
 };
 type StyledTextProps = TextVariants & TextProps & TextStyle;
-declare const StyledText: import("react").ForwardRefExoticComponent<TextVariants & TextProps & TextStyle & import("react").RefAttributes<any>>;
+declare const StyledText: {
+    (props: TextVariants & TextProps & TextStyle & {
+        ref?: import("react").Ref<any> | undefined;
+    }): import("react").JSX.Element;
+    displayName: string;
+};
 export { StyledText };
 export type { StyledTextProps };
 //# sourceMappingURL=index.d.ts.map

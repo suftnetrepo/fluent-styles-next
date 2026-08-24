@@ -22,7 +22,12 @@ type CycleComponentProps = CycleVariants & ViewProps & ViewStyle;
  * Circular container with centered content
  * Default size: md (48px)
  */
-declare const CycleBase: React.ForwardRefExoticComponent<CycleVariants & ViewProps & ViewStyle & React.RefAttributes<any>>;
+declare const CycleBase: {
+    (props: CycleVariants & ViewProps & ViewStyle & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface StyledCycleProps extends CycleComponentProps {
     children?: React.ReactNode;
 }
@@ -59,7 +64,12 @@ interface StyledCycleProps extends CycleComponentProps {
  *   </LinearGradient>
  * </StyledCycle>
  */
-declare const StyledCycle: React.ForwardRefExoticComponent<StyledCycleProps & React.RefAttributes<View>>;
+declare const StyledCycle: {
+    ({ children, ref, ...rest }: StyledCycleProps & {
+        ref?: React.Ref<View> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export { StyledCycle, CycleBase };
 export type { CycleVariants, CycleComponentProps, StyledCycleProps, SizeVariant };
 //# sourceMappingURL=cycle.d.ts.map

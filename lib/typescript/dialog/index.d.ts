@@ -13,7 +13,12 @@ type DialogVariant = "delete" | "save" | "error" | "success" | "default" | "warn
 /**
  * Base Dialog component - Styled Modal wrapper
  */
-declare const DialogBase: React.ForwardRefExoticComponent<import("react-native").ModalBaseProps & import("react-native").ModalPropsIOS & import("react-native").ModalPropsAndroid & ViewProps & React.RefAttributes<any>>;
+declare const DialogBase: {
+    (props: import("react-native").ModalBaseProps & import("react-native").ModalPropsIOS & import("react-native").ModalPropsAndroid & ViewProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface StyledDialogProps extends ModalProps {
     /**
      * Whether dialog is visible

@@ -75,12 +75,20 @@ export interface StyledButtonProps extends ButtonProps {
     /** Icon element rendered after the label. */
     rightIcon?: React.ReactNode;
 }
-interface RefExoticComponent extends React.ForwardRefExoticComponent<StyledButtonProps & React.RefAttributes<React.ComponentRef<typeof ButtonBase>>> {
+interface RefExoticComponent {
+    (props: StyledButtonProps & {
+        ref?: React.Ref<React.ComponentRef<typeof ButtonBase>>;
+    }): React.ReactNode;
     Text: typeof StyledText;
 }
-declare const ButtonBase: React.ForwardRefExoticComponent<{
-    variant?: ButtonVariants | undefined;
-} & TouchableOpacityProps & ViewStyle & React.RefAttributes<any>>;
+declare const ButtonBase: {
+    (props: {
+        variant?: ButtonVariants | undefined;
+    } & TouchableOpacityProps & ViewStyle & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 declare const StyledButton: RefExoticComponent;
 export { StyledButton };
 //# sourceMappingURL=index.d.ts.map

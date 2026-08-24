@@ -57,6 +57,21 @@ const StyledHeaderContainer = styled<HeaderProps>(View, {
   },
 });
 
+// ─── Side slot ────────────────────────────────────────────────────────────────
+// Fixed-width, always-rendered container used only when titleAlignment is
+// "center". It guarantees the back-icon side and the rightIcon side reserve
+// equal width, so the centered title is centered relative to the whole
+// header — not just the leftover space between two differently-sized
+// siblings (which is what caused center titles to drift previously).
+
+const SideSlot = styled<ViewProps>(View, {
+  base: {
+    width: 48,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
 // ─── Full — pure children pass-through ───────────────────────────────────────
 // No layout of its own. StyledHeader (the outer wrapper) owns all spacing,
 // status bar, and container sizing. Full just renders whatever is inside it.
@@ -166,6 +181,20 @@ const HeaderComponent = ({
   //    them directly inside the container — skip the built-in layout slots.
   const renderContent = () => {
     if (children) return <>{children}</>;
+
+    // Centered titles need symmetric side widths to actually sit in the
+    // middle of the header — see SideSlot above. Left/right alignment
+    // already hug an edge and don't need this.
+    if (titleAlignment === "center") {
+      return (
+        <>
+          <SideSlot>{renderBackIcon()}</SideSlot>
+          {renderCenter()}
+          <SideSlot>{rightIcon}</SideSlot>
+        </>
+      );
+    }
+
     return (
       <>
         {renderBackIcon()}

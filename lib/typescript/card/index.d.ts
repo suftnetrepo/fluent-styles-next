@@ -1,7 +1,7 @@
 import { PressableProps, ViewProps, ViewStyle } from 'react-native';
 import React from 'react';
-import { StackProps } from '../stack';
-import { StyledImageBackgroundProps } from '../image';
+import { Stack, StackProps } from '../stack';
+import { StyledImageBackground, StyledImageBackgroundProps } from '../image';
 declare const shadow: {
     light: ViewStyle;
     lightMedium: ViewStyle;
@@ -24,28 +24,57 @@ interface StyledCardProps extends CardComponentProps {
  * Base Card component with shadow support
  * Flexible layout container with optional shadow variants
  */
-declare const CardBase: React.ForwardRefExoticComponent<CardVariants & ViewProps & ViewStyle & React.RefAttributes<any>>;
+declare const CardBase: {
+    (props: CardVariants & ViewProps & ViewStyle & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface HeaderProps extends StackProps {
     children: React.ReactNode;
 }
-declare const StyledHeader: React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<any>>;
+declare const StyledHeader: {
+    ({ children, ref, ...rest }: HeaderProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface ImageProps extends StyledImageBackgroundProps {
     children?: React.ReactNode;
 }
-declare const StyledImage: React.ForwardRefExoticComponent<ImageProps & React.RefAttributes<any>>;
+declare const StyledImage: {
+    ({ children, ref, ...rest }: ImageProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface ContentProps extends StackProps {
     children: React.ReactNode;
 }
-declare const StyledContent: React.ForwardRefExoticComponent<ContentProps & React.RefAttributes<any>>;
+declare const StyledContent: {
+    ({ children, ref, ...rest }: ContentProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface FooterProps extends StackProps {
     children: React.ReactNode;
 }
-declare const StyledFooter: React.ForwardRefExoticComponent<FooterProps & React.RefAttributes<any>>;
-interface Card extends React.ForwardRefExoticComponent<StyledCardProps & React.RefAttributes<React.ComponentRef<typeof CardBase>>> {
+declare const StyledFooter: {
+    ({ children, ref, ...rest }: FooterProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
+interface Card {
+    (props: StyledCardProps & {
+        ref?: React.Ref<React.ComponentRef<typeof CardBase>>;
+    }): React.ReactNode;
     Header: typeof StyledHeader;
     Footer: typeof StyledFooter;
     Image: typeof StyledImage;
     Content: typeof StyledContent;
+    displayName?: string;
 }
 declare const StyledCard: Card;
 export { StyledCard, StyledHeader, StyledContent, StyledFooter, shadow };

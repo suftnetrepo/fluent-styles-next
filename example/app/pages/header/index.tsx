@@ -217,6 +217,48 @@ export const StyledHeaderDemo: React.FC = () => {
           </Stack>
         </DemoSection>
 
+        {/* ── 3b. Symmetric centering ─────────────────────────────────────── */}
+        {/* With titleAlignment="center", the back-arrow slot and the
+            rightIcon slot each reserve equal fixed width, so the title
+            stays centered even when only one side has content. */}
+        <DemoSection title="Symmetric centering">
+          <Stack gap={12}>
+            {/* back arrow only — no right icon */}
+            <HeaderFrame>
+              <StyledHeader
+                title="Back arrow only"
+                titleAlignment="center"
+                showBackArrow
+
+                backgroundColor={theme.colors.gray[50]}
+              />
+            </HeaderFrame>
+
+            {/* right icon only — no back arrow */}
+            <HeaderFrame>
+              <StyledHeader
+                title="Right icon only"
+                titleAlignment="center"
+
+                backgroundColor={theme.colors.gray[50]}
+                rightIcon={<IconBtn label="⋯" />}
+              />
+            </HeaderFrame>
+
+            {/* both sides populated */}
+            <HeaderFrame>
+              <StyledHeader
+                title="Both sides"
+                titleAlignment="center"
+                showBackArrow
+
+                backgroundColor={theme.colors.gray[50]}
+                rightIcon={<IconBtn label="⋯" />}
+              />
+            </HeaderFrame>
+          </Stack>
+        </DemoSection>
+
         {/* ── 4. Left icon ───────────────────────────────────────────────── */}
         <DemoSection title="Left icon (no back arrow)">
           <Stack gap={12}>
