@@ -505,8 +505,8 @@ export default function TextInputUsage() {
                             <StyledText fontSize={20} fontWeight="800" color="#111827">Create account</StyledText>
                             <Stack vertical gap={14} marginTop={16}>
                                 <Stack horizontal gap={12} flex={1}>
-                                    <StyledTextInput label="First name" placeholder="Alex" />
-                                    <StyledTextInput label="Last name" placeholder="Johnson" />
+                                    <StyledTextInput label="First name" placeholder="Alex" flex={1} />
+                                    <StyledTextInput label="Last name" placeholder="Johnson" flex={1} />
                                 </Stack>
                                 <StyledTextInput
                                     label="Email"
@@ -561,8 +561,8 @@ export default function TextInputUsage() {
                                     maxLength={19}
                                 />
                                 <Stack horizontal gap={12}>
-                                    <StyledTextInput label="Expiry" placeholder="MM / YY" keyboardType="numeric" maxLength={5} />
-                                    <StyledTextInput label="CVV" placeholder="•••" keyboardType="numeric" maxLength={4} secureTextEntry />
+                                    <StyledTextInput label="Expiry" placeholder="MM / YY" keyboardType="numeric" maxLength={5} flex={1} />
+                                    <StyledTextInput label="CVV" placeholder="•••" keyboardType="numeric" maxLength={4} secureTextEntry flex={1} />
                                 </Stack>
                                 <StyledTextInput
                                     label="Billing ZIP"

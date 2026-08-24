@@ -592,6 +592,8 @@ import { StyledImage, StyledImageBackground } from 'fluent-styles'
 
 A composable navigation header with status bar management, slot-based layout, and a `StyledHeader.Full` escape hatch for fully custom content.
 
+> **Centering:** with `titleAlignment="center"`, the back-arrow slot and the `rightIcon` slot each reserve an equal, fixed width — so the title stays visually centered in the header whether only one side has content, both do, or neither does. `left` / `right` alignment hug their edge directly and aren't affected by this.
+
 ```tsx
 import { StyledHeader } from 'fluent-styles'
 
@@ -599,6 +601,10 @@ import { StyledHeader } from 'fluent-styles'
 <StyledHeader title="Left aligned"   titleAlignment="left"   showStatusBar={false} />
 <StyledHeader title="Center aligned" titleAlignment="center" showStatusBar={false} />
 <StyledHeader title="Right aligned"  titleAlignment="right"  showStatusBar={false} />
+
+// Center alignment stays centered even with only one side populated
+<StyledHeader title="Detail" titleAlignment="center" showBackArrow showStatusBar={false} />
+<StyledHeader title="Detail" titleAlignment="center" rightIcon={<MoreIconBtn />} showStatusBar={false} />
 
 // ── Back arrow ───────────────────────────────────────────────────────────────
 <StyledHeader
@@ -697,7 +703,7 @@ import { StyledHeader } from 'fluent-styles'
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `title` | `string` | — | Header title |
-| `titleAlignment` | `left \| center \| right` | `left` | Title position |
+| `titleAlignment` | `left \| center \| right` | `left` | Title position. `center` reserves equal-width side slots so the title stays centered regardless of which sides have content |
 | `titleProps` | `StyledTextProps` | — | Font/colour overrides for the title |
 | `showBackArrow` | `boolean` | `false` | Renders a chevron back arrow |
 | `onBackPress` | `() => void` | — | Tapped when the back arrow is pressed |

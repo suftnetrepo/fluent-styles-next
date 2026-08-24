@@ -78,12 +78,23 @@ export interface StyledTextInputProps extends CardComponentProps {
     fontSize?: number;
     fontWeight?: TextStyle['fontWeight'];
 }
+declare const TextInputBase: {
+    (props: TextInputProps & TextStyle & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export interface StyledTextInputHandle extends StyledTextInputProps {
     focus: () => void;
     blur: () => void;
     clear: () => void;
     isFocused: () => boolean;
 }
-export declare const StyledTextInput: React.ForwardRefExoticComponent<StyledTextInputProps & React.RefAttributes<any>>;
+export declare const StyledTextInput: {
+    ({ label, labelProps, required, helperText, helperProps, errorMessage, errorProps, error, showCounter, leftIcon, rightIcon, leftAddon, rightAddon, clearable, loading, variant, size, borderColor: borderColorProp, focusColor, floatLabel, containerStyle, inputWrapStyle, inputStyle, flex, fontSize: fontSizeProp, fontWeight: fontWeightProp, value, defaultValue, onChangeText, placeholder, editable, multiline, numberOfLines, maxLength, onFocus: onFocusProp, onBlur: onBlurProp, ref, ...rest }: StyledTextInputProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export { StyledTextInput as StyledInput };
 //# sourceMappingURL=index.d.ts.map

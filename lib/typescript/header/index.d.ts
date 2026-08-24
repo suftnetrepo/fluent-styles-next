@@ -1,6 +1,5 @@
 import React from "react";
 import { View, ViewProps, ViewStyle } from "react-native";
-import { StatusBarProps } from "./statusBar";
 import { ShapeProps } from "../shape";
 import { StyledTextProps } from "../text";
 export interface BackArrowProps {
@@ -19,8 +18,6 @@ export interface HeaderProps extends ViewProps, ViewStyle {
     backArrowProps?: BackArrowProps;
     shapeProps?: ShapeProps;
     onBackPress?: () => void;
-    showStatusBar?: boolean;
-    statusBarProps?: StatusBarProps;
     skipStatusBarOnAndroid?: boolean;
     skipStatusBarOnIOS?: boolean;
     children?: React.ReactNode;
@@ -28,10 +25,13 @@ export interface HeaderProps extends ViewProps, ViewStyle {
 declare const Full: React.FC<{
     children?: React.ReactNode;
 }>;
-declare const HeaderComponent: React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<ViewProps & ViewStyle & React.RefAttributes<any>>>;
-interface HeaderComponent extends React.ForwardRefExoticComponent<HeaderProps & React.RefAttributes<View>> {
+interface StyledHeaderType {
+    (props: HeaderProps & {
+        ref?: React.Ref<View>;
+    }): React.ReactElement | null;
     Full: typeof Full;
+    displayName?: string;
 }
-declare const StyledHeader: HeaderComponent;
+declare const StyledHeader: StyledHeaderType;
 export { StyledHeader };
 //# sourceMappingURL=index.d.ts.map

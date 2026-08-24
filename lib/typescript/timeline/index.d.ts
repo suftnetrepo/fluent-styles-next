@@ -45,6 +45,14 @@ export interface StyledTimelineColors {
     /** Secondary time (endTime) colour. Default: theme.colors.gray[400] */
     endTimeText?: string;
 }
+export interface StyledTimeFont {
+    /** Time text font size. Default: theme.fontSize.normal */
+    startFontSize?: number;
+    /** Secondary time (endTime) font size. Default: theme.fontSize.small */
+    endFontSize?: number;
+    startFontWeight?: number | string;
+    endFontWeight?: number | string;
+}
 export interface StyledTimelineProps {
     /**
      * Array of timeline entries.
@@ -80,6 +88,7 @@ export interface StyledTimelineProps {
     colors?: StyledTimelineColors;
     /** Called when an item is pressed (only fires if item has no custom onPress) */
     onItemPress?: (item: TimelineItem) => void;
+    fonts?: StyledTimeFont;
 }
 /**
  * StyledTimeline — vertical data-driven timeline for fluent-styles apps.

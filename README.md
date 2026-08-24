@@ -60,35 +60,36 @@ export default function App() {
 | `StyledText` | Typography |
 | `StyledButton` | Actions |
 | `StyledPressable` | Actions |
-| `StyledInput` | Form |
+| `StyledInput` / `StyledTextInput` | Form |
 | `StyledForm` | Form |
 | `StyledCheckBox` | Form |
 | `Switch` | Form |
 | `StyledDropdown` | Form |
 | `StyledMultiSelectDropdown` | Form |
-| `StyledRadio` | Form |
+| `StyledRadio` / `StyledRadioGroup` | Form |
 | `StyledSlider` | Form |
 | `StyledDatePicker` | Form |
 | `StyledSearchBar` | Form |
 | `StyledImage` / `StyledImageBackground` | Media |
-| `StyleShape` / `Cycle` | Shape |
+| `StyleShape` / `StyledCycle` | Shape |
 | `StyledBadge` / `BadgeWithIcon` / `BadgeIcon` | Indicators |
-| `StyledChips` | Indicators |
+| `StyledChip` | Indicators |
 | `Spinner` / `Circular` / `Loader` | Loading |
 | `StyledProgressBar` | Progress |
 | `StyledCircularProgress` | Progress |
-| `StyledBarChart` | Charts |
+| `StyledBar` | Charts |
 | `StyledDialog` / `StyledConfirmDialog` / `StyledOkDialog` | Overlays |
-| `StyledDrawer` | Overlays |
-| `StyledPopup` | Overlays |
-| `StyledActionSheet` | Overlays |
-| `StyledCollapsible` | Navigation |
-| `StyledTabBar` | Navigation |
+| `Drawer` | Overlays |
+| `Popup` | Overlays |
+| `Collapse` / `CollapseGroup` | Navigation |
+| `TabBar` | Navigation |
 | `StyledTimeline` | Display |
 | `StyledTable` | Display |
 | `StyledSkeleton` | Display |
 | `StyledEmptyState` | Display |
 | `GlobalPortalProvider` | Portal |
+
+> Action sheets are accessed via `useActionSheet` / `actionSheetService`, not a standalone component — see [Hooks & Services](#hooks--services).
 
 ---
 

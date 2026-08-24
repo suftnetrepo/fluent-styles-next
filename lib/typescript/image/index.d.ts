@@ -2,14 +2,21 @@ import { Image, ImageProps, ImageBackgroundProps, ImageStyle, DimensionValue } f
 import React from 'react';
 type StyledImageProps = ImageProps & ImageStyle;
 type StyledImageBackgroundProps = ImageBackgroundProps & ImageStyle;
-declare const StyledImageBackground: React.ForwardRefExoticComponent<ImageBackgroundProps & ImageStyle & React.RefAttributes<any>>;
+declare const StyledImageBackground: {
+    (props: ImageBackgroundProps & ImageStyle & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 interface _StyledImageProps extends Omit<StyledImageProps, 'height' | 'width'> {
     cycle?: boolean;
     size?: DimensionValue;
     height?: DimensionValue;
     width?: DimensionValue;
 }
-declare const StyledImage: React.ForwardRefExoticComponent<_StyledImageProps & React.RefAttributes<Image>>;
+declare const StyledImage: ({ height, width, ref, ...props }: _StyledImageProps & {
+    ref?: React.Ref<Image> | undefined;
+}) => React.JSX.Element;
 export { StyledImage, StyledImageBackground };
 export type { StyledImageProps, StyledImageBackgroundProps };
 //# sourceMappingURL=index.d.ts.map

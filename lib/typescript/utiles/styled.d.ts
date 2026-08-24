@@ -9,6 +9,11 @@ interface StyledOptions {
         } | ((selected: string, options: any) => Style);
     };
 }
-declare const styled: <P extends object>(Component: React.ComponentType<P>, { base, variants }?: StyledOptions) => React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<any>>;
+declare const styled: <P extends object>(Component: React.ComponentType<P>, { base, variants }?: StyledOptions) => {
+    (props: P & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export { styled };
 //# sourceMappingURL=styled.d.ts.map

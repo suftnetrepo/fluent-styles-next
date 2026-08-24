@@ -23,6 +23,17 @@ interface StyledCheckBoxProps extends CheckBoxProps {
     iconProps?: any;
     iconSize?: number;
 }
-declare const StyledCheckBox: React.ForwardRefExoticComponent<StyledCheckBoxProps & React.RefAttributes<any>>;
+declare const CheckBoxBase: {
+    (props: VariantProps & ViewStyleProps & TouchableOpacityProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
+declare const StyledCheckBox: {
+    ({ checked, onCheck, checkedColor, uncheckedColor, checkMarkColor, size, disabled, iconProps, iconSize, ref, ...rest }: StyledCheckBoxProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export { StyledCheckBox, type StyledCheckBoxProps };
 //# sourceMappingURL=index.d.ts.map

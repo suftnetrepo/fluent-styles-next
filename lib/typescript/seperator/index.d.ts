@@ -1,4 +1,4 @@
-import { StackProps } from "../stack";
+import { Stack, StackProps } from "../stack";
 import { StyledText } from "../text";
 import React from "react";
 interface SeperatorProps extends StackProps {
@@ -7,7 +7,12 @@ interface SeperatorProps extends StackProps {
     rightLabel?: string;
     rightLabelProps?: React.ComponentProps<typeof StyledText>;
 }
-declare const StyledSeperator: React.ForwardRefExoticComponent<SeperatorProps & React.RefAttributes<any>>;
+declare const StyledSeperator: {
+    ({ leftLabel, leftLabelProps, rightLabel, rightLabelProps, ref, ...rest }: SeperatorProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 export { StyledSeperator };
 export type { SeperatorProps };
 //# sourceMappingURL=index.d.ts.map

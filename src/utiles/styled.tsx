@@ -20,6 +20,7 @@ const styled = <P extends object>(
     const StyledComponent = (props: P & { ref?: React.Ref<any> }) => {
         const styles: Style = { ...(base || {}) };
         const options = props as Record<string, any>;
+        const incomingStyle = options.style;
         const cleanProps = { ...options };
 
         if (variants) {
@@ -38,7 +39,7 @@ const styled = <P extends object>(
             });
         }
 
-        return <Component {...(cleanProps as P)} style={styles} />;
+       return <Component {...(cleanProps as P)} style={[styles, incomingStyle]} />;
     };
 
     StyledComponent.displayName = `Styled(${

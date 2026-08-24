@@ -37,7 +37,12 @@ declare const variantConfig: Record<'default' | 'primary' | 'success' | 'warning
  * - Theme integration
  * - Accessibility support
  */
-declare const StyledSpinner: React.ForwardRefExoticComponent<SpinnerProps & React.RefAttributes<any>>;
+declare const StyledSpinner: {
+    ({ size, variant, color, overlay, overlayColor, label, labelColor, labelSize, accessibilityLabel, ref, ...rest }: SpinnerProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 /**
  * Props for SpinnerContainer - Full-screen loading overlay with backdrop
  */
@@ -52,7 +57,12 @@ interface SpinnerContainerProps extends Omit<SpinnerProps, 'ref' | 'overlay'> {
  *
  * Use for: Page loading, data fetching, async operations
  */
-declare const SpinnerContainer: React.ForwardRefExoticComponent<SpinnerContainerProps & React.RefAttributes<any>>;
+declare const SpinnerContainer: {
+    ({ isVisible, size, variant, color, backdropColor, message, labelColor, labelSize, onBackdropPress, ref, ...rest }: SpinnerContainerProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element | null;
+    displayName: string;
+};
 /**
  * Props for InlineSpinner - Spinner with text in a row
  */
@@ -66,7 +76,12 @@ interface InlineSpinnerProps extends Omit<SpinnerProps, 'overlay'> {
  *
  * Use for: Button loading states, inline operations, compact loading indicators
  */
-declare const InlineSpinner: React.ForwardRefExoticComponent<InlineSpinnerProps & React.RefAttributes<any>>;
+declare const InlineSpinner: {
+    ({ size, variant, color, text, labelColor, labelSize, direction, gap, accessibilityLabel, ref, ...rest }: InlineSpinnerProps & {
+        ref?: React.Ref<any> | undefined;
+    }): React.JSX.Element;
+    displayName: string;
+};
 /**
  * Exports
  */
