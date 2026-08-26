@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "react-native-xiaoshu",
-    "slug": "react-native-xiaoshu",
+    "name": "fluent-styles-example",
+    "slug": "fluent-styles-example",
     "version": "0.4.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -1,6 +1,7 @@
 
 import { View, ViewProps, ViewStyle } from 'react-native';
 import { styled } from '../utiles/styled';
+import { viewStyleVariants, viewStyleStringVariants } from '../utiles/viewStyleVariants';
 
 /**
  * Stack-specific layout variants for flex direction
@@ -25,6 +26,8 @@ const Stack = styled<StackProps>(View, {
         position: 'relative',
     } as ViewStyle,
     variants: {
+        ...viewStyleVariants,
+        ...viewStyleStringVariants,
         vertical: {
             true: {
                 flexDirection: 'column',
@@ -44,14 +47,22 @@ const XStack = styled<Omit<StackProps, 'vertical' | 'horizontal'>>(View, {
     base: {
         position: 'relative',
          flexDirection: 'row',
-    } as ViewStyle
+    } as ViewStyle,
+    variants: {
+        ...viewStyleVariants,
+        ...viewStyleStringVariants,
+    } as any
 });
 
 const YStack = styled<Omit<StackProps, 'vertical' | 'horizontal'>>(View, {
     base: {
         position: 'relative',
          flexDirection: 'column',
-    } as ViewStyle
+    } as ViewStyle,
+    variants: {
+        ...viewStyleVariants,
+        ...viewStyleStringVariants,
+    } as any
 });
 
 export {  Stack, XStack, YStack };
