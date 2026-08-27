@@ -19,7 +19,7 @@ interface StyledPageType {
     displayName?: string;
 }
 
-const Page = ({ children, statusBarProps, showStatusBar = true, statusBarStyle, statusBarBackgroundColor, hideStatusBarOnAndroid, hideStatusBarOnIOS, translucentStatusBar, ...props }: React.PropsWithChildren<StyledPageProps>) => {
+const Page = ({ children, statusBarProps, showStatusBar = true, statusBarStyle = 'dark-content', statusBarBackgroundColor, hideStatusBarOnAndroid, hideStatusBarOnIOS, translucentStatusBar, ...props }: React.PropsWithChildren<StyledPageProps>) => {
     return (
         <StyledSafeAreaView {...props}>
             {showStatusBar && <StatusBar hidden={hideStatusBarOnAndroid || hideStatusBarOnIOS} barStyle={statusBarStyle} backgroundColor={statusBarBackgroundColor} translucent={translucentStatusBar} {...statusBarProps} />}
