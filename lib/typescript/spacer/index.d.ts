@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ViewProps } from 'react-native';
 import { ViewStyleProps } from '../utiles/viewStyleProps';
 type SpacerProps = ViewProps & (Pick<ViewStyleProps, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight' | 'marginHorizontal' | 'marginVertical' | 'backgroundColor' | 'borderRadius' | 'borderWidth' | 'borderColor' | 'flex' | 'width' | 'height'>);

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { SafeAreaViewProps } from 'react-native-safe-area-context';
 import { ViewStyleProps } from '../utiles/viewStyleProps';
 type StyledSafeAreaViewProps = SafeAreaViewProps & ViewStyleProps;

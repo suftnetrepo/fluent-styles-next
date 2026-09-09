@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { TextProps, TextStyle } from 'react-native';
 type TextVariants = {
     fontSize?: number;

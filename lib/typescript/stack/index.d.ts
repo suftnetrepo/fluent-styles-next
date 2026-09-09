@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ViewProps, ViewStyle } from 'react-native';
 /**
  * Stack-specific layout variants for flex direction

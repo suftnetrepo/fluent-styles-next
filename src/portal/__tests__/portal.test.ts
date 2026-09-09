@@ -8,8 +8,8 @@
  *   2. `getPositionStyles` — the position-to-style mapping utility
  */
 
-import { PortalInstance } from './PortalInstance'
-import { getPositionStyles } from '../utiles/position'
+import { PortalInstance } from '../PortalInstance'
+import { getPositionStyles } from '../../utiles/position'
 
 // ─── PortalInstance ───────────────────────────────────────────────────────────
 

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ViewProps } from 'react-native';
 import { ViewStyle } from '../utiles/viewStyleProps';
 type DividerVariants = {

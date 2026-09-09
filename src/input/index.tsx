@@ -15,13 +15,10 @@ import {
   View,
 } from 'react-native'
 import type {
-  NativeSyntheticEvent,
-  TextInputFocusEventData,
   TextStyle,
   ViewStyle,
 } from 'react-native'
 
-import { styled }               from '../utiles/styled'
 import { theme }                from '../utiles/theme'
 import { viewStyleVariants, viewStyleStringVariants } from '../utiles/viewStyleVariants'
 import { StyledText }           from '../text'
@@ -132,38 +129,52 @@ export interface StyledTextInputProps
   
 }
 
-const TextInputBase = styled<CardComponentProps>(TextInput, {
-    base: {
-        borderColor: theme.colors.gray[200],
-        backgroundColor: theme.colors.gray[1],
-        flex : 1,
-        color: theme.colors.gray[800],
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        fontSize: theme.fontSize.normal,
-        minHeight: 48,
-    },
-    variants: {
-        ...viewStyleVariants,
-        ...viewStyleStringVariants,
+// ─── Flat style-prop resolution ────────────────────────────────────────────────
+// Replaces the generic `styled()` wrapper that used to sit around TextInput.
+// Preserves its behaviour exactly: any flat ViewStyle/TextStyle prop (e.g.
+// `opacity`, `padding`, `borderColor`) passed straight to StyledTextInput is
+// resolved into a real style on the inner TextInput and stripped out of the
+// props spread onto it — same variant maps `styled()` used, resolved locally
+// instead of through the shared HOC.
+const BASE_INPUT_STYLE: TextStyle = {
+    borderColor: theme.colors.gray[200],
+    backgroundColor: theme.colors.gray[1],
+    flex: 1,
+    color: theme.colors.gray[800],
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: theme.fontSize.normal,
+    minHeight: 48,
+}
 
-        fontSize: (selected: string) => {
-            const size = selected || theme.fontSize.normal;
-            if (isNaN(Number(size))) {
-                // throw new Error('Invalid fontSize value');
-            }
-            return { fontSize: Number(size) };
-        },
+const FLAT_STYLE_VARIANTS: Record<string, any> = {
+    ...viewStyleVariants,
+    ...viewStyleStringVariants,
+}
 
-        fontWeight: (selected: string) => {
-            const weight = selected || theme.fontWeight.normal;
-            if (isNaN(Number(weight))) {
-                // throw new Error('Invalid fontWeight value');
-            }
-            return { fontWeight: weight as any };
-        },
-    }
-});
+const resolveFlatStyle = (
+    props: Record<string, any>,
+): { style: TextStyle; clean: Record<string, any> } => {
+    const style: TextStyle = { ...BASE_INPUT_STYLE }
+    const clean: Record<string, any> = { ...props }
+
+    Object.keys(FLAT_STYLE_VARIANTS).forEach((key) => {
+        if (!(key in clean)) return
+        const selected = clean[key]
+        delete clean[key]
+
+        const variant = FLAT_STYLE_VARIANTS[key]
+        if (typeof variant === 'function') {
+            const resolved = variant(selected, props)
+            if (resolved) Object.assign(style, resolved)
+        } else if (variant?.[selected]) {
+            const value = variant[selected]
+            Object.assign(style, typeof value === 'function' ? value(selected, props) : value)
+        }
+    })
+
+    return { style, clean }
+}
 
 export interface StyledTextInputHandle extends StyledTextInputProps {
   focus:      () => void
@@ -396,7 +407,7 @@ export const StyledTextInput = (
     onBlur:  onBlurProp,
     ref,
     ...rest
-  }: StyledTextInputProps & { ref?: React.Ref<React.ComponentRef<typeof TextInputBase>> },
+  }: StyledTextInputProps & { ref?: React.Ref<StyledTextInputHandle> },
 ) => {
     const [focused,     setFocused]     = useState(false)
     const [localValue,  setLocalValue]  = useState(defaultValue ?? '')
@@ -418,12 +429,12 @@ export const StyledTextInput = (
       onChangeText?.(text)
     }, [value, onChangeText])
 
-    const handleFocus = useCallback((e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    const handleFocus = useCallback((e: Parameters<NonNullable<TextInputProps['onFocus']>>[0]) => {
       setFocused(true)
       onFocusProp?.(e)
     }, [onFocusProp])
 
-    const handleBlur = useCallback((e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    const handleBlur = useCallback((e: Parameters<NonNullable<TextInputProps['onBlur']>>[0]) => {
       setFocused(false)
       onBlurProp?.(e)
     }, [onBlurProp])
@@ -450,6 +461,11 @@ export const StyledTextInput = (
     const baseRadius = variant === 'underline' || variant === 'ghost' ? 0 : 8
     const hasLeftAddon  = !!leftAddon
     const hasRightAddon = !!rightAddon
+
+    // Resolves any flat ViewStyle/TextStyle prop passed straight to
+    // StyledTextInput (e.g. `opacity`, `padding`) into a real style, and
+    // strips those keys out of what gets spread onto the native TextInput.
+    const { style: flatStyle, clean: cleanRest } = resolveFlatStyle(rest)
 
     // ── Right-side icons (priority: loading > clear > rightIcon) ─────────
     const resolvedRightNode = loading ? (
@@ -535,7 +551,7 @@ export const StyledTextInput = (
             ) : null}
 
             {/* Core TextInput */}
-            <TextInputBase
+            <TextInput
               ref={inputRef}
               value={value}
               defaultValue={defaultValue}
@@ -549,6 +565,7 @@ export const StyledTextInput = (
               numberOfLines={numberOfLines}
               maxLength={maxLength}
               style={[
+                flatStyle,
                 S.input,
                 {
                   fontSize:    fontSizeProp ?? sz.fontSize,
@@ -562,7 +579,7 @@ export const StyledTextInput = (
                 },
                 inputStyle,
               ]}
-              {...rest}
+              {...cleanRest}
             />
 
             {/* Right icon / clear / spinner */}

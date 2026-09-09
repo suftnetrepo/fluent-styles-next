@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ViewProps, ViewStyle } from 'react-native';
 type ShapeVariants = {
     cycle?: boolean | [boolean, ViewStyle];

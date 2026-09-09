@@ -12,7 +12,6 @@
   "include": [
     "./src",
     "typing.d.ts",
-    ".dumirc.ts",
     "./docs",
     ".dumi",
     ".eslintrc.js",
@@ -21,7 +20,12 @@
     "jest-setup.js",
     "babel.config.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    ".dumirc.ts",
+    "docs/case/__fixtures__",
+    "docs/guide/code"
+  ]
   ,
    "resolutions": {
     "@types/react": "^18"

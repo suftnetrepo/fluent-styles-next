@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import type { PortalContextType } from './types';
 /**
  * React context that carries the declarative mount / update / unmount API.

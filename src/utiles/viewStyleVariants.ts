@@ -1,295 +1,334 @@
 import { ViewStyle } from 'react-native';
 
+/**
+ * A raw variant value as it arrives from a prop. Numeric props (e.g. `width={100}`)
+ * come through as `number`, string props (e.g. `width="100%"`) come through as `string`.
+ */
+type RawValue = string | number | null | undefined;
+
+/**
+ * Parses a raw prop value into a React Native `DimensionValue` (`number | \`${number}%\``).
+ *
+ * `parseFloat` alone silently discards any trailing unit (e.g. `parseFloat('100%') === 100`),
+ * which turns a percentage into a plain pixel value. This keeps the `%` suffix intact when
+ * present, and otherwise numerically parses the value (so `"16px"`, `"16dp"`, `16`, `"16"`
+ * all resolve to the number `16`, matching the previous behaviour for non-percentage units).
+ */
+const parseDimension = (
+  selected: RawValue,
+  { min, max }: { min?: number; max?: number } = {}
+): number | `${number}%` | undefined => {
+  if (selected === null || selected === undefined) return undefined;
+
+  if (typeof selected === 'number') {
+    if (isNaN(selected)) return undefined;
+    if (min !== undefined && selected < min) return undefined;
+    if (max !== undefined && selected > max) return undefined;
+    return selected;
+  }
+
+  const trimmed = selected.trim();
+  if (trimmed === '') return undefined;
+
+  const isPercent = trimmed.endsWith('%');
+  const numeric = parseFloat(trimmed);
+  if (isNaN(numeric)) return undefined;
+  if (min !== undefined && numeric < min) return undefined;
+  if (max !== undefined && numeric > max) return undefined;
+
+  return isPercent ? (`${numeric}%` as `${number}%`) : numeric;
+};
+
 export const viewStyleVariants = {
 
-  width: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+  width: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { width: value } as ViewStyle;
   },
-  
-  height: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  height: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { height: value } as ViewStyle;
   },
-  
-  minWidth: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  minWidth: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { minWidth: value } as ViewStyle;
   },
-  
-  maxWidth: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  maxWidth: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { maxWidth: value } as ViewStyle;
   },
-  
-  minHeight: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  minHeight: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { minHeight: value } as ViewStyle;
   },
-  
-  maxHeight: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  maxHeight: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { maxHeight: value } as ViewStyle;
   },
 
   // Position Properties
-  top: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+  top: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { top: value } as ViewStyle;
   },
-  
-  bottom: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  bottom: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { bottom: value } as ViewStyle;
   },
-  
-  left: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  left: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { left: value } as ViewStyle;
   },
-  
-  right: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  right: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { right: value } as ViewStyle;
   },
 
   // Margin Properties
-  margin: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+  margin: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { margin: value } as ViewStyle;
   },
-  
-  marginTop: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginTop: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginTop: value } as ViewStyle;
   },
-  
-  marginBottom: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginBottom: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginBottom: value } as ViewStyle;
   },
-  
-  marginLeft: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginLeft: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginLeft: value } as ViewStyle;
   },
-  
-  marginRight: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginRight: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginRight: value } as ViewStyle;
   },
-  
-  marginHorizontal: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginHorizontal: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginHorizontal: value } as ViewStyle;
   },
-  
-  marginVertical: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  marginVertical: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { marginVertical: value } as ViewStyle;
   },
 
   // Padding Properties
-  padding: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+  padding: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { padding: value } as ViewStyle;
   },
-  
-  paddingTop: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingTop: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingTop: value } as ViewStyle;
   },
-  
-  paddingBottom: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingBottom: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingBottom: value } as ViewStyle;
   },
-  
-  paddingLeft: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingLeft: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingLeft: value } as ViewStyle;
   },
-  
-  paddingRight: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingRight: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingRight: value } as ViewStyle;
   },
-  
-  paddingHorizontal: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingHorizontal: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingHorizontal: value } as ViewStyle;
   },
-  
-  paddingVertical: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value) || value < 0) return {};
+
+  paddingVertical: (selected: RawValue) => {
+    const value = parseDimension(selected, { min: 0 });
+    if (value === undefined) return {};
     return { paddingVertical: value } as ViewStyle;
   },
 
   // Border Properties
-  borderWidth: (selected: string) => {
-    const value = parseFloat(selected);
+  borderWidth: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderWidth: value } as ViewStyle;
   },
-  
-  borderTopWidth: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderTopWidth: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderTopWidth: value } as ViewStyle;
   },
-  
-  borderBottomWidth: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderBottomWidth: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderBottomWidth: value } as ViewStyle;
   },
-  
-  borderLeftWidth: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderLeftWidth: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderLeftWidth: value } as ViewStyle;
   },
-  
-  borderRightWidth: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderRightWidth: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderRightWidth: value } as ViewStyle;
   },
 
   // Border Radius Properties
-  borderRadius: (selected: string) => {
-    const value = parseFloat(selected);
+  borderRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderRadius: value } as ViewStyle;
   },
-  
-  borderTopLeftRadius: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderTopLeftRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderTopLeftRadius: value } as ViewStyle;
   },
-  
-  borderTopRightRadius: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderTopRightRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderTopRightRadius: value } as ViewStyle;
   },
-  
-  borderBottomLeftRadius: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderBottomLeftRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderBottomLeftRadius: value } as ViewStyle;
   },
-  
-  borderBottomRightRadius: (selected: string) => {
-    const value = parseFloat(selected);
+
+  borderBottomRightRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { borderBottomRightRadius: value } as ViewStyle;
   },
 
   // Border Color Properties (accept color strings)
-  borderColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+  borderColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { borderColor: selected } as ViewStyle;
   },
-  
-  borderTopColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+
+  borderTopColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { borderTopColor: selected } as ViewStyle;
   },
-  
-  borderBottomColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+
+  borderBottomColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { borderBottomColor: selected } as ViewStyle;
   },
-  
-  borderLeftColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+
+  borderLeftColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { borderLeftColor: selected } as ViewStyle;
   },
-  
-  borderRightColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+
+  borderRightColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { borderRightColor: selected } as ViewStyle;
   },
 
   // Background Properties
-  backgroundColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+  backgroundColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { backgroundColor: selected } as ViewStyle;
   },
-  
-  opacity: (selected: string) => {
-    const value = parseFloat(selected);
+
+  opacity: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0 || value > 1) return {};
     return { opacity: value } as ViewStyle;
   },
 
   // Transform Properties (simplified - only scale, rotate)
-  rotation: (selected: string) => {
-    const value = parseFloat(selected);
+  rotation: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value)) return {};
     return { transform: [{ rotate: `${value}deg` }] } as ViewStyle;
   },
-  
-  scale: (selected: string) => {
-    const value = parseFloat(selected);
+
+  scale: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { transform: [{ scale: value }] } as ViewStyle;
   },
 
   // Shadow Properties (iOS)
-  shadowOpacity: (selected: string) => {
-    const value = parseFloat(selected);
+  shadowOpacity: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0 || value > 1) return {};
     return { shadowOpacity: value } as ViewStyle;
   },
-  
-  shadowRadius: (selected: string) => {
-    const value = parseFloat(selected);
+
+  shadowRadius: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { shadowRadius: value } as ViewStyle;
   },
-  
-  shadowColor: (selected: string) => {
-    if (!selected || selected.trim() === '') return {};
+
+  shadowColor: (selected: RawValue) => {
+    if (!selected || String(selected).trim() === '') return {};
     return { shadowColor: selected } as ViewStyle;
   },
 
   // Elevation (Android)
-  elevation: (selected: string) => {
-    const value = parseFloat(selected);
+  elevation: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { elevation: value } as ViewStyle;
   },
 
   // Z-Index
-  zIndex: (selected: string) => {
-    const value = parseInt(selected, 10);
+  zIndex: (selected: RawValue) => {
+    const value = parseInt(String(selected), 10);
     if (isNaN(value)) return {};
     return { zIndex: value } as ViewStyle;
   },
@@ -300,14 +339,14 @@ export const viewStyleStringVariants = {
     absolute: { position: 'absolute' } as ViewStyle,
     relative: { position: 'relative' } as ViewStyle,
   },
-  
+
   flexDirection: {
     row: { flexDirection: 'row' } as ViewStyle,
     column: { flexDirection: 'column' } as ViewStyle,
     'row-reverse': { flexDirection: 'row-reverse' } as ViewStyle,
     'column-reverse': { flexDirection: 'column-reverse' } as ViewStyle,
   },
-  
+
   justifyContent: {
     'flex-start': { justifyContent: 'flex-start' } as ViewStyle,
     'flex-end': { justifyContent: 'flex-end' } as ViewStyle,
@@ -316,7 +355,7 @@ export const viewStyleStringVariants = {
     'space-around': { justifyContent: 'space-around' } as ViewStyle,
     'space-evenly': { justifyContent: 'space-evenly' } as ViewStyle,
   },
-  
+
   alignItems: {
     'flex-start': { alignItems: 'flex-start' } as ViewStyle,
     'flex-end': { alignItems: 'flex-end' } as ViewStyle,
@@ -324,7 +363,7 @@ export const viewStyleStringVariants = {
     stretch: { alignItems: 'stretch' } as ViewStyle,
     baseline: { alignItems: 'baseline' } as ViewStyle,
   },
-  
+
   alignSelf: {
     auto: { alignSelf: 'auto' } as ViewStyle,
     'flex-start': { alignSelf: 'flex-start' } as ViewStyle,
@@ -333,7 +372,7 @@ export const viewStyleStringVariants = {
     stretch: { alignSelf: 'stretch' } as ViewStyle,
     baseline: { alignSelf: 'baseline' } as ViewStyle,
   },
-  
+
   alignContent: {
     'flex-start': { alignContent: 'flex-start' } as ViewStyle,
     'flex-end': { alignContent: 'flex-end' } as ViewStyle,
@@ -342,69 +381,69 @@ export const viewStyleStringVariants = {
     'space-between': { alignContent: 'space-between' } as ViewStyle,
     'space-around': { alignContent: 'space-around' } as ViewStyle,
   },
-  
+
   flexWrap: {
     wrap: { flexWrap: 'wrap' } as ViewStyle,
     nowrap: { flexWrap: 'nowrap' } as ViewStyle,
     'wrap-reverse': { flexWrap: 'wrap-reverse' } as ViewStyle,
   },
-  
+
   overflow: {
     visible: { overflow: 'visible' } as ViewStyle,
     hidden: { overflow: 'hidden' } as ViewStyle,
     scroll: { overflow: 'scroll' } as ViewStyle,
   },
-  
+
   display: {
     flex: { display: 'flex' } as ViewStyle,
     none: { display: 'none' } as ViewStyle,
   },
-  
+
   borderStyle: {
     solid: { borderStyle: 'solid' } as ViewStyle,
     dotted: { borderStyle: 'dotted' } as ViewStyle,
     dashed: { borderStyle: 'dashed' } as ViewStyle,
   },
   // Flexbox Properties
-  flex: (selected: string) => {
-    const value = parseFloat(selected);
+  flex: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { flex: value } as ViewStyle;
   },
-  
-  flexBasis: (selected: string) => {
-    const value = parseFloat(selected);
-    if (isNaN(value)) return {};
+
+  flexBasis: (selected: RawValue) => {
+    const value = parseDimension(selected);
+    if (value === undefined) return {};
     return { flexBasis: value } as ViewStyle;
   },
-  
-  flexGrow: (selected: string) => {
-    const value = parseFloat(selected);
+
+  flexGrow: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { flexGrow: value } as ViewStyle;
   },
-  
-  flexShrink: (selected: string) => {
-    const value = parseFloat(selected);
+
+  flexShrink: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { flexShrink: value } as ViewStyle;
   },
 
   // Gap Properties (for newer React Native versions)
-  gap: (selected: string) => {
-    const value = parseFloat(selected);
+  gap: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { gap: value } as ViewStyle;
   },
-  
-  columnGap: (selected: string) => {
-    const value = parseFloat(selected);
+
+  columnGap: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { columnGap: value } as ViewStyle;
   },
-  
-  rowGap: (selected: string) => {
-    const value = parseFloat(selected);
+
+  rowGap: (selected: RawValue) => {
+    const value = parseFloat(String(selected));
     if (isNaN(value) || value < 0) return {};
     return { rowGap: value } as ViewStyle;
   },

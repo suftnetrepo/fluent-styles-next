@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ScrollViewProps } from 'react-native';
 import { ViewStyleProps } from '../utiles/viewStyleProps';
 type StyledScrollViewProps = ScrollViewProps & ViewStyleProps;
